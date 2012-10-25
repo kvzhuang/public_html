@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2012-06-22">
+<meta name="modified" content="Fri 22 Jun 2012 10:39:36 AM CST">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.4.1/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.4.1/build/cssfonts/fonts-min.css">
+<script type="text/javascript" src="http://yui.yahooapis.com/3.4.1/build/yui/yui-min.js"></script>
+<style type="text/css">
+.mod,
+.mod .mod-content,
+.mod .ft,
+.mod .ft-content {
+   background:url(images/rc_nb.gif) no-repeat;
+   position:relative;
+}
+.mod {
+   background-position:100% 0;
+   z-index:0;
+   width:400px;
+   position:relative;
+   left:100px;
+}
+.mod .mod-content {
+   background-position:0 0;
+   left:-7px; /* offset by size of the rounded corner */
+   width:100%;
+   position:relative;
+   z-index:2;
+}
+.mod .ft {
+   background-position:100% 100%;
+   bottom:-7px; /* move outside of mod-content */
+   right:-7px;
+   width:100%;
+}
+.mod .ft .ft-content {
+   background-position:0 100%;
+   padding:0 0 7px 10px;
+   left:-7px;
+}
+.mod .x1 { /* speech tail */
+   display:block;
+   font-size:0;
+   height:1px;
+   width:1px;
+   position:absolute;
+   right:-15px;
+   top:15px;
+   border-right:0;
+   border-left:15px solid #4C9ADA; /* pixel size = tail size */
+   border-top:10px solid transparent; /* set angle of arrow */
+   border-bottom:10px solid transparent;
+   _border-top-color:cyan; /* No 'transparent' borders in IE6 */
+   _border-bottom-color:cyan;
+   _filter:chroma(color="cyan"); /* filter out the cyan color */
+}
+
+
+</style>
+</head>
+<body>
+<div id="corners-nb" class="mod">
+<span class="x1"><span class="x1a"></span></span><span class="x2"><span class="x2a"></span></span>
+   <div class="mod-content">
+          <div class="hd">
+
+                           <h4>Module Head</h4>
+          </div>
+          <div class="bd">
+                           <p>Module Body</p>
+          </div>
+          <div class="ft">
+              <p class="ft-content">Module Foot</p>
+
+          </div>
+        </div>
+</div>
+
+</body>
+</html>

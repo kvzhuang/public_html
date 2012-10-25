@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2012-06-22">
+<meta name="modified" content="Fri 22 Jun 2012 09:59:08 AM CST">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.4.1/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.4.1/build/cssfonts/fonts-min.css">
+<script type="text/javascript" src="http://yui.yahooapis.com/3.4.1/build/yui/yui-min.js"></script>
+<style type="text/css">
+.mod {
+    width:100px;
+   border:1px solid #b1e397;
+   background-color:#f4ffe5;
+   position:relative;
+   left:10px;
+   z-index:0;
+}
+.mod .mod-content {
+   position:relative;
+   z-index:2;
+}
+/* x1 = top-right, x1a = top-left, x2 = bottom-right, x2a = bottom-left */
+.mod .x1,
+.mod .x1a,
+.mod .x2,
+.mod .x2a {
+   display:block;
+   clear:both;
+   font-size:0; /* for IE6 */
+   height:18px;  /* set height to the size of the corner */
+   position:relative;
+   background:url(images/cr_big.gif) no-repeat;
+}
+.mod .x1,
+.mod .x2 {
+   width:100%; /* scales with the module */
+   right:-1px; /* overlap borders */
+}
+.mod .x1a,
+.mod .x2a { /* left corners */
+   width:3px;
+   left:-2px;
+}
+.mod .x1 {
+   background-position:100% 0;
+   top:-1px;
+}
+.mod .x1a {
+   background-position:0 -36px;
+}
+.mod .x2 { /* bottom corners get moved */
+   position:absolute;
+   background-position:100% -18px;
+   bottom:-1px; /* overlap bottom border */
+}
+.mod .x2a {
+   background-position:0 -54px;
+}
+</style>
+</head>
+<body>
+<div id="corners-b" class="mod">
+<span class="x1"><span class="x1a"></span></span><span class="x2"><span class="x2a"></span></span>
+   <div class="mod-content">
+          <div class="hd">
+             <h4>Module Head</h4>
+          </div>
+          <div class="bd">
+               <p>Module Content</p>
+          </div>
+          <div class="ft">
+                <p class="ft-wrapper">Module Foot</p>
+          </div>
+        </div>
+</div>
+
+</body>
+</html>

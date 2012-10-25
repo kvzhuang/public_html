@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Vivian">
+<meta name="created" content="2012-08-06">
+<title>MPlayer Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.6.0/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.6.0/build/cssfonts/fonts-min.css">
+<script type="text/javascript" src="http://yui.yahooapis.com/3.6.0/build/yui/yui-min.js"></script>
+<script type="text/javascript" src="mplayer.js"></script>
+<style type="text/css">
+body {
+    height: 550px;
+    position: relative;
+}
+.container {
+    background: #ddd;
+    height: 200px;
+    left: 0;
+    opacity: 0.5;
+    position: absolute;
+    bottom: 0;
+    width: 400px;
+    z-index: 1;
+}
+</style>
+</head>
+<body class="yui3-skin-sam">
+    <div id="mplayer">
+        <!--
+        <embed type="application/x-mplayer2" id="media-player" name="mediaPlayer" src="http://dl.dropbox.com/u/50251053/tv/videos/video.mp4" autostart="false" width="900" height="600"></embed>
+        -->
+    </div>
+    <div id="cover" ></div>
+    <div class="container"></div>
+    <script>
+        YUI().use("node", "event", "event-key", "mplayer", "console", function (Y) {
+            var positionNode,
+                durationNode,
+                player;
+
+            Y.Node.DOM_EVENTS.key.eventDef.KEY_MAP.arrowleft = 37;
+            Y.Node.DOM_EVENTS.key.eventDef.KEY_MAP.arrowright = 39;
+            Y.Node.DOM_EVENTS.key.eventDef.KEY_MAP.arrowup = 38;
+            Y.Node.DOM_EVENTS.key.eventDef.KEY_MAP.arrowdown = 40;
+
+            Y.Node.DOM_EVENTS.key.eventDef.KEY_MAP.a = 82;
+            Y.Node.DOM_EVENTS.key.eventDef.KEY_MAP.b = 66;
+            Y.Node.DOM_EVENTS.key.eventDef.KEY_MAP.q = 81;
+            Y.Node.DOM_EVENTS.key.eventDef.KEY_MAP.f = 70;
+
+            (new Y.Console({height:"600px"})).render();
+            var cover = Y.one("#cover");
+            cover.setStyles({
+                "position":"absolute",
+                "width":"700px",
+                "height":"800px",
+                "background-color":"red",
+                "top":"-700px",
+                "left":"0"
+            });
+            player = new Y.MPlayer({
+                container: "#mplayer",
+                autoPlay: true,
+                url: "http://dl.dropbox.com/u/10258402/GokKUqLcvD8.mp4"
+                //url: "http://video.nexttv.com.tw/videos/tv_12/20120903/12793.mp4"
+            });
+
+            player.on("playing", function (e) {
+                Y.log("position/duration = " + e.position + "/" + e.duration);
+            });
+
+            Y.one("body").on("key", function () {
+                Y.log("left");
+                player.play();
+                //player.play("http://dl.dropbox.com/u/50251053/tv/videos/video.mp4");
+            }, "arrowleft");
+
+            Y.one("body").on("key", function() {
+                Y.log("right")
+                player.stop();
+            }, "arrowright");
+
+            Y.one("body").on("key", function() {
+                Y.log("up")
+                //player.pause();
+                Y.one("#mplayer").setStyles({
+                    "position" : "absolute",
+                    "top": "-700px",
+                    "left": "0px"
+                });
+                cover.setStyle("top","0");
+            }, "arrowup");
+
+            Y.one("body").on("key", function() {
+                Y.log("down")
+                player.pause();
+            }, "arrowdown");
+
+            Y.one("body").on("key", function () {
+                Y.log("aaa");
+            }, "a+shift");
+
+            Y.one("body").on("key", function () {
+                Y.log("bbb");
+            }, "b+shift");
+
+            Y.one("body").on("key", function () {
+                Y.log("qqq");
+            }, "q+shift");
+
+            Y.one("body").on("key", function () {
+                Y.log("fff");
+            }, "f+shift");
+
+        });
+    </script>
+</body>
+</html>

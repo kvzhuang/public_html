@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2012-06-22">
+<meta name="modified" content="Fri 22 Jun 2012 11:29:45 AM CST">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.4.1/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.4.1/build/cssfonts/fonts-min.css">
+<script type="text/javascript" src="http://yui.yahooapis.com/3.4.1/build/yui/yui-min.js"></script>
+<style type="text/css">
+.mod {
+   position:relative;
+   z-index:0;
+   _padding-bottom:6px; /* IE6 fix - bounds x1's height */
+   _overflow-y:hidden;
+   width:100px;
+}
+.mod .mod-content {
+   position:relative;
+   z-index:2;
+   border:1px solid #746555;
+   background:#bdafa1;
+}
+.mod .x1 {
+   display:block;
+   background:#000;
+   height:100%;
+   _height:3000px; /* IE6 can't do 100% of an unknown height */
+   width:100%;
+   position:absolute;
+   top:6px; /* offset the shadow */
+   left:6px;
+   z-index:-1;
+   opacity:.30;
+   *filter:alpha(opacity="30"); /* use 'filter' for IE6 & 7 */
+}
+</style>
+</head>
+<body>
+
+<div id="shadow" class="mod">
+<span class="x1"><span class="x1a"></span></span><span class="x2"><span class="x2a"></span></span>
+   <div class="mod-content">
+          <div class="hd">
+             <h4>Module Head</h4>
+          </div>
+          <div class="bd">
+                           <p>Module Body</p>
+
+          </div>
+          <div class="ft">
+             <p class="ft-content">Module Foot</p>
+          </div>
+        </div>
+</div>
+
+</body>
+</html>

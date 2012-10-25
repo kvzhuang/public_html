@@ -1,0 +1,80 @@
+{
+    "project": {},
+    "files": {
+        "vlc.js": {
+            "name": "vlc.js",
+            "modules": {
+                "vlc": 1
+            },
+            "classes": {
+                "VLC": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "vlc": {
+            "name": "vlc",
+            "submodules": {},
+            "classes": {
+                "VLC": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "vlc.js",
+            "line": 8,
+            "description": "A util for control VLC.",
+            "requires": [
+                "node",
+                "base"
+            ]
+        }
+    },
+    "classes": {
+        "VLC": {
+            "name": "VLC",
+            "shortname": "VLC",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "vlc",
+            "namespace": "",
+            "file": "vlc.js",
+            "line": 8,
+            "description": "An utility that...\nThe following is sample usage.\n\n    var vlc = new Y.VLC({\n        node: \"#foo\"\n    });",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "attribute object",
+                    "type": "Object"
+                }
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "vlc.js",
+            "line": 23,
+            "description": "The status code for VLC control.",
+            "itemtype": "property",
+            "name": "STATUS",
+            "class": "VLC",
+            "module": "vlc"
+        },
+        {
+            "file": "vlc.js",
+            "line": 39,
+            "description": "The video uri.",
+            "itemtype": "attribute",
+            "name": "uri",
+            "type": "String",
+            "class": "VLC",
+            "module": "vlc"
+        }
+    ]
+}
