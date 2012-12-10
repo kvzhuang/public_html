@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2012-11-28">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
+<style type="text/css">
+
+</style>
+</head>
+<body>
+    <div>
+      <embed type="application/channels" id="channelObject" hidden="true"></embed>
+    </div>
+    <script>
+
+    YUI().use('', function (Y) {
+        var p_ChnTest = document.getElementById("channelObject");
+        Y.log(p_ChnTest);
+        p_ChnTest.switchChannel(205);
+    });
+    </script>
+</body>
+</html>

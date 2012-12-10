@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2012-12-03">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
+<style type="text/css">
+
+</style>
+</head>
+<body>
+    <div>
+    <embed type="application/channels" id="channelObject" hidden="true"></embed>
+    </div>
+    <script>
+    // get channels plugin
+    var p_ChnTest = document.getElementById("channelObject");
+
+
+    // test enableChannelSwitch() plugin api. Open this to enableChannelSwitch
+    p_ChnTest.enableChannelSwitch();
+
+    // switch channel to 205
+    setTimeout("p_ChnTest.switchChannel(302)", 10000);
+    </script>
+</body>
+</html>

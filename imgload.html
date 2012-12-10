@@ -11,13 +11,19 @@
 <style type="text/css">
     .image {
         position: absolute;
-
+        background-color: blue;
+    }
+    .image2 {
+        position: absolute;
+        background-color: red;
     }
     .outside {
         top: -700px;
         left: 0;
     }
     .inside {
+        width: 500px;
+        height: 500px;
         top: 0;
         left: 0;
     }
@@ -25,44 +31,64 @@
 </head>
 <body>
     <span class="text">text 1</span>
-    <div class="image" width="500" height="500">
+    <div class="image outside" width="500" height="500">
+    </div>
+    <div class="image2 outside" width="500" height="500">
     </div>
     <script>
 
 
-    var startTime;
+    var changeImg1, changeImg2;
     YUI().use('node', function (Y) {
-    var timerid = 0, img, imgDiv;
-    var images = new Array( "http://dl.dropbox.com/u/10258402/logo/%E8%8E%8ALOGO_RGB-01.png",
+    var timerid = 0, img, imgDiv, imgDiv2;
+    /*var images = new Array( "http://dl.dropbox.com/u/10258402/logo/%E8%8E%8ALOGO_RGB-01.png",
             "http://dl.dropbox.com/u/10258402/logo/%E8%8E%8ALOGO_RGB-02.png",
-            "http://dl.dropbox.com/u/10258402/logo/%E8%8E%8ALOGO_RGB-03.png",
+            "http://dl.dropbox.com/u/10258402/elly_vietnam_05.jpg",
             "http://dl.dropbox.com/u/10258402/logo/%E8%8E%8ALOGO-%E5%AE%9A%E7%A8%BF%E6%AA%94-01.jpg",
+            "http://dl.dropbox.com/u/10258402/47530_432264969258_677359258_4766069_1176094_n.jpg",
+            "http://dl.dropbox.com/u/10258402/DSCN0923.JPG",
             "http://dl.dropbox.com/u/10258402/logo/%E8%8E%8ALOGO_RGB-04.png"
-            );
+            );*/
+    var images = new Array(
+            "http://dl.dropbox.com/u/10258402/%E5%A4%A7%E5%BC%B502.jpg",
+            "http://dl.dropbox.com/u/10258402/%E5%B0%8F%E5%BC%B503.JPG"
+        );
     var countimages = 0;
     imgDiv = Y.one(".image");
     img = new Image;
     img.width = "500";
     img.height= "500";
     img.onload = function(){
-       imgDiv.removeClass("outside");
-       imgDiv.addClass("inside");
+       imgDiv.replaceClass("outside", "inside");
+       imgDiv2.replaceClass("inside", "outside");
+       changeImg1();
     }
     imgDiv.appendChild(img);
-    var startTime = function () {
-       imgDiv.removeClass("inside");
-       imgDiv.addClass("outside");
-        var tDate = new Date();
-
+    imgDiv2 = Y.one(".image2");
+    img2 = new Image;
+    img2.width = "500";
+    img2.height= "500";
+    img2.onload = function(){
+       imgDiv2.replaceClass("outside", "inside");
+       imgDiv.replaceClass("inside", "outside");
+       changeImg2();
+    }
+    imgDiv2.appendChild(img2);
+    changeImg1 = function () {
+        if(countimages == images.length) {
+                countimages = 0;
+        }
+        img2.src = images[countimages];
+        countimages++;
+    };
+    changeImg2 = function () {
         if(countimages == images.length) {
                 countimages = 0;
         }
         img.src = images[countimages];
-
         countimages++;
     };
-
-        setInterval(startTime,5000);
+    changeImg2();
         /*var startload = (new Date()).getTime();
         Y.log("loading : "+startload);
         imageOnload = function () {
