@@ -6,50 +6,62 @@
 <link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
 <link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
 <style>
-.mod {
-    width: 50%; /* Set flexible layout for testing */
-    min-width: 400px;
-    margin: 0 auto;
-    border: solid 1px #ccc;
-}
-.mod .mod-content {
+.mod-content {
     padding: 10px;
     zoom: 1;
+    width: 400px;
+    border: solid 1px #111;
+    margin: 10px;
 }
-.mod .mod-content:after {
+.mod-content:after {
     content: "";
     display: block;
     clear: both;
 }
-.mod .img {
+.img {
     float: left;
     height: 130px;
     margin-right: 10px;
     position: relative;
     width: 130px;
 }
-.mod .img img {
+.img img {
     display: block;
 }
-.mod .txt {
+.txt {
     font-size: 20px;
-    display: table;
+    display: block;
     overflow: hidden;
     word-wrap: break-word;
-    word-break: break-all;
+    *float: left;
+}
+.txt2 {
+    font-size: 20px;
+    display: block;
+    word-wrap: break-word;
     *float: left;
 }
 </style>
 </head>
 <body>
-    <div class="mod">
-        <div class="mod-content">
-            <div class="img">
-                <img src="http://a.mimgs.com/index/common/ico_device_d-link_dwr-117_24bit.png" alt="§ڮaªº¤(ɾ¹ 1 -  »ݭn UPNP" width="130" height="130">
-            </div>
-            <div class="txt">
-                <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
-            </div>
+    <div class="mod-content">
+        <div class="img">
+            <img src="https://dl.dropboxusercontent.com/u/10258402/logo/%E8%8E%8ALOGO_RGB-07.png" alt="logo" width="130" height="130">
+        </div>
+        <div class="txt">
+            <p>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+            </p>
+        </div>
+    </div>
+    <div class="mod-content">
+        <div class="img">
+            <img src="https://dl.dropboxusercontent.com/u/10258402/logo/%E8%8E%8ALOGO_RGB-07.png" alt="logo" width="130" height="130">
+        </div>
+        <div class="txt2">
+            <p>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+            </p>
         </div>
     </div>
 </body>
