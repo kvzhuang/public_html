@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Image / Text Module</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style>
+.mod {
+    width: 50%; /* Set flexible layout for testing */
+    min-width: 400px;
+    margin: 0 auto;
+    border: solid 1px #ccc;
+}
+.mod .mod-content {
+    padding: 10px;
+    zoom: 1;
+}
+.mod .mod-content:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+.mod .img {
+    float: left;
+    height: 130px;
+    margin-right: 10px;
+    position: relative;
+    width: 130px;
+}
+.mod .img img {
+    display: block;
+}
+.mod .txt {
+    font-size: 20px;
+    display: table;
+    overflow: hidden;
+    word-wrap: break-word;
+    word-break: break-all;
+    *float: left;
+}
+</style>
+</head>
+<body>
+    <div class="mod">
+        <div class="mod-content">
+            <div class="img">
+                <img src="http://a.mimgs.com/index/common/ico_device_d-link_dwr-117_24bit.png" alt="§ڮaªº¤(ɾ¹ 1 -  »ݭn UPNP" width="130" height="130">
+            </div>
+            <div class="txt">
+                <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
