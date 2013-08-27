@@ -7,6 +7,7 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
     <script type="text/javascript" src="//codeorigin.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="//areaaperta.com/nicescroll/js/jquery.nicescroll.min.js"></script>
     <link href="editor.css" rel="stylesheet">
   </head>
   <body>
@@ -14,16 +15,33 @@
 <div class="container">
   <div class="hero-unit">
     <div class="btn-group">
-        <a class="btn" href="#" data-command="bold"><i class="icon-bold"></i></a>
-        <a class="btn" href="#" data-command="italic"><i class="icon-italic"></i></a>
-        <a class="btn" href="#" data-command="underline"><i class="icon-underline"></i></a>
-        <a class="btn" href="#" data-command="strikeThrough"><i class="icon-strikethrough"></i></a>
+        <a class="btn dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font"><i class="icon-font"></i><b class="caret"></b></a>
+          <ul class="dropdown-menu">
+          <li><a data-command="fontName" data-value="Serif" style="font-family:'Serif'">Serif</a></li>
+          <li><a data-command="fontName" data-value="Sans"  style="font-family:'Sans'">Sans</a></li>
+          <li><a data-command="fontName" data-value="Arial" style="font-family:'Arial'">Arial</a></li>
+          <li><a data-command="fontName"data-value="Verdana" style="font-family:'Verdana'">Verdana</a></li></ul>
+    </div>
+   <div class="btn-group">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="icon-text-height"></i>&nbsp;<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+          <li><a data-command="fontSize" data-value="5"><font size="5">Huge</font></a></li>
+          <li><a data-command="fontSize" data-value="3"><font size="3">Normal</font></a></li>
+          <li><a data-command="fontSize" data-value="1"><font size="1">Small</font></a></li>
+          </ul>
+    </div>
+
+    <div class="btn-group">
+        <a class="btn" href="#" data-command="bold" title="Bold"><i class="icon-bold"></i></a>
+        <a class="btn" href="#" data-command="italic" title="Italic"><i class="icon-italic"></i></a>
+        <a class="btn" href="#" data-command="underline" title="Underline"><i class="icon-underline"></i></a>
+        <a class="btn" href="#" data-command="strikeThrough" title="Strike Through"><i class="icon-strikethrough"></i></a>
     </div>
     <div class="btn-group">
-        <a class="btn" href="#" data-command="insertunorderedlist"><i class="icon-list-ul"></i></a>
-        <a class="btn" href="#" data-command="insertorderedlist"><i class="icon-list-ol"></i></a>
-        <a class="btn" href="#" data-command="outdent"><i class="icon-indent-left"></i></a>
-        <a class="btn" href="#" data-command="indent"><i class="icon-indent-right"></i></a>
+        <a class="btn" href="#" data-command="insertunorderedlist" title="Insert Unordered List"><i class="icon-list-ul"></i></a>
+        <a class="btn" href="#" data-command="insertorderedlist" title="Insert Ordered List"><i class="icon-list-ol"></i></a>
+        <a class="btn" href="#" data-command="outdent" title="Remove indent"><i class="icon-indent-left"></i></a>
+        <a class="btn" href="#" data-command="indent" title="Add indent"><i class="icon-indent-right"></i></a>
     </div>
     <div class="btn-group">
         <a class="btn" href="#" data-command="justifyleft" title="Align Left "><i class="icon-align-left"></i></a>
@@ -31,7 +49,7 @@
         <a class="btn" href="#" data-command="justifyright" title="Align Right "><i class="icon-align-right"></i></a>
         <a class="btn" href="#" data-command="justifyfull" title="Justify "><i class="icon-align-justify"></i></a>
     </div>
-    <div class="btn-group">
+    <div class="btn-group color-picker">
         <a class="btn dropdown-toggle" title="Change Color" data-toggle="dropdown"><i class="icon-pencil"></i>&nbsp;<b class="caret"></b></a>
           <ul class="dropdown-menu dropdown-caret pull-right">
             <li><a class="colorpick-btn selected" href="#" data-command="forecolor" style="background-color:#6e6e6e;" data-value="#6e6e6e"></a></li>
@@ -62,15 +80,15 @@
           </ul>
       </div>
     <div id="editor" contenteditable="true">
-        This is editor.
+    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
     </div>
   </div>
 </div>
-    <script src="editor.js"></script>
 <script>
   $(function(){
+    $('#editor').niceScroll();
   });
 </script>
-
+    <script src="editor.js"></script>
 </html>
 

@@ -31,7 +31,7 @@
     },
 
     exec = function (command, value) {
-        restoreSelection();
+        console.log(command+" "+ value);
         document.execCommand(command, false, value);
     };
 
@@ -42,8 +42,9 @@
     container.find('a[data-command]').click(function () {
         var command = $(this).data('command'),
         value = $(this).data('value');
+        restoreSelection();
         exec(command, value);
     });
-
+    container.find('[data-toggle=dropdown]').click(restoreSelection);
 
 }(window.jQuery));
