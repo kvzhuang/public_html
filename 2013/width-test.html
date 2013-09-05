@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2013-09-05">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
+<style type="text/css">
+.parent {
+    width: 200px;
+    height: 200px;
+    background: grey;
+
+}
+.child-auto {
+    width: auto;
+    height: 50px;
+    padding: 0 10px;
+    margin : 5px 10px;
+    background: yellow;
+    border-left: solid 5px black;
+    border-right: solid 5px black;
+}
+.child-100 {
+    width: 100%;
+    height: 50px;
+    padding: 0 10px;
+    margin : 0 10px;
+    background: red;
+    border-left: solid 5px black;
+    border-right: solid 5px black;
+}
+</style>
+</head>
+<body>
+    <div class="parent">
+        <div class="child-auto"></div>
+        <div class="child-100"></div>
+    </div>
+</body>
+</html>
