@@ -16,20 +16,22 @@
 $playlistId = $_GET['pid'];
 if (isset($playlistId)&& $playlistId ==''){
 exit;
-}
-$offset = 1;
-for ($x=1; $x<=40; $x++) {
-$cont = json_decode(file_get_contents('http://gdata.youtube.com/feeds/api/playlists/'.$playlistId.'/?v=2&alt=json&feature=plcp&max-results=15&start-index='.$offset));
+} else {
+    $offset = 1;
+    for ($x=1; $x<=40; $x++) {
+        $cont = json_decode(file_get_contents('http://gdata.youtube.com/feeds/api/playlists/'.$playlistId.'/?v=2&alt=json&feature=plcp&max-results=15&start-index='.$offset));
+        if (count($cont->feed->entry)===0) break;
 ?>
 
 <?php echo ($x==1)?$cont->feed->title->{'$t'}.'<br/>':$x.'<br/>'; ?>
 <?php $feed = $cont->feed->entry; ?>
+
 <?php if(count($feed)): foreach($feed as $item): // youtube start ?>
 <?php echo  $item->link[0]->href;  ?> <br />
 <?php endforeach; endif; // youtube end ?>
 <?php
-
-$offset += 15;
+    $offset += 15;
+    }
 }
 ?>
 </body>
