@@ -27,6 +27,7 @@
              <label for="group_id" class="control-label">Group id *</label>
              <div class="controls">
                 <input type="text" id="group_id" name="group_id" placeholder="Group id" value="521085554595481">
+                 <span class="help-block">此為Front-End Developers Taiwan的Group Id</span>
              </div>
         </div>
         <div class="control-group">
