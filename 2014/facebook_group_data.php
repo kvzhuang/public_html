@@ -50,12 +50,12 @@ foreach($content->data as $data)
     }
     else if ($data->type == "link" ||$data->type == "photo")
     {
-    echo "<pre>";print_r($data);
+//    echo "<pre>";print_r($data);
 ?>
              訊息:<a href="https://www.facebook.com/<?php echo $d[0]; ?>/posts/<?php echo $d[1]; ?>" target="_blank">
-                <img src="" width="100" height="100">
+                <img src="<?php echo $data->picture; ?>" >
              </a>
-             <a src="" target="_blank"><?php echo (string)$data->link; ?></a>
+             <a src="<?php $data->link; ?>" target="_blank"><?php echo (string)$data->link; ?></a>
              讚: <?php echo sizeof($data->likes->data); ?>
              作者:<?php echo $data->from->name; ?>
              <br>
