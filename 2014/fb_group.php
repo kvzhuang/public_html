@@ -13,7 +13,8 @@
 </head>
 <body>
     <h1>Facebook 公開社團資料分析器</h1>
-    <form action="facebook_group_data.php" METHOD="POST" class="form-horizontal" >
+    <h2>by 莊為任</h2>
+    <form action="fb_group_list.php" METHOD="POST" class="form-horizontal" >
         <div class="control-group">
              <label for="access_token" class="control-label">Access token *</label>
              <div class="controls">

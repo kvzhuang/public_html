@@ -20,13 +20,13 @@ if (! isset($group_id) || trim($group_id) == "")
 }
 
 $since = $_POST["since"];
-if (isset($since) && trim($since) != "")
+if ( trim($since) != "")
 {
     $since = strtotime($since);
     $post_data["since"] = $since;
 }
 $until = $_POST["until"];
-if (isset($until) && trim($until) != "")
+if ( trim($until) != "")
 {
     $until = strtotime($until);
     $post_data["until"] = $until;
@@ -62,6 +62,7 @@ $feed_count = sizeof($content->data);
 </head>
 <body>
     <h1>Facebook 公開社團資料分析器</h1>
+    <h2>by 莊為任</h2>
     <span>總共:<?php echo $feed_count;?>訊息</span>
     <br/>
 <table class="table table-striped">
@@ -75,7 +76,6 @@ $feed_count = sizeof($content->data);
 <?php
 foreach($content->data as $data)
     {
-    //echo "<pre>";print_r($data->type);
     if (isset($data->message))
     {
             $d = explode("_", (string)$data->id);
