@@ -1,18 +1,41 @@
 <?php
+$post_data = array();
 $access_token = $_POST["access_token"];
-$since = $_POST["since"];
-$until = $_POST["until"];
+if (! isset($_POST["access_token"]) ||  trim($access_token) == "")
+{
+    echo "No access token!";
+    continue;
+} else
+{
+    $post_data["access_token"] = $access_token;
+}
+
+
 $group_id = $_POST["group_id"];
 
-$post_data = array(
-    "access_token" => $access_token,
-    "since" => $since,
-    "until" => $until
-);
+if (! isset($group_id) || trim($group_id) == "")
+{
+    echo "No group id!";
+    continue;
+}
+
+$since = $_POST["since"];
+if (isset($since) && trim($since) != "")
+{
+    $since = strtotime($since);
+    $post_data["since"] = $since;
+}
+$until = $_POST["until"];
+if (isset($until) && trim($until) != "")
+{
+    $until = strtotime($until);
+    $post_data["until"] = $until;
+}
+
 $param = http_build_query($post_data);
 $url = "https://graph.facebook.com/" . $group_id . "/feed?".$param;
 $content = json_decode(file_get_contents($url));
-//echo "<pre>";print_r($content->data);
+//echo "<pre>";print_r($content);
 $feed_count = sizeof($content->data);
 
 
