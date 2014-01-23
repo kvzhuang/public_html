@@ -20,6 +20,7 @@
              <div class="controls">
                  <input type="text" id="access_token" name="access_token" placeholder="access token">
                  <span class="help-block"><a href="https://developers.facebook.com/tools/explorer/" target="_blank">登入facebook取得access token.</a></span>
+                 <span class="help-block">複製"存取代碼"到此欄位</span>
             </div>
         </div>
         <div class="control-group">
