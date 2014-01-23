@@ -49,12 +49,29 @@ $feed_count = sizeof($content->data);
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
 <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
 <style>
+.col1 {
+    width: 80%
+}
+.col2 {
+    width: 10%
+}
+.col3 {
+    width: 10%
+}
 </style>
 </head>
 <body>
-    <div class="">
+    <h1>Facebook 公開社團資料分析器</h1>
     <span>總共:<?php echo $feed_count;?>訊息</span>
-<br/>
+    <br/>
+<table class="table table-striped">
+<thead>
+    <tr>
+        <th>文章連結</th>
+        <th>讚數</th>
+        <th>作者</th>
+    </tr>
+</thead>
 <?php
 foreach($content->data as $data)
     {
@@ -63,32 +80,46 @@ foreach($content->data as $data)
     {
             $d = explode("_", (string)$data->id);
 ?>
+    <tr>
+            <td class="col1">
             訊息:<a href="https://www.facebook.com/<?php echo $d[0]; ?>/posts/<?php echo $d[1]; ?>" target="_blank">
             <?php echo (string)$data->message; ?>
             </a>
+            </td>
+            <td class="col2">
             讚: <?php echo sizeof($data->likes->data); ?>
+            </td>
+            <td class="col3">
             作者:<?php echo $data->from->name; ?>
-            <br>
+            </td>
+    </tr>
 <?php
     }
     else if ($data->type == "link" ||$data->type == "photo")
     {
 //    echo "<pre>";print_r($data);
 ?>
+    <tr>
+        <td class="col1">
              訊息:<a href="https://www.facebook.com/<?php echo $d[0]; ?>/posts/<?php echo $d[1]; ?>" target="_blank">
                 <img src="<?php echo $data->picture; ?>" >
              </a>
              <a src="<?php $data->link; ?>" target="_blank"><?php echo (string)$data->link; ?></a>
+        </td>
+        <td class="col2">
              讚: <?php echo sizeof($data->likes->data); ?>
+        </td>
+        <td class="col3">
              作者:<?php echo $data->from->name; ?>
-             <br>
+        </td>
+    </tr>
 
 <?php
     }
 
 }
 ?>
-    </div>
+</table>
 </body>
 </html>
 

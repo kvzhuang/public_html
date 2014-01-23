@@ -12,6 +12,7 @@
 </style>
 </head>
 <body>
+    <h1>Facebook 公開社團資料分析器</h1>
     <form action="facebook_group_data.php" METHOD="POST" class="form-horizontal" >
         <div class="control-group">
              <label for="access_token" class="control-label">Access token *</label>
@@ -23,7 +24,7 @@
         <div class="control-group">
              <label for="group_id" class="control-label">Group id *</label>
              <div class="controls">
-                <input type="text" id="group_id" name="group_id" placeholder="Group id">
+                <input type="text" id="group_id" name="group_id" placeholder="Group id" value="521085554595481">
              </div>
         </div>
         <div class="control-group">
