@@ -31,6 +31,8 @@ if ( trim($until) != "")
     $until = strtotime($until);
     $post_data["until"] = $until;
 }
+$group_info = json_decode(file_get_contents( "https://graph.facebook.com/" . $group_id));
+$group_name = (string)$group_info->name;
 
 $param = http_build_query($post_data);
 $url = "https://graph.facebook.com/" . $group_id . "/feed?".$param;
@@ -50,7 +52,7 @@ $feed_count = sizeof($content->data);
 <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
 <style>
 .col1 {
-    width: 80%
+    width: 70%
 }
 .col2 {
     width: 10%
@@ -61,18 +63,21 @@ $feed_count = sizeof($content->data);
 </style>
 </head>
 <body>
-    <h1>Facebook 公開社團資料分析器</h1>
-    <h2>by 莊為任</h2>
-    <span>總共:<?php echo $feed_count;?>訊息</span>
-    <br/>
-<table class="table table-striped">
-<thead>
-    <tr>
-        <th>文章連結</th>
-        <th>讚數</th>
-        <th>作者</th>
-    </tr>
-</thead>
+    <div class="container">
+        <h1>Facebook 公開社團資料分析器</h1>
+        <h2>by 莊為任</h2>
+        <h3><?php echo htmlspecialchars($group_name); ?></h3>
+        <span>總共:<?php echo $feed_count;?>條訊息</span>
+        <br/>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>文章連結</th>
+                    <th>討論數</th>
+                    <th>讚數</th>
+                    <th>作者</th>
+                </tr>
+            </thead>
 <?php
 foreach($content->data as $data)
     {
@@ -87,7 +92,10 @@ foreach($content->data as $data)
             </a>
             </td>
             <td class="col2">
-            讚: <?php echo sizeof($data->likes->data); ?>
+                回文數: <?php echo sizeof($data->comments->data); ?>
+            </td>
+            <td class="col2">
+                 讚: <?php echo sizeof($data->likes->data); ?>
             </td>
             <td class="col3">
             作者:<?php echo htmlspecialchars($data->from->name); ?>
@@ -107,6 +115,9 @@ foreach($content->data as $data)
              <a src="<?php echo htmlspecialchars($data->link); ?>" target="_blank"><?php echo htmlspecialchars((string)$data->link); ?></a>
         </td>
         <td class="col2">
+             回文數: <?php echo sizeof($data->comments->data); ?>
+        </td>
+        <td class="col2">
              讚: <?php echo sizeof($data->likes->data); ?>
         </td>
         <td class="col3">
@@ -119,7 +130,8 @@ foreach($content->data as $data)
 
 }
 ?>
-</table>
-</body>
+            </table>
+        </div>
+    </body>
 </html>
 
