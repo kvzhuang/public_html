@@ -6,7 +6,7 @@
 <title> Prototype</title>
 <link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
 <link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
-<script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <style type="text/css">
 
 </style>
@@ -28,10 +28,12 @@ exit;
 ?>
 
 <?php echo ($x==1)?$cont->feed->title->{'$t'}.'<br/>':$x.'<br/>'; ?>
+<span>
 <?php $feed = $cont->feed->entry; ?>
 <?php if(count($feed)): foreach($feed as $item): // youtube start ?>
 <?php echo  $item->link[0]->href;  ?> <br />
 <?php endforeach; endif; // youtube end ?>
+</span>
 <?php
     $offset += 15;
     }
@@ -76,9 +78,11 @@ exit;
 
 <?php echo ($x==1)?$cont->feed->author[0]->name->{'$t'}.'<br/>':$x.'<br/>'; ?>
 <?php $feed = $cont->feed->entry; ?>
+<span>
 <?php if(count($feed)): foreach($feed as $item): // youtube start ?>
 <?php echo  $item->link[0]->href;  ?> <br />
 <?php endforeach; endif; // youtube end ?>
+</span>
 <?php
     $offset += 15;
     }
@@ -106,5 +110,23 @@ exit;
 }
 ?>
 </div>
+<script>
+
+$('span').click(function (){
+    var range, selection;
+    return;
+    if (window.getSelection && document.createRange) {
+        selection = window.getSelection();
+        range = document.createRange();
+        range.selectNodeContents($(this)[0]);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    } else if (document.selection && document.body.createTextRange) {
+        range = document.body.createTextRange();
+        range.moveToElementText($(this)[0]);
+        range.select();
+    }
+});
+</script>
 </body>
 </html>
