@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2018-04-02">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<style type="text/css">
+textarea {
+white-space: pre-wrap;
+}
+</style>
+ <script>
+        function getPlaylist() {
+            var playlistId = document.getElementById('playlistId');
+            var playlistIds = document.getElementById('pids');
+            var names = document.getElementById('names');
+            gapi.client.setApiKey('AIzaSyCFa4OQNWv89nb6VvpN4Nm45Aci5LQ-YkQ');
+            gapi.client.load('youtube', 'v3', function() {
+
+                var request = gapi.client.youtube.playlistItems.list({
+                    part: 'snippet',
+                    playlistId: playlistId.value,
+                    maxResults: 50
+                });
+
+                request.execute(function(response) {
+                    for (var i = 0; i < response.items.length; i++) {
+                        var pid = 'https://www.youtube.com/watch?v='+response.items[i].snippet.resourceId.videoId+'\n';
+                        playlistIds.value +=pid;
+                        var name = response.items[i].snippet.title + '\n';
+                        names.value += name
+                        console.log(response.items[i].snippet);
+                        //console.log(response.items[i].snippet.title + " published at " + response.items[i].snippet.publishedAt)
+                    }
+                });
+            });
+        }
+    </script>
+
+    <script src="https://apis.google.com/js/client.js"></script>
+</head>
+<body>
+    <div>
+    <input type='text' id='playlistId'  value='PLvFYFNbi-IBFeP5ALr50hoOmKiYRMvzUq' style='width:400px'/>
+    <input type='button' id='getPlaylist' onClick="javascript:getPlaylist()" value='getIt!'/>
+    <hr/>
+    <textarea id='pids' rows='50' cols='100' onscroll="javascript:scrollPid()"></textarea>
+    <textarea id='names' rows='50' cols='100'></textarea>
+    </div>
+    <script>
+            var pids = document.getElementById('pids');
+            var names = document.getElementById('names');
+            function scrollPid(e) {
+                names.scrollTop = pids.scrollTop;
+            }
+    </script>
+</body>
+</html>
