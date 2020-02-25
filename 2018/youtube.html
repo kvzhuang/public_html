@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2018-07-23">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div>
+請用桌機瀏覽
+<script>
+                window.ppsCreatives = window.ppsCreatives || [];
+                window.ppsCreatives.push({
+                    creativeId: '1126',
+                    targetId: 'cr-1126',
+                    templateKey: 'iframe',
+                    version: '2',
+                    width: 300 ,
+                    height: 250 ,
+                    assets: [
+                        {
+                        "type": "IFRAME",
+                        "key": "iframe",
+                        "content": null,
+                        "src": "https://www.youtube.com/embed/7ivuzPd3lfs?autoplay=1"
+                    }, {
+                        "type": "URL",
+                        "key": "landingPage",
+                        "content": "%%CLICK_URL_UNESC%%http://tenmax.io",
+                        "src": null
+                    }, ],
+                    config: {
+                        "escape": true
+                    },
+                    defaultAutoplay: true
+                });
+            </script>
+
+<div class="container">
+  <div>
+    <ins class="ppstudio" data-pps-target-id="cr-1126"></ins>
+  </div>
+</div>
+<script async src="https://tenmaxsgads.blob.core.windows.net/code-stage/ppstudio.js"></script>
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+    });
+    </script>
+</body>
+</html>

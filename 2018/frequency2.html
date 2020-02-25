@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2018-05-22">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div>
+<script>
+    window.ppsOptions = {
+        escape: {
+            level: 2
+        }
+    };
+    window.ppsCreatives = window.ppsCreatives || [];
+    window.ppsCreatives.push({
+        creativeId: '1013',
+        targetId: 'cr-1013',
+        templateKey: 'cover-1280x720',
+        width: 970 ,
+        height: 250 ,
+        videoUrl: '//tenmaxsgadsmediastage.blob.core.windows.net/asset-73bb638e-f4d9-4221-8419-6c7ba6107e51/tenmaxad.mp4?sv=2015-07-08&sr=c&si=46fe6e5f-1453-4a76-b87e-4783121b686d&sig=9eMp%2BqJHSkSEZRErovhQO%2BGvJil%2Fv1%2Fd%2B41lKp7GN28%3D&se=2116-12-14T06%3A12%3A12Z',
+        companionUrl: 'https://tenmax-ads.azureedge.net/creative-stage/2018/05/22/1013.jpg',
+        clickUrl: '%%CLICK_URL_UNESC%%http://tenmax.io',
+        title: '',
+        description: '',
+        config: {
+            "frequencyControl": [{
+                "intervalMaximum": 2,
+                "exceedingClass": "closed",
+                "normalClass": "expanded",
+                "domain": ".appledaily.com"
+            }, {
+                "intervalMaximum": 2,
+                "exceedingClass": "closed",
+                "normalClass": "expanded",
+                "domain": ".appledaily.com.tw"
+            }, {
+                "intervalMaximum": 999,
+                "exceedingClass": "closed",
+                "normalClass": "expanded",
+                "domain": null
+            }]
+        },
+        defaultAutoplay: true
+    });
+</script><ins class="ppstudio" data-pps-target-id="cr-1013"></ins>
+<script async src="//tenmaxsgads.blob.core.windows.net/code-stage/ppstudio-dev.js"></script>
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>youtube_gdata_v2</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<!-- <link rel="stylesheet" href="/lib/bootstrap-3.0.0/css/bootstrap.css"> -->
+</head>
+<body>
+    <div>
+        <div class="cover"></div>
+        <div class="vid"></div>
+        <div class="title"></div>
+        <div class="url"></div>
+    </div>
+</body>
+<script>
+// var keyWord = 'red%20bull';
+var keyWord = '小蘋果';
+    $.ajax({
+        url: 'http://gdata.youtube.com/feeds/api/videos',
+        type: 'GET',
+        data: {
+            q: keyWord,
+            alt: 'json',
+            orderby: 'published',
+            'start-index': 1,
+            'max-results': 10,
+            v: 2
+        },
+        success: function(data) {
+            console.log('youtube');
+            console.log(data);
+        }
+    });
+    $.ajax({
+        url: 'https://api.dailymotion.com/videos',
+        type: 'GET',
+        data: {
+            search: keyWord,
+            private: 0,
+            filters: 'hd',
+            page: 1,
+            limit: 5
+        },
+        success: function(data) {
+            console.log('dailymotion');
+            console.log(data);
+        }
+    });
+    $.ajax({
+        url: 'https://api.dailymotion.com/video/x251z82?fields=thumbnail_120_url,thumbnail_180_url%2Cthumbnail_240_url%2Cthumbnail_360_url%2Cthumbnail_480_url%2Cthumbnail_720_url',
+        type: 'GET',
+        data: {
+        },
+        success: function(data) {
+            console.log('dailymotion');
+            console.log(data);
+        }
+    });
+    $.ajax({
+        url: 'https://openapi.youku.com/v2/searches/video/by_keyword.json',
+        type: 'GET',
+        data: {
+            client_id: 'a3660779c8b57c32',
+            keyword: keyWord,
+            public_type: 'all',
+            orderby: 'published',
+            streamtypes: '1, 6',
+            page: 1,
+            count: 5
+        },
+        success: function(data) {
+            console.log('youku');
+            console.log(data);
+        }
+    });
+</script>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2019-11-06">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title> Prototype</title>
+<style type="text/css">
+body{
+margin: 0;
+height:0;
+width:100%
+}
+
+</style>
+<body>
+<script>
+    window.ppsCreatives = window.ppsCreatives || [];
+    window.ppsCreatives.push({
+      creativeId: 'mobile-bottom-spin-video-image',
+      targetId: 'cr-mobile-bottom-spin-video-image',
+      templateKey: 'mobile-bottom-spin',
+      version: '2',
+      width: 320,
+      height: 128,
+      assets: [{
+          'key': 'circle',
+          'type': 'IMAGE',
+          'src': 'https://ads-cdn.tenmax.io/creative/2019/04/17/13340-circle.png?cb=1555502871849'
+        },
+        {
+          'key': 'content-1',
+          'type': 'IMAGE',
+          // 'src': 'https://ads-cdn.tenmax.io/creative/2019/04/17/13340-content-0.png?cb=1555502871860'
+          'src': 'https://tenmaxsgads.blob.core.windows.net/creative-sample/spin_combo.png'
+
+        }, {
+          "key": "video-1",
+          "type": "VIDEO",
+          "src": "//tenmax-ads-media.azureedge.net/asset-a0c17c32-dcf0-4e90-a5ca-ca93f504a59d/35f0448.mp4?sv=2017-04-17&sr=c&si=a4e6f8a4-cbce-4e36-afcb-eab9782f3d16&sig=FDKt2xGk20jUZgmG1iZqwGQ3B2qQlOOpBzXU6gQOeZ0%3D&se=2117-07-05T14%3A54%3A42Z",
+        },
+        {
+          'key': 'content-2',
+          'type': 'IMAGE',
+          // 'src': 'https://ads-cdn.tenmax.io/creative/2019/04/17/13340-content-1.png?cb=1555502871872'
+          'src': 'https://tenmaxsgads.blob.core.windows.net/creative-sample/spin_combo.png'
+
+        },{
+          "key": "video-2",
+          "type": "VIDEO",
+          "src": null,
+        },
+        {
+          'key': 'content-3',
+          'type': 'IMAGE',
+          // 'src': 'https://ads-cdn.tenmax.io/creative/2019/04/17/13340-content-2.png?cb=1555502871884'
+          'src': 'https://tenmaxsgads.blob.core.windows.net/creative-sample/spin_combo.png'
+        },{
+          "key": "video-3",
+          "type": "VIDEO",
+          "src": "//tenmax-ads-media.azureedge.net/asset-15879410-cbfc-40e0-86c9-26726bf154f3/f026aed.mp4?sv=2017-04-17&sr=c&si=1830dcdf-0989-41fa-a329-fc6602e83510&sig=RupiaiaMaAaci4FOoZ%2Fm9fFCsHrG4rERFVHgtZg5nZc%3D&se=2117-07-07T08%3A31%3A12Z",
+        },
+        {
+          'key': 'landingPage-1',
+          'type': 'URL',
+          'content': 'https://tenmax.io?0'
+        },
+        {
+          'key': 'landingPage-2',
+          'type': 'URL',
+          'content': 'https://tenmax.io?1'
+        },
+        {
+          'key': 'landingPage-3',
+          'type': 'URL',
+          'content': 'https://tenmax.io?2'
+        },
+        {
+          "type": "OBJECT",
+          "key": "__PARAMETERS__",
+          // "content": "{}"
+          "content": "{\"circleClockWise\": \"clockwise\", \"spinJump\": \"yes\"}",
+        }
+      ],
+      customScript: null,
+      defaultAutoplay: true
+    });
+
+  </script>
+  <div>
+    <ins class="ppstudio" data-pps-target-id="cr-mobile-bottom-spin-video-image"></ins>
+    </div>
+<script async src="https://tenmaxsgads.blob.core.windows.net/code-stage/ppstudio-dev.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2018-05-28">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div>
+<script>
+window.ppsCreatives = window.ppsCreatives || [];
+window.ppsCreatives.push({
+  creativeId: '1101',
+  targetId: 'cr-1101',
+  templateKey: 'left-right-showdown',
+  width: 1,
+  height: 1,
+  assets: [
+    {
+      key: 'left-video',
+      type: 'video',
+      src: 'https://tenmaxsgads.blob.core.windows.net/creative-stage/left-video.mp4'
+    },
+    {
+      key: 'main-image',
+      type: 'image',
+      src: 'https://tenmaxsgads.blob.core.windows.net/creative-stage/main.jpg'
+    },
+    {
+      key: 'right-video',
+      type: 'video',
+      src: 'https://tenmaxsgads.blob.core.windows.net/creative-stage/right-ribs.mp4'
+    },
+    {
+      key: 'click',
+      type: 'url',
+      content: 'https://tenmax.io'
+    }
+  ],
+  version: '2'
+});
+</script>
+
+<div class="container">
+  <div>
+    <ins class="ppstudio" data-pps-target-id="cr-1101"></ins>
+  </div>
+</div>
+<script async src="https://tenmaxsgads.blob.core.windows.net/code-stage/ppstudio-dev.js"></script>
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+    });
+    </script>
+</body>
+</html>

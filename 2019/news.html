@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2019-10-28">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+.header {
+    width: 100%;
+    position:fixed;
+    top: 0;
+    background: gold;
+    text-align: center;
+    font-size: 40px;
+}
+.header .logo {
+    height: 90px;
+}
+
+
+.ad {
+width: 100%;
+line-height: 0;
+}
+.ad img {
+width: 100%
+}
+.content {
+width: 320px;
+margin: 0 auto;
+overflow: hidden;
+}
+body { padding-top: 90px; }
+div.devide { margin: 30px 0; }
+ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  width: 520px;
+}
+ul.dummy-article-list li {
+  border-bottom: 1px solid #e7e7e7;
+  padding: 5px;
+}
+ul.dummy-article-list.with-image li {
+  padding: 20px 5px;
+}
+ul.dummy-article-list li span.dummy-title {
+  background: #ddd;
+  height: 14px;
+  width: 60%;
+  display: inline-block;
+}
+ul.dummy-article-list li span.dummy-body {
+  background: #ddd;
+  height: 14px;
+  width: 40%;
+  margin-top: 5px;
+  display: inline-block;
+}
+ul.dummy-article-list li span.dummy-image {
+  background: #ddd;
+  height: 50px;
+  width: 50px;
+  float: left;
+  margin-right: 10px;
+  display: inline-block;
+}
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body >
+    <div class="header">
+        <div class="logo">
+        Good News
+        </div>
+        <div class="ad">
+        </div>
+    </div>
+    <div class="content">
+<ul class="dummy-article-list with-image">
+  <li>
+    <span class="dummy-image"></span>
+    <span class="dummy-title"></span>
+    <span class="dummy-body"></span>
+  </li>
+</ul>
+<ul class="dummy-article-list">
+  <li><span class="dummy-title"></span></li>
+  <li><span class="dummy-title"></span></li>
+  <li><span class="dummy-title"></span></li>
+</ul>
+<div class="devide"></div>
+<ul class="dummy-article-list with-image">
+  <li>
+    <span class="dummy-image"></span>
+    <span class="dummy-title"></span>
+    <span class="dummy-body"></span>
+  </li>
+</ul>
+<ul class="dummy-article-list">
+  <li><span class="dummy-title"></span></li>
+  <li><span class="dummy-title"></span></li>
+  <li><span class="dummy-title"></span></li>
+</ul>
+<div class="devide"></div>
+<ul class="dummy-article-list with-image">
+  <li>
+    <span class="dummy-image"></span>
+    <span class="dummy-title"></span>
+    <span class="dummy-body"></span>
+  </li>
+</ul>
+<ul class="dummy-article-list">
+  <li><span class="dummy-title"></span></li>
+  <li><span class="dummy-title"></span></li>
+  <li><span class="dummy-title"></span></li>
+</ul>
+<div class="devide"></div>
+<ul class="dummy-article-list with-image">
+  <li>
+    <span class="dummy-image"></span>
+    <span class="dummy-title"></span>
+    <span class="dummy-body"></span>
+  </li>
+</ul>
+<ul class="dummy-article-list">
+  <li><span class="dummy-title"></span></li>
+  <li><span class="dummy-title"></span></li>
+  <li><span class="dummy-title"></span></li>
+</ul>
+<div class="devide"></div>
+<ul class="dummy-article-list with-image">
+  <li>
+    <span class="dummy-image"></span>
+    <span class="dummy-title"></span>
+    <span class="dummy-body"></span>
+  </li>
+</ul>
+
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+        var ad = document.querySelector('.ad');
+        var adImg = document.createElement('img');
+        adImg.src = 'https://tenmaxsgads.blob.core.windows.net/template-stage/bottom-320x50/640x100.jpg';
+        setTimeout(function() {
+            ad.appendChild(adImg);
+            document.body.style.paddingTop = '160px';
+        }, 2000);
+        var position = $(window).scrollTop();
+        var count = 0;
+        $(window).scroll(function() {
+            var scroll = $(window).scrollTop();
+            if(scroll > position) {
+                    count++;
+                if (count === 3) {
+                    adImg.src = 'https://tenmaxsgads.blob.core.windows.net/template-stage/bottom-320x50/640x360.jpg';
+                }
+                 console.log('scrollDown');
+            } else {
+                if (scroll === 0) {
+                    count = 0;
+                    adImg.src = 'https://tenmaxsgads.blob.core.windows.net/template-stage/bottom-320x50/640x100.jpg';
+                }
+                console.log('scrollUp');
+             }
+        position = scroll;
+        });
+    });
+    </script>
+</body>
+</html>
