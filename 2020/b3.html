@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2019-03-08">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div  style="width:320px;margin:0 auto;height: 3000px">
+        <div id="log">aaa</div>
+        <iframe width="320" height="300" srcdoc='<script id="pps-script-15210" data-width="300" data-height="250" data-click-url="" data-cache-buster="" data-dsp-script="" src="https://tenmaxsgads.blob.core.windows.net/holder/15210_ccb471cd-a98c-3262-8af0-4af97aec476d.js?cb=1585644659505"></script><ins class="ppstudio" data-pps-target-id="cr-15210"></ins><script async src="https://ads-cdn.tenmax.io/code/ppstudio.js"></script>'></iframe>
+
+ </div>
+    <script>
+        var log = document.querySelector('#log')
+        var srcd = !!('srcdoc' in document.createElement('iframe'));
+        var ios = navigator.userAgent.match('MessengerLiteForiOS')
+        log.innerHTML += srcd;
+        log.innerHTML += ios;
+    debugger;
+    var iframe = document.querySelector('iframe');
+var sr = encodeURI(iframe.getAttribute("srcdoc"));
+// alert(sr);
+
+const jsUrl = 'javascript: \''+sr+'\';';
+    iframe.setAttribute('src', jsUrl);
+    iframe.srcdoc = '';
+    if (iframe.contentWindow) {
+        iframe.contentWindow.location = jsUrl;
+    }
+
+    </script>
+</body>
+</html>

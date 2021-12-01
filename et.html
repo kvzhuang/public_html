@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2018-04-02">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<style type="text/css">
+textarea {
+white-space: pre-wrap;
+}
+</style>
+ <script>
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+        function getPlaylist() {
+            var pids = document.getElementById('pids');
+            var names = document.getElementById('names');
+            var v = pids.value;
+            v = v.replaceAll("\"", '\'');
+            v = v.replaceAll("\\\\'", '\"');
+            names.value = v;
+        }
+    </script>
+</head>
+<body>
+    <div>
+    <input type='button' id='getPlaylist' onClick="javascript:getPlaylist()" value='transform It!'/>
+    <hr/>
+    <textarea id='pids' rows='50' cols='70' onscroll="javascript:scrollPid()"></textarea>
+    <textarea id='names' rows='50' cols='80'></textarea>
+    </div>
+    <script>
+            var pids = document.getElementById('pids');
+            var names = document.getElementById('names');
+            function scrollPid(e) {
+                names.scrollTop = pids.scrollTop;
+            }
+    </script>
+</body>
+</html>

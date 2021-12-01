@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2020-11-27">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div>
+<iframe srcdoc='<script>
+  window.ppsCreatives = window.ppsCreatives || [];
+  window.ppsCreatives.push({
+      creativeId: "11962",
+      targetId: "cr-11962",
+      templateKey: "single-element",
+      version: "2",
+      width: 300,
+      height: 250,
+      assets: [{
+          "type": "OBJECT",
+          "key": "__PARAMETERS__",
+          "content": "{\"animationType\": \"opacity-scale\"}"
+      }, {
+          "type": "TEXT",
+          "key": "name",
+          "content": "中矩形廣告(僅影片)_華聯國際 90分鐘末日倒數_1812"
+      }, {
+          "type": "URL",
+          "key": "landingPage",
+          "content": "%%CLICK_URL_UNESC%%https://youtu.be/rTUkgqqmf-k"
+      }, {
+          "type": "VIDEO",
+          "key": "content",
+          "src": "https://ads-media-cdn.tenmax.io/asset-aa0d0aa9-da9b-4272-972e-f4eb0926b62f/cc76896.mp4?sv=2017-04-17&sr=c&si=da2eac04-da54-42d4-b0e4-e035b48de1da&sig=dsWv1x37nXZ9AxYim6wXI9opSvlUAhUhSkB4c2iO%2B5E%3D&se=2119-06-25T08%3A33%3A30Z",
+          "params": "{\"poster\": \"https://tenmax-ads.azureedge.net/creative/2018/12/13/11962-thumbnail.png\"}"
+      }],
+      config: {
+          "classes": ["mobile"]
+      },
+      customScript: "mirrormedia.js",
+      appAutoplay:true,
+      defaultAutoplay: true
+  });
+</script>
+
+      <script async src="https://tenmaxsgads.blob.core.windows.net/code-stage/ppstudio.js"></script>
+        <ins class="ppstudio" data-pps-target-id="cr-11962"></ins>
+' width="300" height="250"><iframe>
+    </div>
+    <script>
+window.addEventListener('unload', logData, false);
+
+function logData() {
+    navigator.sendBeacon("/log", {});
+}
+    $(function() {
+        console.log( "ready!" );
+    });
+    </script>
+</body>
+</html>

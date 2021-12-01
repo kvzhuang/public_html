@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2021-04-22">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="log">
+
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+var log = document.querySelector('#log');
+function elementSupportsAttribute(element, attribute, value) {
+
+return CSS.supports('object-fit', 'contain');
+//var d = document.createElement(element);
+  //d.style[attribute] = value;
+  //return d.style[attribute] === value;
+};
+if (elementSupportsAttribute("video", "object-fit", "contain")) {
+log.innerText = 'object-fit support';
+} else {
+log.innerText = 'object-fit NOT support';
+   // fallback
+}
+    });
+    </script>
+</body>
+</html>

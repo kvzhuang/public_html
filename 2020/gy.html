@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2020-04-06">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="log">
+
+    </div>
+    <script>
+    $(function() {
+      var log = document.getElementById('log');
+        console.log( "ready!" );
+        if (window.Gyroscope) {
+
+          let gyroscope = new Gyroscope({frequency: 60});
+          
+          gyroscope.addEventListener('reading', e => {
+            log.innerHTML ="X-axis " + gyroscope.x +"Y-axis " + gyroscope.y +"Z-axis " + gyroscope.z; 
+            // console.log("Angular velocity along the X-axis " + gyroscope.x);
+            // console.log("Angular velocity along the Y-axis " + gyroscope.y);
+            // console.log("Angular velocity along the Z-axis " + gyroscope.z);
+          });
+          gyroscope.start();
+        }
+        window.addEventListener("deviceorientation", handleOrientation, true);
+        function handleOrientation(event) {
+          var absolute = event.absolute;
+          var alpha    = event.alpha;
+          var beta     = event.beta;
+          var gamma    = event.gamma;
+
+          log.innerHTML ="absolute " + absolute +" alpha " +  alpha +" beta " + beta + " gamma " +gamma; 
+
+          // Do stuff with the new orientation data
+        }
+    });
+    </script>
+</body>
+</html>

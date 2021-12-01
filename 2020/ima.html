@@ -1,0 +1,51 @@
+<html>
+  <head>
+    <title>IMA HTML5 Simple Demo</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <style>
+
+#mainContainer {
+    position: relative;
+    width: 640px;
+    height: 360px;
+  }
+
+  #content,
+  #adContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 640px;
+    height: 360px;
+  }
+
+  #contentElement {
+    width: 640px;
+    height: 360px;
+    overflow: hidden;
+  }
+
+  #playButton {
+    margin-top:10px;
+    height: 60px;
+    padding: 15px;
+    font-size: 22px;
+  }
+</style>
+</head>
+
+  <body>
+    <div id="mainContainer">
+      <div id="content">
+        <video id="contentElement">
+          <source src="https://storage.googleapis.com/gvabox/media/samples/stock.mp4"></source>
+        </video>
+      </div>
+      <div id="adContainer"></div>
+    </div>
+    <button id="playButton">Play</button>
+    <script type="text/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+    <script type="text/javascript" src="ads.js"></script>
+  </body>
+</html>
