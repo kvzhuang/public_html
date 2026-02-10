@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Iframe with JavaScript</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        iframe {
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="iframe-container">
+    <iframe id="myIframe" src="./rwd_content.html"></iframe>
+</div>
+
+<script>
+    function resizeIframe() {
+        var iframe = document.getElementById('myIframe');
+        iframe.style.width = window.innerWidth + 'px';
+        iframe.style.height = window.innerHeight + 'px';
+    }
+
+    window.addEventListener('resize', resizeIframe);
+    // 初始化時也需要調整
+    resizeIframe();
+</script>
+
+</body>
+</html>
+

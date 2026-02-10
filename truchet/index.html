@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Truchet Curves - Generative Art</title>
+
+  <!-- Basic Meta -->
+  <meta name="description" content="A generative art piece creating unique Truchet curve patterns with 48 color palettes. Each iteration produces a distinct maze-like design.">
+  <meta name="keywords" content="fxhash, generative art, Truchet, p5.js, NFT, algorithmic art, creative coding, tezos">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#1A1A2E">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Truchet Curves - Generative Art">
+  <meta property="og:description" content="Unique Truchet curve patterns with 48 color palettes. Generative art on fxhash.">
+  <meta property="og:site_name" content="fxhash">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Truchet Curves - fxhash Generative Art">
+  <meta name="twitter:description" content="Unique Truchet curve patterns with 48 color palettes. Generative art on fxhash.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+  <!-- fxhash snippet -->
+  <script id="fxhash-snippet">
+    //---- fxhash snippet (simplified for local development)
+    let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+
+    // 生成隨機 hash（在 fxhash 平台上會被真實的 hash 取代）
+    var fxhash = "oo" + Array(49).fill(0).map(_ => alphabet[(Math.random() * alphabet.length) | 0]).join("");
+
+    // base58 解碼
+    let b58dec = function(str) {
+      return [...str].reduce((p, c) => p * alphabet.length + alphabet.indexOf(c) | 0, 0);
+    };
+
+    // 取得 hash 的數值種子
+    let fxhashTrunc = fxhash.slice(2);
+    let regex = new RegExp(".{" + ((fxhashTrunc.length / 4) | 0) + "}", "g");
+    let hashes = fxhashTrunc.match(regex).map(h => b58dec(h));
+
+    // 隨機數產生器 (sfc32)
+    let sfc32 = function(a, b, c, d) {
+      return function() {
+        a |= 0; b |= 0; c |= 0; d |= 0;
+        var t = (a + b | 0) + d | 0;
+        d = d + 1 | 0;
+        a = b ^ (b >>> 9);
+        b = c + (c << 3) | 0;
+        c = (c << 21) | (c >>> 11);
+        c = c + t | 0;
+        return (t >>> 0) / 4294967296;
+      };
+    };
+
+    // fxrand - 使用此函數取代 Math.random()
+    var fxrand = sfc32(hashes[0], hashes[1], hashes[2], hashes[3]);
+
+    // 預覽模式
+    var isFxpreview = new URLSearchParams(window.location.search).get("preview") === "1";
+
+    // 呼叫此函數通知預覽完成
+    function fxpreview() {
+      window.dispatchEvent(new Event("fxhash-preview"));
+    }
+
+    // fxhash features
+    window.$fxhashFeatures = {};
+    //---- /fxhash snippet
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <script src="sketch.js"></script>
+</body>
+</html>
+

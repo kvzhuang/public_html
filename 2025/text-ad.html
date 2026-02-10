@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2025-05-07">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> Prototype</title>
+<style type="text/css">
+.container-four-text {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 桌機模式：四欄 */
+  gap: 3px; /* 欄間距 */
+    margin: 26px 0; /* 20 是上下間距, 0 是左右間距*/
+}
+
+@media (max-width: 480px) {
+  .container-four-text {
+    grid-template-columns: repeat(2, 1fr); /* 手機模式：兩欄 */
+  }
+}
+.text-ad {
+  text-align: center;
+  font-weight: bold;
+    font-size: 30px;
+    padding: 5px 0;
+}
+
+.text-ad a{
+  text-decoration: none;
+}
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div>
+<div class="container-four-text">
+  <div class="text-ad"><a href="https://www.avbebetoys.com/shop/man-health" target="_blank" rel="noopener">一二三四</a></div>
+  <div class="text-ad"><a href="https://av758.com/index.phtml?FID=1469106" target="_blank" rel="noopener">一二三四五</a></div>
+  <div class="text-ad"><a href="https://www.avbebetoys.com/new-products#" target="_blank" rel="noopener">一二三四五六</a></div>
+  <div class="text-ad"><a href="https://accounts.binance.info/register?ref=473358553" target="_blank" rel="noopener">一二三四五六</a></div>
+</div>
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+    });
+    </script>
+</body>
+</html>
+

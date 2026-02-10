@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://retailmax.cloud.looker.com;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TenMax Dashboard Hub</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #1976d2;
+            color: white;
+            box-shadow:0px 2px 4px -1px rgba(0,0,0,0.2),0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12);
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .user-tools {
+            display: flex;
+            align-items: center;
+        }
+        .user-info {
+            margin-right: 15px;
+        }
+        .tools a {
+            color: white;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .iframe-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+        .loading {
+            font-size: 1.5em;
+            color: #555;
+        }
+        .menu-icon {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 80px;
+                left: -250px;
+                bottom: 0;
+                z-index: 1000;
+                transition: left 0.3s ease-in-out;
+            }
+            .sidebar.open {
+                left: 0;
+            }
+            .menu-icon {
+                display: block;
+            }
+            .content {
+                margin-left: 0;
+            }
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+            padding: 5px 0;
+        }
+        .sidebar ul li a:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">TenMax Dashboard Hub</div>
+            <div class="user-tools">
+                <span class="user-info">使用者名稱</span>
+                <div class="tools">
+                    <a href="#">登出</a>
+                </div>
+            </div>
+        </header>
+        <div class="main-content">
+            <div class="sidebar" id="sidebar">
+                <h2>報表</h2>
+                <ul id="sidebarMenu">
+                    <!-- 動態生成的選單項目將在這裡 -->
+                </ul>
+            </div>
+            <div class="content">
+                <div class="menu-icon" onclick="toggleSidebar()">☰</div>
+                <div class="iframe-container">
+                    <div id="loadingMessage" class="loading">請從側邊欄選擇一個報表</div>
+                    <iframe id="dynamicIframe" style="display: none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // API endpoint
+        const apiEndpoint = 'https://appx.cacafly.com/reselldev-api-v2/api/public-navigation';
+        const options = ['Facebook ADS', 'Google ADS', 'Line LAP'];
+        // 獲取選單數據並生成側邊欄
+        fetch(apiEndpoint)
+            .then(response => response.json())
+            .then(data => {
+                const sidebarMenu = document.getElementById('sidebarMenu');
+                data.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = '#';
+                    a.textContent = options[index];
+                    a.onclick = function(e) {
+                        e.preventDefault();
+                        loadIframe(item);
+                    };
+                    li.appendChild(a);
+                    sidebarMenu.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error('獲取選單數據時出錯:', error);
+            });
+
+        function loadIframe(url) {
+            const iframe = document.getElementById('dynamicIframe');
+            const loadingMessage = document.getElementById('loadingMessage');
+
+            loadingMessage.textContent = '正在載入報表...';
+            loadingMessage.style.display = 'block';
+            iframe.style.display = 'none';
+
+            iframe.onload = function() {
+                loadingMessage.style.display = 'none';
+                iframe.style.display = 'block';
+            };
+
+            iframe.src = url;
+        }
+    </script>
+</body>
+</html>

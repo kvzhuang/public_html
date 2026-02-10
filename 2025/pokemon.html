@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寶可夢養成遊戲</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>寶可夢養成遊戲</h1>
+        <p>捕捉、培養和對戰你的寶可夢！</p>
+    </header>
+
+    <div class="game-container">
+        <div class="section">
+            <h2 class="section-title">遊戲狀態</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div>金錢</div>
+                    <div id="money">1000</div>
+                </div>
+                <div class="stat">
+                    <div>寶可夢數量</div>
+                    <div id="pokemon-count">0</div>
+                </div>
+                <div class="stat">
+                    <div>勝場</div>
+                    <div id="wins">0</div>
+                </div>
+                <div class="stat">
+                    <div>敗場</div>
+                    <div id="losses">0</div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button id="explore-btn" class="btn-primary">探索野外</button>
+                <button id="shop-btn" class="btn-warning">商店</button>
+            </div>
+        </div>
+
+        <div id="encounter-section" class="section" style="display: none;">
+            <h2 class="section-title">野生寶可夢出現！</h2>
+            <div id="wild-pokemon-container" style="text-align: center; padding: 20px;">
+                <img id="wild-pokemon-img" class="wild-pokemon" src="" alt="Wild Pokemon">
+                <h3 id="wild-pokemon-name"></h3>
+                <p id="wild-pokemon-level"></p>
+            </div>
+            <div class="action-buttons">
+                <button id="catch-btn" class="btn-success">嘗試捕捉</button>
+                <button id="run-btn" class="btn-danger">逃跑</button>
+                <button id="battle-wild-btn" class="btn-warning">戰鬥</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">我的寶可夢</h2>
+            <div id="pokemon-list" class="pokemon-list">
+                <p id="no-pokemon-message">你還沒有寶可夢，去探索野外尋找吧！</p>
+            </div>
+        </div>
+
+        <div id="pokemon-detail" class="section" style="display: none;">
+            <h2 class="section-title">寶可夢詳情</h2>
+            <div style="display: flex; gap: 20px;">
+                <div style="text-align: center;">
+                    <img id="detail-image" src="" alt="Pokemon">
+                    <h3 id="detail-name"></h3>
+                    <p id="detail-level"></p>
+                </div>
+                <div style="flex: 1;">
+                    <div>
+                        <p>經驗值: <span id="detail-exp"></span>/<span id="detail-next-level"></span></p>
+                        <div class="progress-bar">
+                            <div id="exp-progress" class="progress"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <p>生命值: <span id="detail-hp"></span>/<span id="detail-max-hp"></span></p>
+                        <div class="progress-bar">
+                            <div id="hp-progress" class="progress"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <p>攻擊力: <span id="detail-attack"></span></p>
+                        <p>防禦力: <span id="detail-defense"></span></p>
+                        <p>速度: <span id="detail-speed"></span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button id="train-btn" class="btn-primary">訓練 (花費: 50金錢)</button>
+                <button id="heal-btn" class="btn-success">治療 (花費: 30金錢)</button>
+                <button id="release-btn" class="btn-danger">釋放</button>
+            </div>
+        </div>
+
+        <div id="battle-section" class="section" style="display: none;">
+            <h2 class="section-title">寶可夢對戰</h2>
+            <div class="battle-area">
+                <div class="battle-pokemon">
+                    <h3>我的寶可夢</h3>
+                    <img id="player-pokemon-img" src="" alt="Player Pokemon">
+                    <p id="player-pokemon-name"></p>
+                    <p id="player-pokemon-level"></p>
+                    <p>HP: <span id="player-pokemon-hp"></span>/<span id="player-pokemon-max-hp"></span></p>
+                    <div class="progress-bar">
+                        <div id="player-hp-bar" class="progress"></div>
+                    </div>
+                </div>
+                <div class="battle-pokemon">
+                    <h3>對手寶可夢</h3>
+                    <img id="enemy-pokemon-img" src="" alt="Enemy Pokemon">
+                    <p id="enemy-pokemon-name"></p>
+                    <p id="enemy-pokemon-level"></p>
+                    <p>HP: <span id="enemy-pokemon-hp"></span>/<span id="enemy-pokemon-max-hp"></span></p>
+                    <div class="progress-bar">
+                        <div id="enemy-hp-bar" class="progress"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="battle-log" id="battle-log">
+                <p>戰鬥開始！</p>
+            </div>
+            <div class="action-buttons">
+                <button id="attack-btn" class="btn-danger">攻擊</button>
+                <button id="special-btn" class="btn-warning">特殊攻擊</button>
+                <button id="flee-btn" class="btn-primary">逃跑</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="shop-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-shop">&times;</span>
+            <h2>商店</h2>
+            <div style="margin: 20px 0;">
+                <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
+                    <div>
+                        <h3>精靈球</h3>
+                        <p>提高捕捉成功率</p>
+                    </div>
+                    <button class="btn-primary" id="buy-pokeball">購買 (100金錢)</button>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
+                    <div>
+                        <h3>恢復藥</h3>
+                        <p>恢復所有寶可夢的HP</p>
+                    </div>
+                    <button class="btn-success" id="buy-potion">購買 (200金錢)</button>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 10px;">
+                    <div>
+                        <h3>經驗糖果</h3>
+                        <p>為選中的寶可夢增加經驗</p>
+                    </div>
+                    <button class="btn-warning" id="buy-candy">購買 (300金錢)</button>
+                </div>
+            </div>
+            <div>
+                <p>你的金錢: <span id="shop-money">1000</span></p>
+                <p>精靈球: <span id="pokeball-count">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="result-title"></h2>
+            <p id="result-message"></p>
+            <button id="result-ok" class="btn-primary">確定</button>
+        </div>
+    </div>
+
+    <script src="pokemon-data.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
+

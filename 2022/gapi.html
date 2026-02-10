@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2022-08-24">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+
+</style>
+<script src="https://apis.google.com/js/api.js"></script>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div>
+
+    </div>
+    <script>
+const spreadsheetId = '1cyhSiNG_RJnA8g4SXkU2Dzv8dNoY8VsmUsJtcfVEAjw';
+
+
+gapi.load('client',initClient);
+
+//init gapi
+function initClient() {
+  let GoogleAuth; // Google Auth object.
+  gapi.client.init({
+      'apiKey': 'AIzaSyDEt_y6KrtFoa876tecRNQFnLgrdsDaPKE',
+      'scope': 'https://www.googleapis.com/auth/spreadsheets',
+      'discoveryDocs': ['https://sheets.googleapis.com/$discovery/rest?version=v4']
+  }).then(function () {
+    startBuild();
+  });
+}
+function startBuild(){
+let request = gapi.client.sheets.spreadsheets.values.get({spreadsheetId: spreadsheetId, range: '廣告案例'});
+  request.then(function(response) {
+    console.log(response.result);
+    return response.result;
+  }, function(reason) {
+    console.error('error: ' + reason.result.error.message);
+  });
+}
+    $(function() {
+        console.log( "ready!" );
+    });
+    </script>
+</body>
+</html>
+

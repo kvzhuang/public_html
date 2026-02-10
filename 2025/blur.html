@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動模糊圖片效果</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .image-container {
+            position: relative;
+            width: 300px;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .image-link {
+            display: block;
+            width: 100%;
+            height: 100%;
+            text-decoration: none;
+            pointer-events: none; /* 初始時禁用點擊 */
+        }
+
+        .image-link.active {
+            pointer-events: auto; /* 解鎖後啟用點擊 */
+        }
+
+        .blur-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(15px);
+            transition: filter 0.1s ease;
+        }
+
+        .blur-image.clear {
+            filter: blur(0px);
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .instruction {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .instruction.hidden {
+            opacity: 0;
+        }
+
+        .image-container.completed .instruction {
+            display: none;
+        }
+
+        /* 防止圖片拖拽 */
+        .blur-image {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+        /* 解鎖後的視覺提示 */
+        .image-container.completed {
+            cursor: pointer;
+        }
+
+        .image-container.completed::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 49%, rgba(255,255,255,0.1) 50%, transparent 51%);
+            animation: shine 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container" id="imageContainer">
+        <a href="https://example.com" class="image-link" id="imageLink" target="_blank">
+            <img
+                src="https://ads-cdn.tenmax.io/creative/2025/08/01/31740-content_DUP.png?cb=1754028387014"
+                alt="互動圖片"
+                class="blur-image"
+                id="blurImage"
+            >
+        </a>
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="instruction" id="instruction">
+            按住圖片 3 秒解鎖
+        </div>
+    </div>
+
+    <script>
+        class InteractiveBlurImage {
+            constructor() {
+                this.container = document.getElementById('imageContainer');
+                this.image = document.getElementById('blurImage');
+                this.imageLink = document.getElementById('imageLink');
+                this.progressBar = document.getElementById('progressBar');
+                this.instruction = document.getElementById('instruction');
+
+                this.isPressed = false;
+                this.startTime = 0;
+                this.animationId = null;
+                this.isCompleted = false;
+
+                this.init();
+            }
+
+            init() {
+                // 滑鼠事件
+                this.container.addEventListener('mousedown', (e) => this.startPress(e));
+                this.container.addEventListener('mouseup', () => this.endPress());
+                this.container.addEventListener('mouseleave', () => this.endPress());
+
+                // 觸控事件
+                this.container.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.startPress(e);
+                });
+                this.container.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.endPress();
+                });
+                this.container.addEventListener('touchcancel', (e) => {
+                    e.preventDefault();
+                    this.endPress();
+                });
+
+                // 防止在未解鎖時觸發連結點擊
+                this.imageLink.addEventListener('click', (e) => {
+                    if (!this.isCompleted) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+            }
+
+            startPress(e) {
+                if (this.isCompleted) return;
+
+                // 防止觸發連結點擊
+                e.preventDefault();
+                e.stopPropagation();
+
+                this.isPressed = true;
+                this.startTime = Date.now();
+                this.instruction.classList.add('hidden');
+                this.updateProgress();
+            }
+
+            endPress() {
+                if (this.isCompleted) return;
+
+                this.isPressed = false;
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                }
+
+                // 如果沒有完成，重置效果
+                if (!this.isCompleted) {
+                    this.resetProgress();
+                    setTimeout(() => {
+                        if (!this.isCompleted) {
+                            this.instruction.classList.remove('hidden');
+                        }
+                    }, 200);
+                }
+            }
+
+            updateProgress() {
+                if (!this.isPressed || this.isCompleted) return;
+
+                const elapsed = Date.now() - this.startTime;
+                const progress = Math.min(elapsed / 3000, 1); // 3秒完成
+
+                // 更新進度條
+                this.progressBar.style.width = `${progress * 100}%`;
+
+                // 更新模糊效果
+                const blurAmount = 15 * (1 - progress);
+                this.image.style.filter = `blur(${blurAmount}px)`;
+
+                if (progress >= 1) {
+                    this.completeEffect();
+                } else {
+                    this.animationId = requestAnimationFrame(() => this.updateProgress());
+                }
+            }
+
+            completeEffect() {
+                this.isCompleted = true;
+                this.isPressed = false;
+
+                // 完全移除模糊效果
+                this.image.classList.add('clear');
+                this.container.classList.add('completed');
+                this.progressBar.style.width = '100%';
+
+                // 啟用連結點擊
+                this.imageLink.classList.add('active');
+
+                // 添加完成動畫效果
+                setTimeout(() => {
+                    this.progressBar.style.backgroundColor = '#2196F3';
+                    this.progressBar.style.height = '2px';
+                }, 100);
+
+                console.log('圖片已解鎖，現在可以點擊跳轉！');
+            }
+
+            resetProgress() {
+                this.progressBar.style.width = '0%';
+                this.image.style.filter = 'blur(15px)';
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            new InteractiveBlurImage();
+        });
+
+        // 防止右鍵選單和圖片保存
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('dragstart', (e) => e.preventDefault());
+    </script>
+</body>
+</html>
+

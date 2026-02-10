@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #fbf9f5; /* Off-white map color */
+  display: flex;
+  justify_content: center;
+  align-items: center;
+}
+
+canvas {
+  display: block;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+

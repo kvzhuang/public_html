@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圖片對比滑桿</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .image-comparison {
+            position: relative;
+            width: 300px;
+            height: 250px;
+            margin: 50px auto;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            cursor: col-resize;
+            transition: transform 0.2s ease;
+        }
+
+        .image-comparison:hover {
+            transform: scale(1.02);
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .image-left,
+        .image-right {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+
+        .image-left {
+            left: 0;
+            background-image: url('https://ads-cdn.tenmax.io/creative/2025/05/30/31466-bottomBanner.jpg?cb=1748568174650');
+        }
+
+        .image-right {
+            right: 0;
+            background-image: url('https://ads-cdn.tenmax.io/creative/2025/05/30/31467-bottomBanner.jpg?cb=1748568276402');
+            clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
+        }
+
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background: #fff;
+            cursor: col-resize;
+            z-index: 10;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .slider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border: 2px solid #007bff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider::after {
+            content: '⟷';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #007bff;
+            font-size: 12px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .image-comparison:hover .slider {
+            background: #007bff;
+        }
+
+        .image-comparison:hover .slider::before {
+            border-color: #0056b3;
+            background: #f8f9fa;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 320px) {
+            .image-comparison {
+                width: 280px;
+                height: 233px;
+            }
+        }
+
+        /* 標籤 */
+        .label {
+            position: absolute;
+            bottom: 10px;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 12px;
+            border-radius: 4px;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .label-left {
+            left: 10px;
+        }
+
+        .label-right {
+            right: 10px;
+        }
+
+        /* 點擊提示效果 */
+        .click-hint {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 123, 255, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            z-index: 15;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .image-comparison:hover .click-hint {
+            opacity: 1;
+        }
+
+        /* 點擊反饋效果 */
+        .clicking {
+            transform: scale(0.98) !important;
+            transition: transform 0.1s ease !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="image-comparison" id="imageComparison">
+        <div class="image-container">
+            <div class="image-left" id="imageLeft"></div>
+            <div class="image-right" id="imageRight"></div>
+            <div class="slider" id="slider"></div>
+            <div class="label label-left">原圖</div>
+            <div class="label label-right">對比圖</div>
+            <div class="click-hint">點擊圖片訪問連結</div>
+        </div>
+    </div>
+
+    <script>
+        class ImageComparison {
+            constructor(containerId, options = {}) {
+                this.container = document.getElementById(containerId);
+                this.slider = document.getElementById('slider');
+                this.rightImage = document.getElementById('imageRight');
+                this.leftImage = document.getElementById('imageLeft');
+                this.isDragging = false;
+                this.containerRect = null;
+                this.clickStartTime = 0;
+                this.clickStartPosition = { x: 0, y: 0 };
+
+                // 設定連結 URL（可自訂）
+                this.leftImageUrl = options.leftUrl || 'https://www.example.com/left';
+                this.rightImageUrl = options.rightUrl || 'https://www.example.com/right';
+
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.updatePosition(50); // 初始位置設為中間
+            }
+
+            bindEvents() {
+                // 滑鼠事件
+                this.slider.addEventListener('mousedown', this.handleSliderMouseDown.bind(this));
+                document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+                document.addEventListener('mouseup', this.handleMouseUp.bind(this));
+
+                // 觸控事件（手機支援）
+                this.slider.addEventListener('touchstart', this.handleSliderTouchStart.bind(this));
+                document.addEventListener('touchmove', this.handleTouchMove.bind(this));
+                document.addEventListener('touchend', this.handleTouchEnd.bind(this));
+
+                // 圖片點擊事件
+                this.leftImage.addEventListener('mousedown', this.handleImageMouseDown.bind(this));
+                this.rightImage.addEventListener('mousedown', this.handleImageMouseDown.bind(this));
+                this.leftImage.addEventListener('click', (e) => this.handleImageClick(e, 'left'));
+                this.rightImage.addEventListener('click', (e) => this.handleImageClick(e, 'right'));
+
+                // 容器點擊事件（用於滑桿移動）
+                this.container.addEventListener('mousedown', this.handleContainerMouseDown.bind(this));
+
+                // 視窗大小改變時重新計算
+                window.addEventListener('resize', this.updateContainerRect.bind(this));
+            }
+
+            updateContainerRect() {
+                this.containerRect = this.container.getBoundingClientRect();
+            }
+
+            handleSliderMouseDown(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.isDragging = true;
+                this.updateContainerRect();
+                document.body.style.cursor = 'col-resize';
+            }
+
+            handleSliderTouchStart(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.isDragging = true;
+                this.updateContainerRect();
+            }
+
+            handleImageMouseDown(e) {
+                this.clickStartTime = Date.now();
+                this.clickStartPosition = { x: e.clientX, y: e.clientY };
+                this.container.classList.add('clicking');
+            }
+
+            handleContainerMouseDown(e) {
+                if (e.target === this.leftImage || e.target === this.rightImage ||
+                    e.target === this.slider || this.slider.contains(e.target)) {
+                    return;
+                }
+
+                this.isDragging = true;
+                this.updateContainerRect();
+                this.updateSliderPosition(e.clientX);
+                document.body.style.cursor = 'col-resize';
+            }
+
+            handleMouseMove(e) {
+                if (!this.isDragging) return;
+                e.preventDefault();
+                this.updateSliderPosition(e.clientX);
+            }
+
+            handleMouseUp(e) {
+                this.isDragging = false;
+                document.body.style.cursor = '';
+                this.container.classList.remove('clicking');
+            }
+
+            handleTouchMove(e) {
+                if (!this.isDragging) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                this.updateSliderPosition(touch.clientX);
+            }
+
+            handleTouchEnd() {
+                this.isDragging = false;
+                this.container.classList.remove('clicking');
+            }
+
+            handleImageClick(e, side) {
+                const clickEndTime = Date.now();
+                const clickDuration = clickEndTime - this.clickStartTime;
+                const moveDistance = Math.sqrt(
+                    Math.pow(e.clientX - this.clickStartPosition.x, 2) +
+                    Math.pow(e.clientY - this.clickStartPosition.y, 2)
+                );
+
+                // 如果點擊時間短且移動距離小，則認為是有效點擊
+                if (clickDuration < 300 && moveDistance < 10) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const url = side === 'left' ? this.leftImageUrl : this.rightImageUrl;
+
+                    // 使用 location.href 進行跳轉（在當前頁面）
+                    window.location.href = url;
+
+                    // 如果需要在新分頁開啟，可以使用以下方式：
+                    // const link = document.createElement('a');
+                    // link.href = url;
+                    // link.target = '_blank';
+                    // link.rel = 'noopener noreferrer';
+                    // document.body.appendChild(link);
+                    // link.click();
+                    // document.body.removeChild(link);
+                }
+            }
+
+            updateSliderPosition(clientX) {
+                if (!this.containerRect) this.updateContainerRect();
+
+                const x = clientX - this.containerRect.left;
+                const percentage = Math.max(0, Math.min(100, (x / this.containerRect.width) * 100));
+
+                this.updatePosition(percentage);
+            }
+
+            updatePosition(percentage) {
+                // 更新滑桿位置
+                this.slider.style.left = `${percentage}%`;
+
+                // 更新右側圖片的裁切區域
+                this.rightImage.style.clipPath = `polygon(${percentage}% 0%, 100% 0%, 100% 100%, ${percentage}% 100%)`;
+            }
+
+            // 公開方法：設定連結 URL
+            setUrls(leftUrl, rightUrl) {
+                this.leftImageUrl = leftUrl;
+                this.rightImageUrl = rightUrl;
+            }
+        }
+
+        // 初始化組件
+        document.addEventListener('DOMContentLoaded', function() {
+            const comparison = new ImageComparison('imageComparison', {
+                leftUrl: 'https://www.google.com',      // 左側圖片的連結
+                rightUrl: 'https://www.youtube.com'     // 右側圖片的連結
+            });
+
+            // 也可以動態設定連結
+            // comparison.setUrls('https://www.facebook.com', 'https://www.instagram.com');
+        });
+    </script>
+</body>
+</html>
+

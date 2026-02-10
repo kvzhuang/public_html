@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/video.js/dist/video.min.js"></script>
+    <title>Video Stream Speed Test</title>
+</head>
+<body>
+
+    <input
+      type="text"
+      id="url"
+      placeholder="Enter video url" style="width:500px"
+      value="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"/>
+
+      <p>https://vdownload-45.sb-cd.com/1/5/15129564-720p.mp4?secure=o9yRDFXMTcPmBht9TDJKUQ,1700217620&m=45&d=1&_tid=15129564
+      </p>
+    <button onclick="testSpeed()">Test Video</button>
+    <p id="result"></p>
+    <video playsinline controls width="640" height="360" id="videoPlayer" muted="muted">
+      Your browser does not support the video tag.
+    </video>
+    <p id="log"></p>
+    <script src="script.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2022-11-15">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div>
+<script>
+    window.ppsOptions = {
+        escape: false
+    };
+    window.ppsCreatives = window.ppsCreatives || [];
+    window.ppsCreatives.push({
+        creativeId: '23583',
+        layoutId: 'medium_rectangle_image_only_shared_version',
+        targetId: 'cr-23583',
+        templateKey: 'single-element',
+        version: '2',
+        editVersion: -1,
+        width: 300,
+        height: 250,
+        assets: [{
+            "type": "IMAGE",
+            "key": "content",
+            "src": "https://ads-cdn.tenmax.io/creative/2022/11/02/23582-content_DUP.png?cb=1667365972193",
+            "size": 46625
+        }, {
+            "type": "OBJECT",
+            "key": "__PARAMETERS__",
+            "content": "{\"backgroundColor\":\"#000\"}"
+        }, {
+            "type": "OBJECT",
+            "key": "__TRACKINGS__",
+            "content": "[]"
+        }, {
+            "type": "TEXT",
+            "key": "name",
+            "content": "yvonne test"
+        }, {
+            "type": "URL",
+            "key": "landingPage",
+            "content": "https://portal.adneon.com.tw/demo.html"
+        }],
+        config: {
+            "classes": ["mobile"]
+        },
+        customScript: "tenmax.js",
+        enableDomainMapping: false,
+        customCss: `
+        div#tenmax-pps-logo,
+        div#tenmax-pps-logo div.logo-small-logo,
+        div#tenmax-pps-logo.pps-long-logo {
+            width: 100px;
+            height: 40px;
+        }
+        `,
+        customJs: "",
+        enableBrandLogo: true,
+        smallBrandLogoUrl: "https://tenmaxsgads.blob.core.windows.net/logo/tenmax/tenmax-ex-large-2.png",
+        largeBrandLogoUrl: "https://tenmaxsgads.blob.core.windows.net/logo/tenmax/tenmax-ex-large-2.png",
+        brandLogoLandingPageUrl: "https://www.tenmax.io/",
+        disableSafeFrameAlert: true,
+        layoutWithMultipleImages: false,
+        defaultAutoplay: true,
+        enableP: false
+    });
+</script><ins class="ppstudio" data-pps-creative-id="23583" data-pps-target-id="cr-23583"></ins>
+<script async src="https://ads-cdn.tenmax.io/code/ppstudio.js"></script>
+
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+    });
+    </script>
+</body>
+</html>
+

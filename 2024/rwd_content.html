@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Grid in Iframe</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .grid-container {
+            display: grid;
+            width: 90vw;
+            height: 90vh;
+            grid-gap: 10px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            transition: all 0.3s ease;
+        }
+
+        /* 基本的格子配置 */
+        .grid-item {
+            background-color: #4CAF50;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2vw;
+            color: white;
+        }
+
+        /* 響應式佈局，根據視窗寬度動態調整列數 */
+        @media (max-width: 600px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr); /* 2列 */
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 1200px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr); /* 3列 */
+            }
+        }
+
+        @media (min-width: 1201px) {
+            .grid-container {
+                grid-template-columns: repeat(4, 1fr); /* 4列 */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="grid-container">
+    <div class="grid-item">1</div>
+    <div class="grid-item">2</div>
+    <div class="grid-item">3</div>
+    <div class="grid-item">4</div>
+    <div class="grid-item">5</div>
+    <div class="grid-item">6</div>
+    <div class="grid-item">7</div>
+    <div class="grid-item">8</div>
+    <div class="grid-item">9</div>
+    <div class="grid-item">10</div>
+    <div class="grid-item">11</div>
+    <div class="grid-item">12</div>
+</div>
+
+</body>
+</html>
+

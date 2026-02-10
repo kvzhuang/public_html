@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2022-05-31">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> Prototype</title>
+<style type="text/css">
+
+</style>
+</head>
+<body>
+    <div>
+
+    </div>
+    <script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const r = urlParams.get('r')
+    if(r) {
+     window.location.href = r
+    }
+    </script>
+</body>
+</html>
+

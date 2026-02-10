@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2022-12-12">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+  <style>
+    .mobile-bottom-rectangle-spin-wrapper img {
+        transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out!important;
+    }
+    .mobile-bottom-rectangle-spin-wrapper img.c1 {
+        transform: rotateX(0deg) rotateY(0deg)!important;
+    }
+    .mobile-bottom-rectangle-spin-wrapper img.c2 {
+        transform: rotateX(15deg) rotateY(15deg)!important;
+    }
+    .mobile-bottom-rectangle-spin-wrapper img.c3 {
+        transform: rotateX(-15deg) rotateY(15deg)!important;
+    }
+    .mobile-bottom-rectangle-spin-wrapper img.c4 {
+        transform: rotateX(-15deg) rotateY(-15deg)!important;
+    }
+    .mobile-bottom-rectangle-spin-wrapper img.c5 {
+        transform: rotateX(15deg) rotateY(-15deg)!important;
+    }
+  </style>
+</head>
+<body>
+    <div>
+<script>
+    window.ppsOptions = {
+        escape: false
+    };
+    window.ppsCreatives = window.ppsCreatives || [];
+    window.ppsCreatives.push({
+        creativeId: '24158',
+        layoutId: 'mobile-bottom-rectangle-spin-card-image-only',
+        targetId: 'cr-24158',
+        templateKey: 'mobile-bottom-rectangle-spin-card',
+        version: '2',
+        editVersion: -1,
+        width: 320,
+        height: 568,
+        assets: [{
+            "type": "IMAGE",
+            "key": "card-1",
+            "src": "https://ads-cdn.tenmax.io/creative/2022/12/12/22807-card-1_DUP.png?cb=1670816783196",
+            "size": 38187
+        }, {
+            "type": "IMAGE",
+            "key": "card-2",
+            "src": "https://ads-cdn.tenmax.io/creative/2022/12/12/22807-card-2_DUP.png?cb=1670816783470",
+            "size": 46249
+        }, {
+            "type": "IMAGE",
+            "key": "card-3",
+            "src": "https://ads-cdn.tenmax.io/creative/2022/12/12/22807-card-3_DUP.png?cb=1670816783529",
+            "size": 51146
+        }, {
+            "type": "IMAGE",
+            "key": "bottomBanner-2",
+            "src": "https://ads-cdn.tenmax.io/creative/2022/12/12/22807-bottomBanner-2_DUP.png?cb=1670816783755",
+            "size": 31191
+        }, {
+            "type": "IMAGE",
+            "key": "bottomBanner-3",
+            "src": "https://ads-cdn.tenmax.io/creative/2022/12/12/22807-bottomBanner-3_DUP.png?cb=1670816783966",
+            "size": 23654
+        }, {
+            "type": "IMAGE",
+            "key": "bottomBanner-1",
+            "src": "https://ads-cdn.tenmax.io/creative/2022/12/12/22807-bottomBanner-1_DUP.png?cb=1670816784024",
+            "size": 28347
+        }, {
+            "type": "OBJECT",
+            "key": "__PARAMETERS__",
+            "content": "{\"scrollTriggerRotate\":\"false\",\"fingerHintAnimation\":\"none\",\"fingerIconColor\":\"gray\",\"rotateHintAnimation\":\"none\",\"autoExpandTiming\":\"noAutoExpand\"}"
+        }, {
+            "type": "OBJECT",
+            "key": "__TRACKINGS__",
+            "content": "[]"
+        }, {
+            "type": "TEXT",
+            "key": "name",
+            "content": "Frieda_test 1 方形轉盤"
+        }, {
+            "type": "URL",
+            "key": "card-landing-3",
+            "content": "https://www.tenmax.io/tw/"
+        }, {
+            "type": "URL",
+            "key": "card-landing-1",
+            "content": "https://www.tenmax.io/tw/"
+        }, {
+            "type": "URL",
+            "key": "card-landing-2",
+            "content": "https://www.tenmax.io/tw/"
+        }, {
+            "type": "URL",
+            "key": "landingPage-1",
+            "content": "https://www.tenmax.io/tw/"
+        }, {
+            "type": "URL",
+            "key": "landingPage-2",
+            "content": "https://www.tenmax.io/tw/"
+        }, {
+            "type": "URL",
+            "key": "landingPage-3",
+            "content": "https://www.tenmax.io/tw/"
+        }, {
+            "type": "VAST",
+            "key": "VAST",
+            "content": "[\"%%VAST_URL_UNESC%%\"]"
+        }],
+        config: {
+            "classes": ["mobile"]
+        },
+        customScript: "tenmax.js",
+        enableDomainMapping: false,
+        customCss: "",
+        customJs: "",
+        enableBrandLogo: false,
+        smallBrandLogoUrl: null,
+        largeBrandLogoUrl: null,
+        brandLogoLandingPageUrl: null,
+        disableSafeFrameAlert: false,
+        layoutWithMultipleImages: false,
+        defaultAutoplay: true,
+        enableP: false
+    });
+</script><ins class="ppstudio" data-pps-creative-id="24158" data-pps-target-id="cr-24158"></ins>
+<script async src="https://ads-cdn.tenmax.io/code/ppstudio.js"></script>
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+        window.setTimeout(function (){
+            var img1 = document.querySelector('.mobile-bottom-rectangle-spin-wrapper img');
+            var count = 1;
+            window.setInterval(function (){
+                img1.classList.remove('c'+count);
+                count++;
+                if (count > 5) {
+                    count = 1;
+                }
+                img1.classList.add('c'+count);
+            }, 1000);
+        }, 1000);
+        
+    });
+    </script>
+</body>
+</html>
+

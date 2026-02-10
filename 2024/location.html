@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2024-08-19">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> Prototype</title>
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div>
+<script>
+    window.ppsOptions = {
+        escape: false
+    };
+    window.ppsCreatives = window.ppsCreatives || [];
+    window.ppsCreatives.push({
+        creativeId: '29287',
+        layoutId: 'medium_rectangle_image_only_with_sticky',
+        targetId: 'cr-29287',
+        templateKey: 'single-element',
+        version: '2',
+        editVersion: -1,
+        width: 600,
+        height: 500,
+        assets: [{
+            "type": "IMAGE",
+            "key": "content",
+            "src": "https://ads-cdn.tenmax.io/creative/2024/08/12/29276-content_DUP.gif?cb=1723429682391",
+            "size": 66167,
+            "fileName": "Open Day Masthead_Mobile.gif"
+        }, {
+            "type": "OBJECT",
+            "key": "__PARAMETERS__",
+            "content": "{\"fullWidth\":\"off\",\"fixedSizeWidth\":\"320\",\"fixedSizeHeight\":\"400\",\"backgroundColor\":\"transparent\",\"stickyMode\":\"noSticky\",\"stickyBackgroundColor\":\"#000\",\"stickyPos\":\"RB\",\"stickyWidth\":\"300\",\"stickyHeight\":\"250\",\"stickyX\":\"10\",\"stickyY\":\"10\"}"
+        }, {
+            "type": "OBJECT",
+            "key": "__TRACKINGS__",
+            "content": "[]"
+        }, {
+            "type": "TEXT",
+            "key": "name",
+            "content": "Maus test"
+        }, {
+            "type": "URL",
+            "key": "landingPage",
+            "content": "https://my.sunway.edu.my/openday/?utm_source=thestar&utm_medium=website"
+        }],
+        config: {
+            "classes": ["mobile"]
+        },
+        customScript: "tenmax_oversea.js",
+        enableDomainMapping: false,
+        customCss: ".snowflake {   position: fixed;   top: -10%;   z-index: 9999;   user-select: none;   cursor: default;   animation: snowflakes-fall 10s linear infinite, snowflakes-shake 3s ease-in-out infinite; }  /* Styles for red snowflake */ .hat-fake {   width: 50px;   height: 50px; }  @keyframes snowflakes-fall {   0% { top: -10% }   100% { top: 100% } } @keyframes snowflakes-shake {   0%, 100% { transform: translateX(0px); }   50% { transform: translateX(80px); } } ",
+        customJs: "function generateSnowflakes(num, type) {     const container = document.createElement('div');     container.classList.add('snowflakes', type);     container.setAttribute('aria-hidden', true);      const emojiFlakeTypes = ['❅', '❆'];     const imgFlakeTypes = [         { url: 'https://ads-cdn.tenmax.io/creative-stage/2024/05/24/28659-1.png', className: 'hat-fake' },         { url: 'https://ads-cdn.tenmax.io/creative-stage/2024/05/24/28659-2.png', className: 'hat-fake' },         { url: 'https://ads-cdn.tenmax.io/creative-stage/2024/05/24/28659-3.png', className: 'hat-fake' },         { url: 'https://ads-cdn.tenmax.io/creative-stage/2024/05/24/28659-4.png', className: 'hat-fake' },     ];      for (let i = 0; i < num; i++) {         let snowflake;         if (type === 'emoji') {             snowflake = document.createElement('div');             snowflake.textContent = emojiFlakeTypes[i % 2];         } else if (type === 'img') {             snowflake = document.createElement('img');             snowflake.src = imgFlakeTypes[i % 4].url;             snowflake.classList.add(imgFlakeTypes[i % 4].className);         }            snowflake.classList.add('snowflake');           const startPosition = (i / num) * 100;          snowflake.style.left = startPosition + '%';          snowflake.style.animationDelay = `${Math.random() * 10}s, ${Math.random() * 10}s`;         container.appendChild(snowflake);     }     return container; }  const imageSnowflakes = generateSnowflakes(10, 'img'); document.body.appendChild(imageSnowflakes);   const timeOut = 15 * 1000; setTimeout(() => {   const container = document.querySelector('.snowflakes');   if (container) {     container.remove();   } }, timeOut);  let template = document.querySelector('div[data-pps-creative-id=\"29287\"] > a');     (async function (a) {       var layoutID = {'id':'data-layout-id=\"mobile-bottom-video-image-pd1-customize_with-transition-interstitial\"'};       function buildStyle() {         return new Promise(resolve => {         var style = a.createElement('link');         style.setAttribute('type', 'text/css');         style.setAttribute('rel', 'stylesheet');         style.setAttribute('href', 'https://tenmax-static.cacafly.net/ssp/H5_Creative_Advertising/Location/UniPresident/strongNoodle/locationStrongNoodle.css');         style.addEventListener(\"load\", resolve, {once: true});         template.appendChild(style);       });       }       function buildTemplate() {         var TenMaxTemplate = a.createElement('div');         TenMaxTemplate.setAttribute('id', 'locationStrongNoodle');         var TenMaxInterstitial = a.createElement('div');         TenMaxInterstitial.setAttribute('class', 'TenMaxInterstitial');         TenMaxTemplate.appendChild(TenMaxInterstitial);         var button = a.createElement('button');         button.setAttribute('class', 'TenMaxCloseBtn');         TenMaxTemplate.appendChild(button);         var close = a.createElement('img');         close.src = 'https://tenmax-static.cacafly.net/ssp/H5_Creative_Advertising/img/bt_close.png';         button.appendChild(close);         var TenMaxMuteBtn = a.createElement('button');         TenMaxMuteBtn.setAttribute('class', 'TenMaxMuteBtn');         TenMaxTemplate.appendChild(TenMaxMuteBtn);         var TenMaxMuteImg = a.createElement('img');         TenMaxMuteImg.setAttribute('class', 'TenMaxMute');         TenMaxMuteImg.setAttribute('src', 'https://tenmax-static.cacafly.net/ssp/H5_Creative_Advertising/img/ico_off.png');         TenMaxMuteBtn.appendChild(TenMaxMuteImg);         var TenMaxOn = a.createElement('img');         TenMaxOn.setAttribute('class', 'TenMaxOn');         TenMaxOn.setAttribute('src', 'https://tenmax-static.cacafly.net/ssp/H5_Creative_Advertising/img/ico_on.png');         TenMaxMuteBtn.appendChild(TenMaxOn);         var TenMaxBannerBundle = a.createElement('a');         TenMaxBannerBundle.setAttribute('class', 'TenMaxBannerBundle');         TenMaxBannerBundle.setAttribute('target', '_blank');         TenMaxTemplate.appendChild(TenMaxBannerBundle);         var TenMaxVideo = a.createElement('div');         TenMaxVideo.setAttribute('class', 'TenMaxVideo');         TenMaxBannerBundle.appendChild(TenMaxVideo);         var video = a.createElement('video');         video.setAttribute('width', '100%');         video.setAttribute('autoplay', '');         video.setAttribute('muted', '');         video.setAttribute('playsinline', '');         video.setAttribute('loop', '');         video.innerText = `Sorry, your browser doesn't support embedded videos.`;         TenMaxInterstitial.appendChild(video);         var source = a.createElement('source');         source.setAttribute('src', 'https://tenmax-static.cacafly.net/ssp/H5_Creative_Advertising/Location/UniPresident/strongNoodle/locationStrongNoodle-Video.mp4');         source.setAttribute('type', 'video/mp4');         video.appendChild(source);         TenMaxVideo.append(video);         var TenMaxTitle = a.createElement('div');         TenMaxTitle.setAttribute('class', 'TenMaxTitle');         TenMaxBannerBundle.appendChild(TenMaxTitle);         var TenMaxInfo = a.createElement('div');         TenMaxInfo.setAttribute('class', 'TenMaxInfo');         TenMaxBannerBundle.appendChild(TenMaxInfo);         var nearest = a.createElement('div');         nearest.setAttribute('class', 'nearest');         nearest.innerHTML = '離您最近的是<div class=\"slot\"><p class=\"shopList\"></p></div>';         TenMaxInfo.appendChild(nearest);         var distance = a.createElement('p');         distance.setAttribute('class', 'distance');         distance.innerHTML = '距離<span class=\"guess\">??.??</span><span class=\"km\">19.23</span>公里';         TenMaxInfo.appendChild(distance);         var TenMaxClick = a.createElement('p');         TenMaxClick.setAttribute('class', 'TenMaxClick');         TenMaxClick.innerHTML = '點擊前往<img class=\"point\" src=\"https://tenmax-static.cacafly.net/ssp/H5_Creative_Advertising/img/ico_click.png\"/>';         TenMaxInfo.appendChild(TenMaxClick);         var TenMaxLogo = a.createElement('div');         TenMaxLogo.setAttribute('class', 'TenMaxLogo');         TenMaxBannerBundle.appendChild(TenMaxLogo);         template.parentNode.insertBefore(TenMaxTemplate, template);       }       function buildScript() {         var script = a.createElement('script');         script.setAttribute('id', 'locationStrongNoodleJs');         script.setAttribute('data-click-url', '%%CLICK_URL_UNESC%%');         script.setAttribute('data-viewable-url', '%%VIEWABLE_IMPRESSION_URL_UNESC%%');         script.setAttribute('data-SSPviewable-url', '%%SSP_VIEWABLE_IMPRESSION_URL_UNESC%%');         script.setAttribute('data-ADXviewable-url', '%%ADX_VIEWABLE_IMPRESSION_URL_UNESC%%');         script.src = 'https://tenmax-static.cacafly.net/ssp/H5_Creative_Advertising/Location/UniPresident/strongNoodle/locationStrongNoodle.js';         script.async = 'async';         template.parentNode.appendChild(script);       }       await buildStyle();       buildTemplate();       buildScript();     })(parent.document);",
+        enableBrandLogo: false,
+        smallBrandLogoUrl: null,
+        largeBrandLogoUrl: null,
+        brandLogoLandingPageUrl: null,
+        disableSafeFrameAlert: false,
+        layoutWithMultipleImages: false,
+        defaultAutoplay: true,
+        enableP: false,
+        enableInterstitialContainer: true,
+        interstitialContainerOption: "{\"autoExpandTiming\":\"alwaysAutoExpand\",\"clickCloseInterstitial\":\"true\",\"closeInterstitialSeconds\":\"0\",\"hijackTargetConditions\":\"internalLink\"}"
+    });
+</script><ins class="ppstudio" data-pps-creative-id="29287" data-pps-target-id="cr-29287"></ins>
+<script async src="https://ads-cdn.tenmax.io/code/ppstudio.js"></script>
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+    });
+    </script>
+</body>
+</html>
+

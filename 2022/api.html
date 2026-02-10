@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2022-09-01">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> Prototype</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssreset/reset-min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/3.7.2/build/cssfonts/fonts-min.css">
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    <div>
+
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+    });
+// WARNING: For POST requests, body is set to null by browsers.
+var data = JSON.stringify({
+  "name": "test",
+  "layoutId": "mobile-key-vision-with-3d-carousel",
+  "height": "300",
+  "width": "420",
+  "token": "3ffg0233fd98e1",
+  "expectImpressions": 0,
+  "assets": [
+    {
+      "type": "IMAGE",
+      "key": "card-1-1v3p-5B4",
+      "src": "https://ads-cdn.tenmax.io/creative/2022/03/30/21303-card-1-1v3p-5B4.png?cb=1648611595189",
+      "size": 31247
+    },
+    {
+      "type": "IMAGE",
+      "key": "card-2-1v3p-5B4",
+      "src": "https://ads-cdn.tenmax.io/creative/2022/03/30/21303-card-2-1v3p-5B4.png?cb=1648611595217",
+      "size": 32972
+    },
+    {
+      "type": "IMAGE",
+      "key": "card-3-1v3p-5B4",
+      "src": "https://ads-cdn.tenmax.io/creative/2022/03/30/21303-card-3-1v3p-5B4.png?cb=1648611595227",
+      "size": 36049
+    },
+    {
+      "type": "OBJECT",
+      "key": "__PARAMETERS__",
+      "content": "{\"composedWidgets\":\"1v3p-5B4\",\"displaySize\":\"{\\\"width\\\": 300, \\\"height\\\": 420}\",\"rotateHint\":\"alwaysHint\",\"carouselBlockBackground\":\"#000000\",\"indicatorBackground\":\"#ffffff\"}"
+    },
+    {
+      "type": "TEXT",
+      "key": "name",
+      "content": "Test key vision with 3d carousel"
+    },
+    {
+      "type": "URL",
+      "key": "landingPage",
+      "content": "https://portal.adneon.com.tw/demo.html"
+    },
+    {
+      "type": "URL",
+      "key": "landingPage-1",
+      "content": "https://portal.adneon.com.tw/demo.html"
+    },
+    {
+      "type": "URL",
+      "key": "landingPage-2",
+      "content": "https://portal.adneon.com.tw/demo.html"
+    },
+    {
+      "type": "URL",
+      "key": "landingPage-3",
+      "content": "https://portal.adneon.com.tw/demo.html"
+    },
+    {
+      "type": "VIDEO",
+      "key": "key-vision-1v3p-5B4",
+      "src": "https://ads-media-cdn.tenmax.io/asset-9dfc2b58-9f2d-4236-ac1c-1733c2e32a60/70273b7.mp4?sv=2017-04-17&sr=c&si=3ea946bf-7de7-4453-9c0d-63367989442b&sig=nIsHmhMkgEDv03dNVu3kPhIvmHzs5O2IKpuO2IruRVs%3D&se=2120-10-22T03%3A39%3A54Z",
+      "params": "",
+      "size": 2653945
+    }
+  ]
+});
+
+var xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function() {
+  if(this.readyState === 4) {
+    console.log(this.responseText);
+  }
+});
+
+xhr.open("POST", "https://beta-pps-api.tenmax.io/api/partner/creative/preview");
+xhr.setRequestHeader("partner-token", "NYbigEpkqXblSFmndWZ79XK8EnPrCq8hX3zAKWPdXrOjJdpxvmhbYGhLrW8h");
+xhr.setRequestHeader("Content-Type", "application/json");
+
+xhr.send(data);
+    </script>
+</body>
+</html>
+

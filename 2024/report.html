@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Download Example</title>
+</head>
+<body>
+    <button id="downloadButton">Download</button>
+<a href="http://localhost:8086/api/report/financial/lineOA/spendingBudget/csv?from=2023-12-31T16:00:00.000Z&to=2024-01-31T15:59:59.999Z&companyId=&stoken=a2V2aW5AdGVubWF4LmlvOjE3MDQyNTAwNjYzODI6MTEwMDE6YmJkYWJlOWU4NjM4MWI1M2NlM2Y0MjYyOThhMGM4N2YyNTU4ZDc3MDg5NjlmNGU1NTRlOWI1ZDU0YjljMzEzOQ==" target="_blank" >download</a>
+    <script>
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            fetch('https://appx.cacafly.com/reselldev-api/api/report/financial/lineOA/spendingBudget/csv?from=2023-12-31T16:00:00.000Z&to=2024-01-31T15:59:59.999Z&companyId=', {
+                method: 'GET'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.blob();
+            })
+           // .then(blob => {
+           //     const url = window.URL.createObjectURL(blob);
+           //     const a = document.createElement('a');
+           //     a.style.display = 'none';
+           //     a.href = url;
+           //     a.download = 'download.csv';
+           //     document.body.appendChild(a);
+           //     a.click();
+           //     window.URL.revokeObjectURL(url);
+           // })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>轉盤抽籤工具</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    canvas {
+      margin: 20px auto;
+      display: block;
+    }
+    #spinButton {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #spinButton:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    #winner {
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>轉盤抽籤工具</h1>
+  <canvas id="wheelCanvas" width="500" height="500"></canvas>
+  <button id="spinButton">開始抽籤</button>
+  <div id="winner"></div>
+
+  <script>
+    const options = [
+      "陳蔓晶", "許韋晨", "劉羽甯", "郭濟霆", "許睦頎", "莊織緯",
+      "廖守誠", "溫健暉", "林依晨", "詹喆宇", "丁以杰", "莊織予",
+      "范之碩", "丁筠曦"
+    ];
+
+    const canvas = document.getElementById("wheelCanvas");
+    const ctx = canvas.getContext("2d");
+    const spinButton = document.getElementById("spinButton");
+    const winnerDiv = document.getElementById("winner");
+
+    let startAngle = 0;
+    let arc = Math.PI / (options.length / 2);
+    let spinTimeout = null;
+    let spinAngleStart = 0;
+    let spinTime = 0;
+    let spinTimeTotal = 0;
+
+    function drawRouletteWheel() {
+      if (options.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        winnerDiv.textContent = "所有選項已被選中！";
+        spinButton.disabled = true;
+        return;
+      }
+
+      arc = Math.PI / (options.length / 2); // 更新弧度計算
+
+      const outsideRadius = 200;
+      const textRadius = 160;
+      const insideRadius = 50;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 2;
+
+      ctx.font = "16px Arial";
+
+      for (let i = 0; i < options.length; i++) {
+        const angle = startAngle + i * arc;
+        ctx.fillStyle = i % 2 === 0 ? "#FFDDC1" : "#FFC4A3";
+
+        ctx.beginPath();
+        ctx.arc(250, 250, outsideRadius, angle, angle + arc, false);
+        ctx.arc(250, 250, insideRadius, angle + arc, angle, true);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.save();
+        ctx.fillStyle = "black";
+        ctx.translate(
+          250 + Math.cos(angle + arc / 2) * textRadius,
+          250 + Math.sin(angle + arc / 2) * textRadius
+        );
+        ctx.rotate(angle + arc / 2);
+        ctx.fillText(options[i], -ctx.measureText(options[i]).width / 2, 0);
+        ctx.restore();
+      }
+
+      // Arrow
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.moveTo(250 - 4, 250 - (outsideRadius + 20));
+      ctx.lineTo(250 + 4, 250 - (outsideRadius + 20));
+      ctx.lineTo(250 + 4, 250 - (outsideRadius - 5));
+      ctx.lineTo(250 + 9, 250 - (outsideRadius - 5));
+      ctx.lineTo(250 + 0, 250 - (outsideRadius - 13));
+      ctx.lineTo(250 - 9, 250 - (outsideRadius - 5));
+      ctx.lineTo(250 - 4, 250 - (outsideRadius - 5));
+      ctx.lineTo(250 - 4, 250 - (outsideRadius + 20));
+      ctx.fill();
+    }
+
+    function rotateWheel() {
+      spinTime += 10; // 加快旋轉間隔
+      if (spinTime >= spinTimeTotal) {
+        stopRotateWheel();
+        return;
+      }
+      const spinAngle =
+        spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
+      startAngle += (spinAngle * Math.PI) / 180;
+      drawRouletteWheel();
+      spinTimeout = setTimeout(rotateWheel, 10); // 加快動畫更新速度
+    }
+
+    function stopRotateWheel() {
+      clearTimeout(spinTimeout);
+      const degrees = (startAngle * 180) / Math.PI + 90;
+      const arcd = (arc * 180) / Math.PI;
+      const index = Math.floor((360 - (degrees % 360)) / arcd) % options.length;
+
+      const winner = options[index];
+      winnerDiv.textContent = `恭喜 ${winner}！`;
+      options.splice(index, 1); // 移除選中的選項
+      drawRouletteWheel(); // 重新繪製轉盤
+    }
+
+    function easeOut(t, b, c, d) {
+      const ts = (t /= d) * t;
+      const tc = ts * t;
+      return b + c * (tc + -3 * ts + 3 * t);
+    }
+
+    spinButton.addEventListener("click", () => {
+      spinAngleStart = Math.random() * 15 + 20; // 增加旋轉初始速度
+      spinTime = 0;
+      spinTimeTotal = Math.random() * 2000 + 2000; // 減少旋轉總時間
+      rotateWheel();
+    });
+
+    drawRouletteWheel();
+  </script>
+</body>
+</html>
+

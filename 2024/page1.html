@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Transitions Example</title>
+  <style>
+    /* 基本樣式 */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .page {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      color: white;
+      text-align: center;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .page-1 {
+      background-color: #3498db;
+    }
+
+    .page-2 {
+      background-color: #2ecc71;
+    }
+
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .content {
+      margin: 20px 0;
+    }
+
+    .image {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      margin: 20px 0;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* View Transition 動畫 */
+    @layer view-transition {
+      @keyframes slide-in {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes slide-out {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-100%);
+        }
+      }
+
+      .view-transition-name {
+        animation: slide-in 0.5s ease-in-out;
+      }
+
+      .view-transition-name-exit {
+        animation: slide-out 0.5s ease-in-out;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Page 1 -->
+  <div id="page1" class="page page-1">
+    <h1>Welcome to Page 1</h1>
+    <div class="content">
+      <img src="https://via.placeholder.com/200" alt="Page 1 Image" class="image">
+      <p>This is the content of Page 1. Click below to navigate to Page 2.</p>
+    </div>
+    <button>Go to Page 2</button>
+  </div>
+
+  <!-- Page 2 -->
+  <div id="page2" class="page page-2 hidden">
+    <h1>Welcome to Page 2</h1>
+    <div class="content">
+      <img src="https://via.placeholder.com/200/2ecc71/ffffff" alt="Page 2 Image" class="image">
+      <p>This is the content of Page 2. Click below to navigate back to Page 1.</p>
+    </div>
+    <button>Go to Page 1</button>
+  </div>
+
+  <script>
+    const page1 = document.getElementById("page1");
+    const page2 = document.getElementById("page2");
+
+    // 導航到 Page 2
+    page1.querySelector("button").addEventListener("click", () => {
+      document.startViewTransition(() => {
+        page1.classList.add("hidden");
+        page2.classList.remove("hidden");
+      });
+    });
+
+    // 導航回 Page 1
+    page2.querySelector("button").addEventListener("click", () => {
+      document.startViewTransition(() => {
+        page2.classList.add("hidden");
+        page1.classList.remove("hidden");
+      });
+    });
+  </script>
+</body>
+</html>
+

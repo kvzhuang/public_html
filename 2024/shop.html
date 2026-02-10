@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2024-09-09">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> Prototype</title>
+<style type="text/css">
+body {
+}
+
+.container {
+  width: 300px;
+  height: 600px;
+  margin: 0 auto;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.container .bg {
+  height: 100%;
+  width: 100%;
+}
+
+.container .bg img {
+  height: 100%;
+  width: 100%;
+}
+
+.container .content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+}
+
+.container .content .main-content {
+    width: 100%;
+    height: auto;
+    flex-shrink: 0;
+}
+
+.container .content .main-content img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.container .content .list-items {
+/*     height: 100%; */
+    display: flex;
+
+
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: -1;
+
+
+  transition: transform 0.3s ease;
+  touch-action: none;
+
+
+  pointer-events: none;
+
+}
+
+
+
+
+.container .content .list-items .product {
+    width: calc(100% - 60px);
+    margin: 10px 0 10px 0;
+    background-color: black;
+    flex-shrink: 0;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
+
+/*       aspect-ratio: 0.666667 / 1; */
+
+  scroll-snap-align: start;
+
+      pointer-events: none;
+
+}
+
+.container .content .list-items .product img {
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+<p>
+  Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis repellendus aliquam sit laboriosam hic quasi voluptate dolore alias laudantium vitae odio, quia aspernatur, nisi iure. Asperiores eaque pariatur dicta consequatur adipisci cupiditate eos recusandae ratione, error culpa maiores architecto rem, quod ab molestias, commodi cumque ea odit explicabo. Pariatur cumque nisi quod porro quia quos maiores esse deleniti, eum quo, sunt dolorem neque sit maxime iste quas! Reiciendis tempore ipsum quam sequi mollitia eaque debitis atque maiores eligendi commodi facilis voluptatibus quos ab, minus necessitatibus tempora animi. Veritatis repellendus sit minima consectetur at nostrum quibusdam laborum accusamus earum error ex minus obcaecati accusantium temporibus, ipsa officia asperiores, voluptates inventore assumenda! Voluptatum velit provident dicta aliquam minima, cum temporibus maxime aperiam, eius beatae recusandae non quae vel eligendi harum magnam enim quo accusamus atque. Quis blanditiis recusandae beatae, delectus quod tempore dignissimos aperiam ipsum, impedit commodi repellat similique laboriosam! Numquam eaque nesciunt veritatis vero ea quisquam aut, molestias itaque ullam, velit illum ab maxime mollitia quis deleniti quia culpa nulla odit doloremque aliquid. Quod dolores accusamus quis delectus in, impedit voluptates nihil porro cupiditate sit molestias aliquid mollitia! Nihil iure aperiam laborum, asperiores enim culpa accusamus ducimus magnam sint quaerat eos.
+</p>
+
+
+
+<p>
+  Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis repellendus aliquam sit laboriosam hic quasi voluptate dolore alias laudantium vitae odio, quia aspernatur, nisi iure. Asperiores eaque pariatur dicta consequatur adipisci cupiditate eos recusandae ratione, error culpa maiores architecto rem, quod ab molestias, commodi cumque ea odit explicabo. Pariatur cumque nisi quod porro quia quos maiores esse deleniti, eum quo, sunt dolorem neque sit maxime iste quas! Reiciendis tempore ipsum quam sequi mollitia eaque debitis atque maiores eligendi commodi facilis voluptatibus quos ab, minus necessitatibus tempora animi. Veritatis repellendus sit minima consectetur at nostrum quibusdam laborum accusamus earum error ex minus obcaecati accusantium temporibus, ipsa officia asperiores, voluptates inventore assumenda! Voluptatum velit provident dicta aliquam minima, cum temporibus maxime aperiam, eius beatae recusandae non quae vel eligendi harum magnam enim quo accusamus atque. Quis blanditiis recusandae beatae, delectus quod tempore dignissimos aperiam ipsum, impedit commodi repellat similique laboriosam! Numquam eaque nesciunt veritatis vero ea quisquam aut, molestias itaque ullam, velit illum ab maxime mollitia quis deleniti quia culpa nulla odit doloremque aliquid. Quod dolores accusamus quis delectus in, impedit voluptates nihil porro cupiditate sit molestias aliquid mollitia! Nihil iure aperiam laborum, asperiores enim culpa accusamus ducimus magnam sint quaerat eos.
+</p>
+
+<div class="container">
+  <div class="bg">
+    <img src="https://ads-cdn.tenmax.io/creative-sample/mobile-slide-productset-v2/bg_300x600_v2.png" alt="">
+  </div>
+  <div class="content">
+    <div class="main-content">
+      <img src="https://tenmaxsgads.blob.core.windows.net/creative-sample/mobile-slide-productset-v2/main_1600x900.png" alt="">
+    </div>
+    <div class="list-items">
+      <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/1920x1080/1920x1080_1.png" alt="">
+      </div>
+      <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/1920x1080/1920x1080_2.png" alt="">
+      </div>
+      <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/1920x1080/1920x1080_3.png" alt="">
+      </div>
+      <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/1920x1080/1920x1080_4.png" alt="">
+      </div>
+      <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/1920x1080/1920x1080_5.png" alt="">
+      </div>
+      <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/1920x1080/1920x1080_6.png" alt="">
+      </div>
+
+
+
+
+<!--       <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/400x600/400x600_1.png" alt="">
+      </div>
+      <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/400x600/400x600_2.png" alt="">
+      </div>
+      <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/400x600/400x600_3.png" alt="">
+      </div>
+      <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/400x600/400x600_4.png" alt="">
+      </div>
+      <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/400x600/400x600_5.png" alt="">
+      </div>
+      <div class="product">
+        <img src="https://ads-cdn.tenmax.io/creative-sample/desktop-slide-productset-v2/400x600/400x600_6.png" alt="">
+      </div> -->
+
+
+
+
+
+
+    </div>
+  </div>
+</div>
+
+<p>
+  Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis repellendus aliquam sit laboriosam hic quasi voluptate dolore alias laudantium vitae odio, quia aspernatur, nisi iure. Asperiores eaque pariatur dicta consequatur adipisci cupiditate eos recusandae ratione, error culpa maiores architecto rem, quod ab molestias, commodi cumque ea odit explicabo. Pariatur cumque nisi quod porro quia quos maiores esse deleniti, eum quo, sunt dolorem neque sit maxime iste quas! Reiciendis tempore ipsum quam sequi mollitia eaque debitis atque maiores eligendi commodi facilis voluptatibus quos ab, minus necessitatibus tempora animi. Veritatis repellendus sit minima consectetur at nostrum quibusdam laborum accusamus earum error ex minus obcaecati accusantium temporibus, ipsa officia asperiores, voluptates inventore assumenda! Voluptatum velit provident dicta aliquam minima, cum temporibus maxime aperiam, eius beatae recusandae non quae vel eligendi harum magnam enim quo accusamus atque. Quis blanditiis recusandae beatae, delectus quod tempore dignissimos aperiam ipsum, impedit commodi repellat similique laboriosam! Numquam eaque nesciunt veritatis vero ea quisquam aut, molestias itaque ullam, velit illum ab maxime mollitia quis deleniti quia culpa nulla odit doloremque aliquid. Quod dolores accusamus quis delectus in, impedit voluptates nihil porro cupiditate sit molestias aliquid mollitia! Nihil iure aperiam laborum, asperiores enim culpa accusamus ducimus magnam sint quaerat eos.
+</p>
+
+<p>
+  Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis repellendus aliquam sit laboriosam hic quasi voluptate dolore alias laudantium vitae odio, quia aspernatur, nisi iure. Asperiores eaque pariatur dicta consequatur adipisci cupiditate eos recusandae ratione, error culpa maiores architecto rem, quod ab molestias, commodi cumque ea odit explicabo. Pariatur cumque nisi quod porro quia quos maiores esse deleniti, eum quo, sunt dolorem neque sit maxime iste quas! Reiciendis tempore ipsum quam sequi mollitia eaque debitis atque maiores eligendi commodi facilis voluptatibus quos ab, minus necessitatibus tempora animi. Veritatis repellendus sit minima consectetur at nostrum quibusdam laborum accusamus earum error ex minus obcaecati accusantium temporibus, ipsa officia asperiores, voluptates inventore assumenda! Voluptatum velit provident dicta aliquam minima, cum temporibus maxime aperiam, eius beatae recusandae non quae vel eligendi harum magnam enim quo accusamus atque. Quis blanditiis recusandae beatae, delectus quod tempore dignissimos aperiam ipsum, impedit commodi repellat similique laboriosam! Numquam eaque nesciunt veritatis vero ea quisquam aut, molestias itaque ullam, velit illum ab maxime mollitia quis deleniti quia culpa nulla odit doloremque aliquid. Quod dolores accusamus quis delectus in, impedit voluptates nihil porro cupiditate sit molestias aliquid mollitia! Nihil iure aperiam laborum, asperiores enim culpa accusamus ducimus magnam sint quaerat eos.
+</p>
+
+    <script>
+    $(function() {
+        console.log( "ready!" );
+setTimeout(() => {
+    const body = document.querySelector('body');
+    const containerWidth = 300;
+    const containerHeight = 600;
+    const keyVision = document.querySelector('.main-content');
+    const keyVisionHeight = keyVision.offsetHeight;
+    const listItemHeight = containerHeight - keyVisionHeight;
+    const productMargin = 10;
+    const marginY = productMargin * 2;
+    const listItems = document.querySelector('.list-items');
+    const allCardElement = document.querySelectorAll('.product img');
+    const count = allCardElement.length;
+    let startY, currentY;
+    let currentPosition = 0;
+    let isDragging = false;
+    let direction = 1;
+    let animationType = 'customDistance';
+    let intervalId;
+    const bounceDistance = 20;
+    let isAutoPlayEnabled = true;
+    let isUserInteracting = false;
+
+    const transitionDuration = 2;
+    const customInterval = transitionDuration * 1000;
+
+    function calculateHeights() {
+        return Array.from(allCardElement).map(el => el.offsetHeight + marginY);
+    }
+
+    const cardHeights = calculateHeights();
+    const maxScroll = cardHeights.reduce((sum, height) => sum + height, 0) - listItemHeight;
+
+    console.log(`總共有 ${count} 張卡片, 最大滾動距離: ${maxScroll}px`);
+
+    function moveListItems(animate = true, position = null) {
+        let moveDistance;
+        if (position !== null) {
+            moveDistance = Math.min(Math.max(position, 0), maxScroll);
+        } else {
+            moveDistance = currentPosition;
+        }
+
+        if (Math.abs(moveDistance - maxScroll) < 1) {
+            moveDistance = maxScroll;
+        }
+
+        currentPosition = moveDistance;
+        listItems.style.transition = animate ? `transform ${transitionDuration}s ease` : 'none';
+        listItems.style.transform = `translateY(-${moveDistance}px)`;
+        console.log(`移動到位置: ${moveDistance}px`);
+    }
+
+    function slideOne() {
+        if (direction === 1) {
+            if (currentPosition < maxScroll) {
+                currentPosition += cardHeights[Math.floor(currentPosition / cardHeights[0])];
+                moveListItems(true);
+            } else {
+                direction = -1;
+                currentPosition -= cardHeights[cardHeights.length - 1];
+                moveListItems(true);
+            }
+        } else if (direction === -1) {
+            if (currentPosition > 0) {
+                currentPosition -= cardHeights[Math.floor(currentPosition / cardHeights[0]) - 1];
+                moveListItems(true);
+            } else {
+                direction = 1;
+                currentPosition += cardHeights[0];
+                moveListItems(true);
+            }
+        }
+    }
+
+    function slideToEnd() {
+        currentPosition = currentPosition === 0 ? maxScroll : 0;
+        moveListItems(true);
+    }
+
+    function bounce() {
+        let bounceDirection = 1;
+        let bouncePosition = 0;
+        intervalId = setInterval(() => {
+            if (!isAutoPlayEnabled) return;
+            bouncePosition += bounceDistance * bounceDirection;
+            if (bouncePosition > maxScroll) {
+                bouncePosition = maxScroll;
+                bounceDirection = -1;
+            } else if (bouncePosition < 0) {
+                bouncePosition = 0;
+                bounceDirection = 1;
+            }
+            moveListItems(true, bouncePosition);
+        }, 300);
+    }
+
+    function customDistanceScroll() {
+        const scrollDistance = 100;
+        currentPosition = currentPosition === 0 ? Math.min(scrollDistance, maxScroll) : 0;
+        moveListItems(true);
+    }
+
+    function autoSlide() {
+        switch (animationType) {
+            case 'slideOne':
+                slideOne();
+                break;
+            case 'slideToEnd':
+                slideToEnd();
+                break;
+            case 'customDistance':
+                customDistanceScroll();
+                break;
+            case 'bounce':
+                bounce();
+                return;
+        }
+
+        if (animationType !== 'bounce') {
+            clearInterval(intervalId);
+            intervalId = setInterval(autoSlide, customInterval);
+        }
+    }
+
+    function startAutoSlide() {
+        if (!isAutoPlayEnabled || isUserInteracting) return;
+        stopAutoSlide();
+        autoSlide();
+    }
+
+    function stopAutoSlide() {
+        clearInterval(intervalId);
+    }
+
+    function changeAnimationType(newType) {
+        stopAutoSlide();
+        animationType = newType;
+        isAutoPlayEnabled = true;
+        currentPosition = 0;
+        direction = 1;
+        moveListItems(true);
+        startAutoSlide();
+    }
+
+    allCardElement.forEach((product, index) => {
+        product.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            console.log(product);
+            console.log('drag');
+
+            body.style.overflow = 'hidden';
+            body.style.touchAction = 'none';
+
+            isUserInteracting = true;
+            stopAutoSlide();
+            startY = e.touches[0].clientY;
+            isDragging = true;
+            listItems.style.transition = 'none';
+        });
+
+        product.addEventListener('touchmove', (e) => {
+            e.stopPropagation();
+            if (!isDragging) return;
+            e.preventDefault();
+            currentY = e.touches[0].clientY;
+            const diffY = startY - currentY;
+            let newPosition = currentPosition + diffY;
+            newPosition = Math.max(0, Math.min(newPosition, maxScroll));
+            moveListItems(false, newPosition);
+            startY = currentY; // 更新起始位置，使滑動更順暢
+        });
+
+        product.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+            if (!isDragging) return;
+            isDragging = false;
+
+            body.style.overflow = 'unset';
+            body.style.touchAction = 'unset';
+
+            isUserInteracting = false;
+        });
+    });
+
+    startAutoSlide();
+
+}, 2000);
+    });
+    </script>
+</body>
+</html>
+

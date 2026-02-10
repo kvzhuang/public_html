@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>賓果遊戲</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #bingo-board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 5px;
+        }
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border: 2px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .marked {
+            background-color: #4caf50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="bingo-board"></div>
+    <script>
+        const boardSize = 5;
+        const board = document.getElementById('bingo-board');
+        const cells = [];
+
+        function createBoard() {
+            for (let i = 0; i < boardSize * boardSize; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.textContent = Math.floor(Math.random() * 100) + 1;
+                cell.addEventListener('click', () => markCell(cell, i));
+                board.appendChild(cell);
+                cells.push(cell);
+            }
+        }
+
+        function markCell(cell, index) {
+            cell.classList.toggle('marked');
+            checkBingo(index);
+        }
+
+        function checkBingo(index) {
+            const row = Math.floor(index / boardSize);
+            const col = index % boardSize;
+
+            // Check row
+            if (cells.slice(row * boardSize, (row + 1) * boardSize).every(cell => cell.classList.contains('marked'))) {
+                alert('賓果！');
+                return;
+            }
+
+            // Check column
+            if (cells.filter((_, i) => i % boardSize === col).every(cell => cell.classList.contains('marked'))) {
+                alert('賓果！');
+                return;
+            }
+
+            // Check diagonals
+            if (row === col && cells.filter((_, i) => i % (boardSize + 1) === 0).every(cell => cell.classList.contains('marked'))) {
+                alert('賓果！');
+                return;
+            }
+
+            if (row + col === boardSize - 1 && cells.filter((_, i) => i % (boardSize - 1) === 0 && i !== 0 && i !== boardSize * boardSize - 1).every(cell => cell.classList.contains('marked'))) {
+                alert('賓果！');
+                return;
+            }
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
+

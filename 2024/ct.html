@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2024-04-22">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> Prototype</title>
+<style type="text/css">
+
+</style>
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+    <script async data-cfasync="false" src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+    <script data-cfasync="false">
+        window.googletag = window.googletag || {
+            cmd: []
+        };
+    </script>
+</head>
+<body>
+    <div>
+<script>
+window.ctTenmaxVideoAdPromise = window.ctTenmaxVideoAdPromise || new Promise(function (resolve, reject) {
+            resolve({
+                "isTenmaxVideoAdActive": false
+            });
+        });
+        window.ctTenmaxVideoAdPromise.then(function (data) {
+            debugger;
+            googletag.cmd.push(function () {
+                var slotInreadElmId = "div-gpt-ad-1551198981140-5",
+                    slotInread,
+                    timer = {
+                        "refreshInread": {
+                            "id": "",
+                            "duration": 850
+                        }
+                    };
+                //找出文末影音廣告
+                $(googletag.pubads().getSlots()).each(function (i, slot) {
+                    if (slot.getSlotElementId() === slotInreadElmId) {
+                        slotInread = slot;
+                        return false;
+                    }
+                });
+                //如果有Tenmax影音廣告，則不顯示文末影音廣告
+                if (data.isTenmaxVideoAdActive) {
+                    //移除文末影音廣告
+                    googletag.destroySlots([slotInread]);
+                    console.log("顯示Tenmax影音廣告");
+                } else {
+                    googletag.display(slotInreadElmId);
+                    //若等待時間過長，可能受prebid js影響，無法顯示廣告，視狀況用refresh彌補
+                    timer.refreshInread.id = setTimeout(function () {
+                        googletag.pubads().refresh([slotInread]);
+                    }, timer.refreshInread.duration);
+                    //若影音廣告已成功載入，則取消refresh
+                    googletag.pubads().addEventListener("slotOnload", function (event) {
+                        if (event.slot === slotInread) {
+                            clearTimeout(timer.refreshInread.id);
+                        }
+                    });
+                    console.log("顯示文末影音廣告");
+                }
+            });
+        });
+</script>
+
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+    });
+    </script>
+</body>
+</html>
+

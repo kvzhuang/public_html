@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://retailmax.cloud.looker.com;">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Iframe with API</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        iframe {
+            border: none;
+            width: 90%;
+            height: 90%;
+        }
+
+        .loading {
+            font-size: 1.5em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<div class="iframe-container">
+    <div id="loadingMessage" class="loading">Loading iframe content...</div>
+    <iframe id="dynamicIframe"  style=""></iframe>
+</div>
+
+<script>
+    // API endpoint
+    const apiEndpoint = 'https://appx.cacafly.com/reselldev-api-v2/api/public-navigation';
+
+    // Fetch the iframe URL from the API
+    fetch(apiEndpoint)
+        .then(response => response.json()) // Parse JSON response
+        .then(data => {
+            const iframeUrl = data.url; // Extract the URL from the response
+            const iframe = document.getElementById('dynamicIframe');
+            const loadingMessage = document.getElementById('loadingMessage');
+
+            // Set the iframe src to the fetched URL
+            iframe.src = iframeUrl;
+
+            // Hide the loading message and show the iframe
+            iframe.style.display = 'block';
+            loadingMessage.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error fetching the iframe URL:', error);
+            document.getElementById('loadingMessage').textContent = 'Failed to load iframe content.';
+        });
+</script>
+
+</body>
+</html>
+

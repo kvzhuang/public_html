@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字母筆順練習遊戲</title>
+    <link rel="stylesheet" href="alphabet_styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 字母筆順練習遊戲</h1>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="practice-area" id="practiceArea">
+            <div class="letter-display">
+                <div class="letter-box">
+                    <div class="letter-large" id="upperCase">A</div>
+                </div>
+                <div class="letter-box">
+                    <div class="letter-small" id="lowerCase">a</div>
+                </div>
+            </div>
+
+            <div class="toggle-container">
+                <span class="toggle-label">練習模式：</span>
+                <button class="btn-info" id="caseToggle" onclick="toggleCase()">大寫</button>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="guideCanvas" width="500" height="400"></canvas>
+                <canvas id="drawingCanvas" width="500" height="400"></canvas>
+            </div>
+
+            <div class="controls">
+                <button class="btn-info" onclick="showGuide()">📝 顯示筆順</button>
+                <button class="btn-secondary" onclick="hideGuide()">👁️ 隱藏提示</button>
+                <button class="btn-secondary" onclick="clearCanvas()">🗑️ 清除</button>
+                <button class="btn-primary" onclick="checkStroke()">✅ 檢查筆順</button>
+                <button class="btn-success" onclick="backToMenu()">📋 返回選單</button>
+            </div>
+
+            <div id="message"></div>
+        </div>
+
+        <div class="alphabet-grid" id="alphabetGrid">
+            <!-- 字母按鈕將由 JavaScript 生成 -->
+        </div>
+    </div>
+
+    <script src="letterData.js"></script>
+    <script src="alphabet_game.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic HTML Loader</title>
+</head>
+<body>
+    <div id="content"></div>
+
+    <script>
+        // 從指定 URL 獲取數據
+        const url = "https://revive.punwave.com/www/delivery/asyncspc.php?zones=65&prefix=revive-0-&loc=https%3A%2F%2Fwww.girlstalk.cc%2Farticle%2F80304%3Fgoogle_preview%3DtEwSAwKfg5oY7_H2wAYw742syAaIAYCAgJDk7cqSAQ%26iu%3D127396897%26gdfp_req%3D1%26lineItemId%3D6990180664%26creativeId%3D138516580242&referer=https%3A%2F%2Fwww.girlstalk.cc%2Farticle%2F80304%3Fgoogle_preview%3DtEwSAwKfg5oY7_H2wAYw742syAaIAYCAgJDk7cqSAQ%26iu%3D127396897%26gdfp_req%3D1%26lineItemId%3D6990180664%26creativeId%3D138516580242";
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 獲取 `revive-0-0` 的 HTML
+                const htmlContent = data["revive-0-0"].html;
+                // 使用 DOMParser 解析 HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlContent, 'text/html');
+
+                // 將內容添加到頁面
+                const contentDiv = document.getElementById('content');
+                Array.from(doc.body.children).forEach(child => {
+                    contentDiv.appendChild(document.importNode(child, true));
+                });
+
+                // 執行腳本
+                const scripts = Array.from(doc.querySelectorAll('script'));
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+
+                    Array.from(oldScript.attributes).forEach(attr => {
+                        newScript.setAttribute(attr.name, attr.value);
+                    });
+
+                    newScript.textContent = oldScript.textContent;
+                    document.getElementById('content').appendChild(newScript);
+                });
+
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+            });
+    </script>
+</body>
+</html>
+

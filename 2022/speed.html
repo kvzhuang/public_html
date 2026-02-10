@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="created" content="2022-09-23">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> Prototype</title>
+<style type="text/css">
+.ol_container{
+    top:0;
+    width:100%;
+    position:relative;
+    z-index:0;
+    background:#212121;
+    height:510px;
+    overflow:hidden;
+    padding-top:30px
+}
+.ol_swipe{
+    display:none
+}
+.ol_big,.ol_big_inner{
+    width:320px;
+    height:480px;
+    left:0;
+    right:0;
+    margin:0 auto
+}
+.ol_big_inner{
+    position:fixed;
+    top:30px
+}
+.ol_close_ad{
+    right:calc((100% - 320px) / 2 - 4px);
+    width:30px;
+    z-index:99;
+    height:30px;
+    position:absolute;
+    top:0;
+    cursor:pointer;
+    padding:0;
+    color:#fff;
+    background:transparent;
+    line-height:1;
+    font-size:22px;
+    font-weight:400;
+    display:-webkit-box;
+    display:-ms-flexbox;
+    display:flex;
+    -webkit-box-pack:center;
+    -ms-flex-pack:center;
+    justify-content:center;
+    -webkit-box-align:center;
+    -ms-flex-align:center;
+    align-items:center
+}
+.ol_close_ad:before{
+    content:"";
+    position:absolute;
+    top:50%;
+    left:50%;
+    -webkit-transform:translate(-50%,-50%);
+    transform:translate(-50%,-50%);
+    width:22px;
+    height:22px;
+    background:hsla(0,0%,44%,.8);
+    border:1px solid hsla(0,0%,53%,.8);
+    border-radius:50%;
+    z-index:-1
+}
+.ol_landing{
+    margin:0 auto;
+    border:none;
+    height:100%;
+    width:100%;
+    top:0
+}
+.ol_landing,.ol_promo{
+    position:absolute;
+    right:0;
+    left:0
+}
+.ol_promo{
+    width:320px;
+    height:480px;
+    z-index:1;
+    opacity:0;
+    pointer-events:none
+}
+.ol_promo.show{
+    opacity:1;
+    pointer-events:all
+}
+.ol_script{
+    position:relative;
+    z-index:2;
+    background-color:#212121
+}
+.pushdown.pushdown-close .pushdown-banner{
+    display:none
+}
+.pushdown-banner~.root #page1{
+    background-color:#f2f2f2
+}
+.pushdown-banner~.root .header{
+    position:absolute;
+    top:0
+}
+.pushdown-banner~.root .new-sub-menu{
+    position:absolute
+}
+.pushdown-banner~.root .banner1{
+    position:relative!important;
+    top:0!important
+}
+.pushdown-banner~.root .floating-share--nav{
+    position:absolute
+}
+.pushdown-banner~.root #js-banner-sticky .banner1{
+    -webkit-transition:none;
+    -moz-transition:none;
+    -ms-transition:none;
+    -o-transition:none;
+    transition:none;
+    -ms-transform:none;
+    -webkit-transform:none;
+    transform:none
+}
+.pushdown-banner~.root .floating-share--nav.scrolling{
+    top:0!important;
+    -ms-transform:none;
+    -webkit-transform:none;
+    transform:none
+}
+.pushdown-banner~.root #navpanel{
+    position:absolute
+}
+</style>
+</head>
+<body>
+    <div style="width:320px;margin: 0 auto">
+<div class="pushdown-banner">
+    <div class="ol_container">
+        <div class="ol_big">
+            <div class="ol_big_inner">
+                <div class="ol_promo" data-oltimer="5">
+                    <iframe marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://adsimg.kompas.com/html5/assets_ads/pushdown/images/backup-random.html?v=120" alt="Aplikasi Kompas.com" style="width:320px;height:480px"></iframe>
+                </div>
+                <div class="ol_script">
+                    <div id='div-gpt-ad-Pushdown_CLS'>
+                        <script type='text/javascript'>
+                            googletag.cmd.push(function() { googletag.display('div-gpt-ad-Pushdown_CLS'); });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ol_close_ad" role="button">×</div>
+    </div>
+    <script async src="https://adsimg.kompas.com/html5/assets_ads/pushdown/js/ads-pushdown.min-v_apr22.js"> </script>
+</div>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+<script>window.ppsOptions={escape:false};window.ppsCreatives=window.ppsCreatives||[];window.ppsCreatives.push({creativeId:'22131',layoutId:'mobile_bottom_spin',targetId:'cr-22131',templateKey:'mobile-bottom-spin',version:'2',editVersion:-1,width:320,height:568,assets:[{"type":"IMAGE","key":"circle","src":"https://ads-cdn.tenmax.io/creative/2022/06/28/22131-circle.png?cb=1656388524777","size":105862},{"type":"IMAGE","key":"content-1","src":"https://ads-cdn.tenmax.io/creative/2022/06/28/22131-content-1.png?cb=1656388524791","size":85688},{"type":"IMAGE","key":"content-2","src":"https://ads-cdn.tenmax.io/creative/2022/06/28/22131-content-2.png?cb=1656388524826","size":84707},{"type":"IMAGE","key":"content-3","src":"https://ads-cdn.tenmax.io/creative/2022/06/28/22131-content-3.png?cb=1656388524838","size":83317},{"type":"OBJECT","key":"__TRACKINGS__","content":"[]"},{"type":"OBJECT","key":"__PARAMETERS__","content":"{\"circleClockWise\":\"clockwise\",\"spinJump\":\"none\",\"autoExpandTiming\":\"noAutoExpand\"}"},{"type":"TEXT","key":"name","content":"VCBL_Testing_SpinAd_28062022"},{"type":"URL","key":"landingPage-3","content":"https://www.vcbl.id/"},{"type":"URL","key":"landingPage-1","content":"https://www.vcbl.id/"},{"type":"URL","key":"landingPage-2","content":"https://www.vcbl.id/"}],config:{"classes":["mobile"]},customScript:"",enableDomainMapping:false,customCss:"",enableBrandLogo:false,smallBrandLogoUrl:null,largeBrandLogoUrl:null,brandLogoLandingPageUrl:null,disableSafeFrameAlert:false,layoutWithMultipleImages:false,defaultAutoplay:true,enableP:false});</script><ins class="ppstudio" data-pps-target-id="cr-22131"></ins><script async src="https://ads-cdn.tenmax.io/code/ppstudio.js"></script>
+    </div>
+    <script>
+    $(function() {
+        console.log( "ready!" );
+    });
+    </script>
+</body>
+</html>
+
