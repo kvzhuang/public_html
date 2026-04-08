@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generative Art Gallery</title>
+  <meta name="description" content="kvzhuang 的生成藝術作品集，使用 p5.js 與 fxhash 創作的互動藝術。">
+  <meta name="author" content="kvzhuang">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Noto Sans TC", "Helvetica Neue", Arial, sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px 40px;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      color: #fff;
+    }
+
+    header p {
+      margin-top: 12px;
+      font-size: 1rem;
+      color: #888;
+      letter-spacing: 0.05em;
+    }
+
+    .gallery {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 24px 80px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 32px;
+    }
+
+    .card {
+      background: #151520;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      border: 1px solid #222;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(100, 100, 255, 0.12);
+      border-color: #444;
+    }
+
+    .card-preview {
+      width: 100%;
+      aspect-ratio: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-preview iframe {
+      width: 200%;
+      height: 200%;
+      border: none;
+      transform: scale(0.5);
+      transform-origin: top left;
+      pointer-events: none;
+      scrolling: no;
+    }
+
+    /* 隱藏 iframe 內部捲軸 */
+    .card-preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    .card-body h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .card-body p {
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: #999;
+    }
+
+    .card-tags {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: #1e1e30;
+      color: #8888cc;
+      border: 1px solid #2a2a44;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px 40px;
+      color: #555;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 640px) {
+      header h1 { font-size: 1.6rem; }
+      .gallery { grid-template-columns: 1fr; padding: 16px; gap: 24px; }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <h1>GENERATIVE ART</h1>
+  <p>kvzhuang — 以程式碼創作的視覺實驗</p>
+</header>
+
+<div class="gallery">
+
+  <a class="card" href="./kamon/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./kamon/" loading="lazy" sandbox="allow-scripts" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>家紋 Kamon</h2>
+      <p>以日本傳統家紋為靈感，隨機生成菊、桐、蝶、鶴丸、青海波等 30 種經典紋樣。黑白米色的極簡配色，每次僅呈現一枚家紋。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">家紋</span>
+        <span class="tag">黑白</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./taiwan-tiles/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./taiwan-tiles/" loading="lazy" sandbox="allow-scripts" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>台灣花磚</h2>
+      <p>以台灣傳統花磚為靈感，隨機生成對稱花卉與幾何圖樣。17 組取自老花磚的配色，搭配八瓣花、蓮花、牡丹、水渦紋等 11 種圖案交織排列。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">花磚</span>
+        <span class="tag">對稱</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./truchet/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./truchet/" loading="lazy" sandbox="allow-scripts" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Truchet Curves</h2>
+      <p>經典 Truchet 瓷磚的曲線變體，透過隨機旋轉的弧線組合出迷宮般的流動路徑。擁有 60+ 組調色盤，從 Bauhaus 到 Evangelion 風格皆有。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">Truchet</span>
+        <span class="tag">曲線</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./chromatic-lattice/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./chromatic-lattice/" loading="lazy" sandbox="allow-scripts" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Chromatic Lattice</h2>
+      <p>在三角形網格上探索色彩與幾何的交織。透過色彩漸變與格狀結構，生成萬花筒般的視覺韻律。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">三角網格</span>
+        <span class="tag">色彩</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./metro/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./metro/" loading="lazy" sandbox="allow-scripts" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Generative Metro</h2>
+      <p>以台北捷運配色為基底，模擬地鐵路線圖的生成動畫。隨機生成站點與多條路線，呈現城市交通網路的有機生長過程。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">捷運</span>
+        <span class="tag">動畫</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<footer>
+  Built with p5.js & fxhash
+</footer>
+
+</body>
+</html>

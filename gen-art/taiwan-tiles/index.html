@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台灣花磚 - Generative Art</title>
+
+  <meta name="description" content="以台灣傳統花磚為靈感的生成藝術，隨機產生對稱花卉與幾何圖樣的瓷磚拼貼。">
+  <meta name="keywords" content="台灣花磚, generative art, p5.js, majolica tiles, Taiwan, creative coding">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#8B4513">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="台灣花磚 - Generative Art">
+  <meta property="og:description" content="以台灣傳統花磚為靈感的生成藝術。每次刷新都是獨一無二的花磚圖樣。">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏵️</text></svg>">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #2C1810;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+  <script id="fxhash-snippet">
+    let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+    var fxhash = "oo" + Array(49).fill(0).map(_ => alphabet[(Math.random() * alphabet.length) | 0]).join("");
+    let b58dec = function(str) {
+      return [...str].reduce((p, c) => p * alphabet.length + alphabet.indexOf(c) | 0, 0);
+    };
+    let fxhashTrunc = fxhash.slice(2);
+    let regex = new RegExp(".{" + ((fxhashTrunc.length / 4) | 0) + "}", "g");
+    let hashes = fxhashTrunc.match(regex).map(h => b58dec(h));
+    let sfc32 = function(a, b, c, d) {
+      return function() {
+        a |= 0; b |= 0; c |= 0; d |= 0;
+        var t = (a + b | 0) + d | 0;
+        d = d + 1 | 0;
+        a = b ^ (b >>> 9);
+        b = c + (c << 3) | 0;
+        c = (c << 21) | (c >>> 11);
+        c = c + t | 0;
+        return (t >>> 0) / 4294967296;
+      };
+    };
+    var fxrand = sfc32(hashes[0], hashes[1], hashes[2], hashes[3]);
+    var isFxpreview = new URLSearchParams(window.location.search).get("preview") === "1";
+    function fxpreview() { window.dispatchEvent(new Event("fxhash-preview")); }
+    window.$fxhashFeatures = {};
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <script src="sketch.js"></script>
+</body>
+</html>
