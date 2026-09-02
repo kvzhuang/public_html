@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>拉密牌 Rummikub — 一人對三電腦</title>
+  <meta name="description" content="拉密牌 Rummikub：一人對三電腦，經典規則。組同數字不同色的「組」或同色連號的「順」，鬼牌代任意牌，首次下牌需滿 30 分，先出完手牌者勝。內建桌面自動重組。">
+  <meta name="theme-color" content="#123">
+  <style>
+    :root{ --gold:#e9c46a; --R:#d23b30; --B:#2b6fd6; --O:#e07b1a; --K:#2b2f36; --tile:#f4ecd8; }
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body{ margin:0; min-height:100%; color:#eef2ea; user-select:none;
+      background:radial-gradient(circle at 50% 6%, #274a5a, #0b1620); font-family:"Noto Sans TC",system-ui,sans-serif; }
+    .wrap{ max-width:820px; margin:0 auto; padding:8px 10px 30px; }
+    .bar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .bar a{ color:#9fc0b2; text-decoration:none; font-size:13px; }
+    .bar h1{ font-size:18px; margin:0; } .bar .sp{ flex:1; }
+    .bar button{ background:#ffffff18; color:#eef2ea; border:1px solid #ffffff33; border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer; }
+    #msg{ text-align:center; min-height:22px; font-size:14px; color:var(--gold); margin:6px 0; }
+    .opps{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:8px; }
+    .opp{ flex:1; min-width:120px; background:#ffffff10; border:1px solid #ffffff1e; border-radius:10px; padding:6px 9px; font-size:12.5px; color:#cfe3d6; }
+    .opp.turn{ box-shadow:0 0 0 2px #7fd9a6 inset; background:#ffffff18; }
+    .opp .m{ color:#9fb6a9; font-size:11px; }
+    .win{ background:#e0483b; color:#fff; border-radius:5px; padding:0 5px; font-size:11px; font-weight:800; }
+
+    .board{ background:#0e3b2e; border:2px solid #14614a; border-radius:12px; min-height:120px; padding:10px;
+      display:flex; flex-wrap:wrap; gap:10px; align-content:flex-start; }
+    .board .lbl{ width:100%; color:#8fd6b8; font-size:12px; margin-bottom:-2px; }
+    .set{ display:flex; gap:3px; background:#ffffff12; border-radius:8px; padding:5px; }
+    .poolrow{ text-align:center; font-size:12.5px; color:#9fb6a9; margin:8px 0; }
+
+    .handwrap{ margin-top:6px; }
+    .handhead{ display:flex; align-items:center; gap:8px; font-size:13px; color:#cfe3d6; margin-bottom:6px; flex-wrap:wrap; }
+    .hand{ display:flex; gap:5px; flex-wrap:wrap; justify-content:center; background:#ffffff0d; border-radius:10px; padding:8px; min-height:80px; }
+
+    .t{ width:34px; height:48px; border-radius:6px; background:var(--tile); color:#111; position:relative;
+      display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px;
+      box-shadow:0 2px 4px #0006; border:1px solid #0003; cursor:default; }
+    .t.big{ width:38px; height:54px; font-size:22px; }
+    .t.cR{ color:var(--R);} .t.cB{ color:var(--B);} .t.cO{ color:var(--O);} .t.cK{ color:#111; }
+    .t .dot{ position:absolute; top:3px; left:4px; width:7px; height:7px; border-radius:50%; }
+    .t.cR .dot{background:var(--R);} .t.cB .dot{background:var(--B);} .t.cO .dot{background:var(--O);} .t.cK .dot{background:#111;}
+    .t.joker{ background:linear-gradient(135deg,#ffd24a,#ff7ac0,#7ad0ff); color:#222; }
+    .hand .t{ cursor:pointer; transition:transform .08s; }
+    .hand .t.sel{ transform:translateY(-10px); box-shadow:0 0 0 3px var(--gold), 0 8px 14px #0008; }
+
+    #controls{ display:flex; gap:10px; justify-content:center; margin-top:12px; flex-wrap:wrap; }
+    .ubtn{ border:0; border-radius:10px; padding:11px 20px; font-size:15px; font-weight:800; cursor:pointer; }
+    .ubtn.play{ background:var(--gold); color:#3a2c00; } .ubtn.draw{ background:#3a86c8; color:#fff; }
+    .ubtn.hint{ background:#2fa26a; color:#08241a; }
+    .ubtn.clear{ background:#ffffff1a; color:#eef2ea; border:1px solid #ffffff33; } .ubtn:disabled{ opacity:.4; cursor:default; }
+    .sortbtn{ background:#ffffff14; color:#dfe7ea; border:1px solid #ffffff2e; border-radius:8px; padding:4px 10px; font-size:12px; cursor:pointer; }
+
+    #overlay{ position:fixed; inset:0; background:#000c; display:none; align-items:center; justify-content:center; padding:16px; z-index:20; }
+    #overlay.show{ display:flex; }
+    .modal{ background:linear-gradient(#173350,#0c1a2a); border:1px solid var(--gold); border-radius:16px; padding:22px; max-width:520px; width:100%; text-align:center; box-shadow:0 24px 70px #000c; max-height:88vh; overflow:auto; }
+    #ov-title{ font-size:21px; color:var(--gold); margin-bottom:10px; }
+    #ov-body{ font-size:14.5px; color:#e6efe8; line-height:1.7; text-align:left; }
+    #ov-actions{ display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
+    .ovbtn{ background:var(--gold); color:#3a2c00; border:0; border-radius:10px; padding:11px 18px; font-size:15px; font-weight:700; cursor:pointer; }
+    #toast{ position:fixed; left:50%; bottom:80px; transform:translateX(-50%) translateY(16px); background:#0c1a2aee; border:1px solid var(--gold);
+      color:#fff; padding:9px 15px; border-radius:10px; font-size:14px; opacity:0; transition:.25s; z-index:30; pointer-events:none; text-align:center; }
+    #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bar">
+      <a href="../poker/">← 撲克紙牌</a>
+      <h1>🁫 拉密牌 Rummikub</h1>
+      <span class="sp"></span>
+      <button id="rules">玩法</button>
+      <button id="newgame">新遊戲</button>
+    </div>
+    <div class="opps" id="opps"></div>
+    <div id="msg"></div>
+    <div class="board" id="board"></div>
+    <div class="poolrow" id="poolrow"></div>
+    <div class="handwrap">
+      <div class="handhead">
+        <span id="handinfo"></span>
+        <span class="sp" style="flex:1"></span>
+        <button class="sortbtn" id="sortColor">依色排序</button>
+        <button class="sortbtn" id="sortNum">依數字排序</button>
+      </div>
+      <div class="hand" id="hand"></div>
+    </div>
+    <div id="controls"></div>
+  </div>
+  <div id="overlay"><div class="modal"><div id="ov-title"></div><div id="ov-body"></div><div id="ov-actions"></div></div></div>
+  <div id="toast"></div>
+
+  <script>
+  function bootRk(){
+    var R = window.__rk;
+    var $ = function(id){ return document.getElementById(id); };
+    var el = function(t,c,h){ var e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+    var wait = function(ms){ return new Promise(function(r){ setTimeout(r,ms); }); };
+    var CLS = ['cR','cB','cO','cK'], CN = ['紅','藍','橘','黑'], SEAT = ['你','右家','對家','左家'];
+    var S, busy=false, sel=new Set();
+    var SAVE_KEY='rummikub.save.v1';
+    function save(){ try{ if(S) localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
+    function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
+    function load(){ try{ var s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'); if(s&&s.hands&&s.hands.length===4&&s.pool){ S=s; return true; } }catch(e){} return false; }
+
+    function tileEl(t, big){
+      if(t.joker){ var e=el('div','t joker'+(big?' big':''),'🃏'); return e; }
+      var e=el('div','t '+CLS[t.c]+(big?' big':''), '<span class="dot"></span>'+t.n); return e;
+    }
+    function newRound(){ S=R.newState(); busy=false; sel.clear(); render(); if(S.turn!==0) runAI(); }
+
+    function render(){
+      // 對手
+      var o=$('opps'); o.innerHTML='';
+      [1,2,3].forEach(function(p){
+        var d=el('div','opp'+(S.turn===p?' turn':''));
+        d.innerHTML='<b>'+SEAT[p]+'</b> · '+S.hands[p].length+' 張'+(S.hands[p].length===1?' <span class="win">UNO</span>':'')+
+          '<br><span class="m">'+(S.melded[p]?'已下牌':'未破冰')+'</span>';
+        o.appendChild(d);
+      });
+      // 桌面
+      var b=$('board'); b.innerHTML='';
+      if(!S.board.length){ b.appendChild(el('div','lbl','桌面（尚無牌組）—— 首次下牌需組成合計 ≥30 分的牌型')); }
+      else { b.appendChild(el('div','lbl','桌面牌組（'+S.board.length+' 組）')); }
+      S.board.forEach(function(set){
+        var st=el('div','set');
+        set.items.forEach(function(it){ st.appendChild(tileEl(it,false)); });
+        b.appendChild(st);
+      });
+      $('poolrow').textContent='牌庫剩 '+S.pool.length+' 張';
+      // 手牌
+      $('handinfo').innerHTML=SEAT[0]+'（你）· '+S.hands[0].length+' 張 · '+(S.melded[0]?'已破冰':'<b style="color:#ffd">未破冰（首下需 ≥30）</b>');
+      var h=$('hand'); h.innerHTML='';
+      var myTurn = S.turn===0 && !S.over && !busy;
+      S.hands[0].forEach(function(t){
+        var e=tileEl(t,true); if(sel.has(t)) e.classList.add('sel');
+        if(myTurn) e.onclick=function(){ if(sel.has(t)) sel.delete(t); else sel.add(t); render(); };
+        h.appendChild(e);
+      });
+      // 控制列
+      var c=$('controls'); c.innerHTML='';
+      if(myTurn){
+        var selN=selectedTiles().length;
+        var pb=el('button','ubtn play', '✔ 下牌'+(selN?'（'+selN+'）':'')); pb.disabled=selN===0; pb.onclick=humanPlay; c.appendChild(pb);
+        var sg=el('button','ubtn hint','💡 可出的牌'); sg.onclick=suggest; c.appendChild(sg);
+        var db=el('button','ubtn draw','🎴 抽牌'); db.onclick=humanDraw; c.appendChild(db);
+        if(selN){ var cb=el('button','ubtn clear','✖ 取消選取'); cb.onclick=function(){ sel.clear(); render(); }; c.appendChild(cb); }
+      }
+      if(!$('msg').innerHTML || myTurn) flash(myTurn ? (S.melded[0]?'輪到你：選手牌→下牌，或抽牌':'輪到你：選能組 ≥30 分的牌型下牌，或抽牌') : '');
+      save();   // 每次畫面更新即存檔（localStorage 自動續玩）
+    }
+    function selectedTiles(){ return S.hands[0].filter(function(t){ return sel.has(t); }); }
+
+    function humanPlay(){
+      if(busy||S.turn!==0||S.over) return;
+      var picks=selectedTiles(); if(!picks.length) return;
+      if(!S.melded[0]){
+        var sets=R.partition(picks);
+        if(!sets){ toast('這些牌無法組成合法牌型（組=同數異色3~4；順=同色連號≥3）'); return; }
+        if(R.setsValue(sets) < 30){ toast('首次下牌需滿 30 分，目前只有 '+R.setsValue(sets)+' 分'); return; }
+        sets.forEach(function(st){ S.board.push(st); });
+        R.removeFromHand(S.hands[0], picks); S.melded[0]=true;
+        afterHumanMove();
+      } else {
+        var all = R.boardTiles(S).concat(picks);
+        var sets2 = R.partition(all);
+        if(!sets2){ toast('加入這些牌後桌面無法全部組成合法牌型'); return; }
+        S.board = sets2; R.removeFromHand(S.hands[0], picks);
+        afterHumanMove();
+      }
+    }
+    function afterHumanMove(){
+      sel.clear();
+      if(S.hands[0].length===0){ S.over=true; S.winner=0; render(); return endRound(); }
+      S.turn=1; render(); runAI();
+    }
+    function humanDraw(){
+      if(busy||S.turn!==0||S.over) return;
+      var t=R.drawTile(S,0);
+      toast(t?('抽到 '+(t.joker?'🃏鬼牌':CN[t.c]+t.n)):'牌庫已空，跳過');
+      sel.clear(); S.turn=1; render(); runAI();
+    }
+
+    async function runAI(){
+      busy=true; render();
+      while(!S.over && S.turn!==0){
+        await wait(800);
+        var p=S.turn, act=R.aiTurn(S,p);
+        if(act.type==='meld'){
+          var inst=pickInstances(S.hands[p], act.sets); R.removeFromHand(S.hands[p], inst);
+          act.sets.forEach(function(st){ S.board.push(st); }); S.melded[p]=true;
+          flash(SEAT[p]+' 首次下牌（'+R.setsValue(act.sets)+' 分）'); S.passes=0;
+        } else if(act.type==='play'){
+          R.removeFromHand(S.hands[p], act.used); S.board=act.sets;
+          flash(SEAT[p]+' 下了 '+act.used.length+' 張'); S.passes=0;
+        } else {
+          var t=R.drawTile(S,p); flash(SEAT[p]+(t?' 抽牌':' 過（牌庫空）')); S.passes=(S.passes||0)+1;
+        }
+        render();
+        if(S.hands[p].length===0){ S.over=true; S.winner=p; busy=false; render(); return endRound(); }
+        if((S.passes||0)>=4 && S.pool.length===0){ S.over=true; S.winner=lowestHand(); busy=false; render(); return endRound(); }
+        S.turn=(S.turn+1)%4;
+      }
+      busy=false; render();
+    }
+    function pickInstances(hand, sets){ var pool=hand.slice(), out=[]; sets.forEach(function(set){ set.items.forEach(function(it){ for(var i=0;i<pool.length;i++){ var x=pool[i]; if((it.joker&&x.joker)||(!it.joker&&!x.joker&&x.c===it.c&&x.n===it.n)){ out.push(x); pool.splice(i,1); break; } } }); }); return out; }
+
+    // 💡 找出這回合可出的手牌並自動選起來
+    function suggest(){
+      if(busy||S.turn!==0||S.over) return;
+      var hand=S.hands[0];
+      if(!S.melded[0]){
+        var m=R.bestMeld(hand);
+        if(m.tiles>0 && m.value>=30){
+          var picks=pickInstances(hand, m.sets);
+          sel.clear(); picks.forEach(function(t){ sel.add(t); }); render();
+          toast('找到可下的牌型：'+picks.length+' 張、'+m.value+' 分 —— 按「下牌」');
+        } else { sel.clear(); render(); toast('目前手牌湊不到首下 30 分，建議抽牌'); }
+        return;
+      }
+      // 破冰後：貪婪找能接上桌面的手牌 ＋ 從剩餘手牌組新牌型
+      var added=[], work=hand.slice(), progress=true;
+      while(progress){ progress=false;
+        for(var i=0;i<work.length;i++){ var t=work[i];
+          if(R.isSolvable(R.boardTiles(S).concat(added).concat([t]))){ added.push(t); work.splice(i,1); progress=true; break; } }
+      }
+      var nm=R.bestMeld(work);
+      var picks=added.concat(pickInstances(work, nm.sets));
+      if(picks.length){
+        sel.clear(); picks.forEach(function(t){ sel.add(t); }); render();
+        toast('可出 '+picks.length+' 張（已幫你選起來）—— 按「下牌」');
+      } else { sel.clear(); render(); toast('目前沒有可接上桌面的牌，建議抽牌'); }
+    }
+    function handVal(p){ return S.hands[p].reduce(function(a,t){ return a+(t.joker?30:t.n); },0); }
+    function lowestHand(){ var best=0,bv=1e9; for(var p=0;p<4;p++){ var v=handVal(p); if(v<bv){bv=v;best=p;} } return best; }
+
+    function endRound(){
+      var w=S.winner;
+      var rows=[0,1,2,3].map(function(i){ return '<div>'+SEAT[i]+'：手牌 '+handVal(i)+' 分</div>'; }).join('');
+      overlay('🎉 '+SEAT[w]+' 贏了！', (w===0?'恭喜你先出完手牌！':SEAT[w]+' 先出完手牌。')+'<br><br><div>各家剩餘手牌分數：</div>'+rows,
+        [{t:'再玩一局',f:function(){ hideOverlay(); newRound(); }}]);
+    }
+
+    // sort
+    function sortColor(){ S.hands[0].sort(function(a,b){ if(a.joker) return 1; if(b.joker) return -1; return a.c-b.c || a.n-b.n; }); render(); }
+    function sortNum(){ S.hands[0].sort(function(a,b){ if(a.joker) return 1; if(b.joker) return -1; return a.n-b.n || a.c-b.c; }); render(); }
+
+    // overlay / toast
+    function overlay(t,b,acts){ $('ov-title').innerHTML=t; $('ov-body').innerHTML=b; var box=$('ov-actions'); box.innerHTML='';
+      acts.forEach(function(a){ var x=el('button','ovbtn',a.t); x.onclick=a.f; box.appendChild(x); }); $('overlay').classList.add('show'); }
+    function hideOverlay(){ $('overlay').classList.remove('show'); }
+    function flash(t){ $('msg').innerHTML=t; }
+    function toast(t){ var e=$('toast'); e.textContent=t; e.classList.add('show'); setTimeout(function(){ e.classList.remove('show'); },1800); }
+
+    $('rules').onclick=function(){ overlay('玩法 · 經典拉密牌', '<div style="line-height:1.9">'+
+      '• 一人對 3 電腦，各發 14 張。牌色：<b>紅/藍/橘/黑</b> 各 1~13 兩張，＋2 張 🃏鬼牌（代任意牌）。<br>'+
+      '• 牌型：<b>組</b>＝同數字、不同色 3~4 張；<b>順</b>＝同色連號 ≥3 張。<br>'+
+      '• <b>首次下牌</b>需用自己手牌組成合計 <b>≥30 分</b>（鬼牌算所代表數字）。<br>'+
+      '• 破冰後：選手牌按「下牌」，系統會把<b>整個桌面自動重組</b>——只要加入你的牌後全桌仍能組成合法牌型即可（＝可自由拆併、借用桌上的牌）。<br>'+
+      '• 不下牌就<b>抽一張</b>並換手。先出完手牌者<b>獲勝</b>。</div>',
+      [{t:'開始',f:function(){ hideOverlay(); newRound(); }}]); };
+    $('newgame').onclick=function(){ newRound(); };
+    $('sortColor').onclick=sortColor; $('sortNum').onclick=sortNum;
+    window.__rkui={ S:function(){return S;}, play:humanPlay, sel:sel, save:save, load:load, suggest:suggest, render:render };
+    if(load() && !S.over){ busy=false; sel.clear(); render(); if(S.turn!==0) runAI(); }
+    else newRound();
+  }
+  (function(){ var s=document.createElement('script'); s.src='rummikub.js?v='+Date.now(); s.onload=bootRk; (document.body||document.documentElement).appendChild(s); })();
+  </script>
+</body>
+</html>

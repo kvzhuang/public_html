@@ -1,0 +1,1186 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bridge 橋牌</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --felt: #176247;
+      --felt-dark: #0d352a;
+      --rail: #3f2b20;
+      --gold: #f2b84b;
+      --ink: #eef8f3;
+      --muted: #9fb9ae;
+      --panel: rgba(8, 18, 18, .76);
+      --danger: #ff6b6b;
+      --ok: #67e8a1;
+      --line: rgba(255,255,255,.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, "Noto Sans TC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 50% 36%, rgba(54, 173, 123, .28), transparent 30rem),
+        linear-gradient(140deg, #071312, #102923 42%, #18110e);
+      overflow-x: hidden;
+    }
+
+    button { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+      padding: 14px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .topbar, .controls, .log-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 18px 44px rgba(0,0,0,.24);
+      border-radius: 10px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      min-height: 58px;
+      padding: 10px 14px;
+    }
+
+    .brand { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+
+    h1 { margin: 0; font-size: clamp(20px, 3vw, 30px); white-space: nowrap; }
+
+    .meta {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      color: var(--muted); font-size: 13px; align-items: center;
+    }
+    .meta strong { color: var(--ink); }
+    .meta .vul { color: var(--danger); font-weight: 700; }
+    .meta .nonvul { color: var(--ok); font-weight: 700; }
+
+    .score-pill {
+      display: inline-flex; gap: 10px; align-items: center;
+      padding: 6px 12px; border-radius: 999px;
+      background: rgba(255,255,255,.06); border: 1px solid var(--line);
+      font-size: 14px;
+    }
+    .score-pill b { color: var(--gold); }
+
+    .btn {
+      min-height: 38px; padding: 7px 14px;
+      border-radius: 8px; border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.08); color: var(--ink);
+      cursor: pointer; font-weight: 700; letter-spacing: .04em;
+      transition: background .15s, transform .1s;
+    }
+    .btn:hover { background: rgba(255,255,255,.16); }
+    .btn:active { transform: scale(.97); }
+    .btn.primary { background: linear-gradient(160deg, #f2b84b, #cf8f1f); color: #2a1c08; border-color: rgba(255,255,255,.3); }
+    .btn.primary:hover { filter: brightness(1.08); }
+
+    .toggle {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--muted); cursor: pointer; user-select: none;
+    }
+
+    #save-flash {
+      font-size: 12px; color: var(--ok);
+      opacity: 0; transition: opacity .4s;
+      pointer-events: none;
+    }
+    #save-flash.show { opacity: 1; }
+
+    /* ── Table ── */
+    .table-wrap { position: relative; display: grid; place-items: center; }
+
+    .table {
+      position: relative;
+      width: min(1100px, 100%);
+      height: min(74vh, 700px);
+      min-height: 540px;
+      border-radius: 38% / 42%;
+      background:
+        radial-gradient(ellipse at center, rgba(255,255,255,.12), transparent 58%),
+        repeating-radial-gradient(ellipse at center, transparent 0 12px, rgba(255,255,255,.025) 13px 14px),
+        linear-gradient(145deg, var(--felt), var(--felt-dark));
+      border: clamp(12px, 1.8vw, 22px) solid var(--rail);
+      box-shadow:
+        inset 0 0 0 5px rgba(255,255,255,.08),
+        inset 0 0 90px rgba(0,0,0,.35),
+        0 28px 70px rgba(0,0,0,.42);
+    }
+
+    .seat {
+      position: absolute;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      transition: filter .2s;
+    }
+    .seat-north { top: 2.5%; left: 50%; transform: translateX(-50%); }
+    .seat-south { bottom: 2.5%; left: 50%; transform: translateX(-50%); }
+    .seat-west  { left: 1.8%; top: 50%; transform: translateY(-50%); }
+    .seat-east  { right: 1.8%; top: 50%; transform: translateY(-50%); }
+
+    .seat-head {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 12px; border-radius: 999px;
+      background: rgba(4, 12, 11, .62); border: 1px solid var(--line);
+      font-size: 13px; font-weight: 700;
+    }
+    .seat.active .seat-head {
+      border-color: var(--gold);
+      box-shadow: 0 0 14px rgba(242, 184, 75, .45);
+      color: var(--gold);
+    }
+    .role-badge {
+      font-size: 11px; font-weight: 700; padding: 1px 8px;
+      border-radius: 999px; border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .role-badge.declarer { color: var(--gold); border-color: var(--gold); }
+    .role-badge.dummy { color: #8fc7ff; border-color: #8fc7ff; }
+
+    .cards { display: flex; justify-content: center; align-items: center; }
+    .cards.h-row { flex-direction: row; }
+    .cards.v-col { flex-direction: column; }
+
+    /* Overlapping fans */
+    .h-row .card { margin-left: clamp(-34px, -2.6vw, -22px); }
+    .h-row .card:first-child { margin-left: 0; }
+    .v-col .card { margin-top: -52px; }
+    .v-col .card:first-child { margin-top: 0; }
+
+    .card {
+      width: clamp(40px, 4.6vw, 56px);
+      aspect-ratio: 5 / 7;
+      border-radius: 7px;
+      background: #f8f4e8;
+      color: #151515;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      padding: 4px 5px;
+      box-shadow: -2px 4px 10px rgba(0,0,0,.3);
+      border: 1px solid rgba(0,0,0,.18);
+      font-weight: 900;
+      line-height: 1;
+      user-select: none;
+      position: relative;
+      transition: transform .12s, box-shadow .12s;
+    }
+    .card .rank { font-size: clamp(13px, 1.5vw, 17px); }
+    .card .suit { display: grid; place-items: center; font-size: clamp(18px, 2.4vw, 28px); }
+    .card.red { color: #c81e3a; }
+    .card.back {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.18), transparent 24%),
+        repeating-linear-gradient(45deg, #1d4f8f 0 7px, #173f73 7px 14px);
+      border: 2px solid #e8efff;
+      color: transparent;
+    }
+    .card.playable { cursor: pointer; outline: 2px solid rgba(103, 232, 161, .0); }
+    .card.playable:hover { transform: translateY(-10px); box-shadow: 0 10px 22px rgba(0,0,0,.45), 0 0 0 2px var(--ok); z-index: 5; }
+    .card.disabled { filter: grayscale(.5) brightness(.72); }
+
+    .hand-count {
+      font-size: 11px; color: var(--muted);
+    }
+
+    /* ── Centre area ── */
+    .center {
+      position: absolute; inset: 24% 22%;
+      display: grid; place-items: center;
+      pointer-events: none;
+    }
+    .center > * { pointer-events: auto; }
+
+    .trick-area { position: relative; width: 100%; height: 100%; }
+    .trick-card { position: absolute; transition: all .25s ease; }
+    .trick-card.pos-north { top: 4%;  left: 50%; transform: translateX(-50%); }
+    .trick-card.pos-south { bottom: 4%; left: 50%; transform: translateX(-50%); }
+    .trick-card.pos-west  { left: 16%; top: 50%; transform: translateY(-50%); }
+    .trick-card.pos-east  { right: 16%; top: 50%; transform: translateY(-50%); }
+
+    .contract-tag {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 8px 16px; border-radius: 12px;
+      background: rgba(4, 12, 11, .55); border: 1px solid var(--line);
+      font-size: 13px; color: var(--muted); text-align: center;
+    }
+    .contract-tag b { font-size: 19px; color: var(--gold); }
+    .contract-tag .tricks { font-size: 13px; color: var(--ink); }
+
+    /* ── Auction panel ── */
+    .auction {
+      background: rgba(4, 12, 11, .8);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 16px;
+      max-height: 100%;
+      overflow: auto;
+      min-width: 290px;
+      text-align: center;
+    }
+    .auction h3 { margin: 0 0 8px; font-size: 14px; color: var(--gold); letter-spacing: .12em; }
+    .auction table { border-collapse: collapse; margin: 0 auto; }
+    .auction th, .auction td {
+      padding: 3px 12px; font-size: 14px; text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .auction th { color: var(--muted); font-size: 12px; }
+    .auction td.me { color: var(--ok); }
+    .auction .red-suit { color: #ff8896; }
+
+    /* ── Bidding box ── */
+    .controls {
+      padding: 10px 14px;
+      display: flex; flex-direction: column; gap: 8px;
+      min-height: 64px;
+      justify-content: center;
+    }
+    .status-line { font-size: 14px; color: var(--muted); text-align: center; }
+    .status-line strong { color: var(--gold); }
+
+    .bid-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .bid-btn {
+      min-height: 36px; border-radius: 7px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.07); color: var(--ink);
+      cursor: pointer; font-weight: 800; font-size: 14px;
+      transition: background .12s;
+    }
+    .bid-btn:hover:not(:disabled) { background: rgba(103, 232, 161, .25); }
+    .bid-btn:disabled { opacity: .25; cursor: default; }
+    .bid-btn .rs { color: #ff8896; }
+    .bid-btn.pass-btn {
+      grid-column: 1 / -1;
+      background: linear-gradient(160deg, #2f7a52, #1d5034);
+      font-size: 15px; letter-spacing: .2em;
+    }
+    .bid-btn.pass-btn:hover { filter: brightness(1.15); }
+
+    /* ── Result overlay ── */
+    .result-overlay {
+      position: absolute; inset: 0;
+      display: grid; place-items: center;
+      background: rgba(2, 8, 7, .55);
+      backdrop-filter: blur(3px);
+      border-radius: inherit;
+      z-index: 20;
+    }
+    .result-box {
+      background: var(--panel);
+      border: 1px solid var(--gold);
+      border-radius: 14px;
+      padding: 22px 34px;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0,0,0,.5);
+    }
+    .result-box h2 { margin: 0 0 6px; color: var(--gold); font-size: 22px; }
+    .result-box p { margin: 4px 0; font-size: 15px; color: var(--ink); }
+    .result-box .sub { color: var(--muted); font-size: 13px; }
+    .result-box .btn { margin-top: 14px; }
+
+    /* ── Log ── */
+    .log-panel {
+      padding: 10px 14px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+    }
+    .log {
+      max-height: 110px; overflow-y: auto;
+      font-size: 12.5px; color: var(--muted); line-height: 1.55;
+    }
+    .log .imp { color: var(--gold); }
+    .log .me { color: var(--ok); }
+
+    @media (max-width: 860px) {
+      .app { padding: 8px; gap: 8px; }
+      .table { min-height: 440px; height: 60vh; }
+      .card { width: clamp(30px, 7.6vw, 42px); }
+      .h-row .card { margin-left: -20px; }
+      .v-col .card { margin-top: -42px; }
+      .center { inset: 22% 16%; }
+      .auction { min-width: 240px; padding: 8px 10px; }
+      .auction th, .auction td { padding: 2px 8px; font-size: 12.5px; }
+      .log-panel { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <h1>♠ Bridge 橋牌</h1>
+      <div class="meta">
+        <span>第 <strong id="deal-no">1</strong> 副</span>
+        <span>莊位 <strong id="dealer-label">北</strong></span>
+        <span id="vul-label">局況：雙方無局</span>
+      </div>
+    </div>
+    <div class="meta">
+      <span class="score-pill">我方 (南北) <b id="score-ns">0</b></span>
+      <span class="score-pill">對方 (東西) <b id="score-ew">0</b></span>
+      <label class="toggle"><input type="checkbox" id="autoplay"> 觀戰模式（電腦代打）</label>
+      <button class="btn" id="btn-redeal">重新發牌</button>
+      <button class="btn" id="btn-clear">清除紀錄</button>
+      <span id="save-flash">💾 已儲存</span>
+    </div>
+  </header>
+
+  <main class="table-wrap">
+    <div class="table" id="table">
+      <div class="seat seat-north" id="seat-0"></div>
+      <div class="seat seat-east"  id="seat-1"></div>
+      <div class="seat seat-south" id="seat-2"></div>
+      <div class="seat seat-west"  id="seat-3"></div>
+      <div class="center" id="center"></div>
+      <div id="result-holder"></div>
+    </div>
+  </main>
+
+  <section class="controls" id="controls"></section>
+
+  <footer class="log-panel">
+    <div class="log" id="log"></div>
+    <div class="meta" id="last-result"></div>
+  </footer>
+</div>
+
+<script>
+'use strict';
+
+// ═══════════════════════ 基本常數 ═══════════════════════
+const SUITS = ['♠','♥','♦','♣'];               // 花色（叫牌順位 ♣<♦<♥<♠<NT）
+const STRAINS = ['♣','♦','♥','♠','NT'];
+const STRAIN_RANK = { '♣':0, '♦':1, '♥':2, '♠':3, 'NT':4 };
+const SEAT_NAMES = ['北 (夥伴)','東 (電腦)','南 (你)','西 (電腦)'];
+const SEAT_SHORT = ['北','東','南','西'];
+const HUMAN = 2;                                 // 玩家固定坐南
+const PARTNER = 0;                               // 夥伴坐北
+const DISPLAY_ORDER = ['♠','♥','♣','♦'];        // 手牌顯示順序（紅黑相間）
+
+const SAVE_KEY = 'bridge-v1';
+
+// ═══════════════════════ 遊戲狀態 ═══════════════════════
+let hands = [[],[],[],[]];      // 各家手牌
+let dealNo = 1;
+let dealer = 0;
+let phase = 'bid';              // bid | play | done
+let turn = 0;                   // 目前行動者
+let auction = [];               // {seat, bid:{type:'pass'}|{type:'bid',level,strain}}
+let contract = null;            // {level, strain, declarer}
+let trumps = null;
+let dummy = -1;
+let revealed = new Set();       // 攤開的手牌（夢家／玩家可見）
+let trick = [];                 // [{seat, card}]
+let trickWins = [0,0];          // [NS, EW]
+let playedCards = [];           // 已打出的牌（AI 記憶用）
+let totals = { ns: 0, ew: 0 };
+let busy = false;               // 動畫/AI 思考中
+
+// ═══════════════════════ 工具 ═══════════════════════
+const $ = id => document.getElementById(id);
+const next = s => (s+1)%4;
+const partnerOf = s => (s+2)%4;
+const sideOf = s => (s%2===0) ? 'ns' : 'ew';
+const isRed = suit => suit==='♥'||suit==='♦';
+
+function rankText(r){ return r===14?'A':r===13?'K':r===12?'Q':r===11?'J':r===10?'10':String(r); }
+function cardLabel(c){ return rankText(c.rank)+c.suit; }
+function bidLabel(b){
+  if(b.type==='pass') return 'Pass';
+  return b.level + b.strain;
+}
+function bidValue(b){ return b.level*5 + STRAIN_RANK[b.strain]; }
+
+function vulOf(side){
+  const v = (dealNo-1) % 4;   // 0:無 1:NS 2:EW 3:雙
+  if(v===0) return false;
+  if(v===3) return true;
+  return (v===1) === (side==='ns');
+}
+function vulText(){
+  const v = (dealNo-1)%4;
+  return ['局況：雙方無局','局況：南北有局','局況：東西有局','局況：雙方有局'][v];
+}
+
+function log(msg, cls=''){
+  const el = $('log');
+  const line = document.createElement('div');
+  if(cls) line.className = cls;
+  line.innerHTML = msg;
+  el.prepend(line);
+  while(el.children.length>60) el.removeChild(el.lastChild);
+}
+
+// ── 完整牌局記憶：手牌、叫牌、合約、墩數全部存檔 ──
+let saveFlashTimer = 0;
+function saveGame(){
+  const data = {
+    v: 2,
+    totals, dealNo, dealer, phase, turn,
+    hands, auction, contract, trumps, dummy,
+    revealed: [...revealed],
+    trick, trickWins, playedCards,
+    autoplay: $('autoplay').checked,
+  };
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    const el = $('save-flash');
+    el.classList.add('show');
+    clearTimeout(saveFlashTimer);
+    saveFlashTimer = setTimeout(()=>el.classList.remove('show'), 1200);
+  } catch(e){}
+}
+
+function loadGame(){
+  try {
+    const d = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if(!d) return false;
+    totals = d.totals ?? { ns:0, ew:0 };
+    dealNo = d.dealNo ?? 1;
+    // 舊版存檔只有總分 → 只還原總分，重新發牌
+    if(d.v !== 2 || !Array.isArray(d.hands)) return false;
+    dealer = d.dealer; phase = d.phase; turn = d.turn;
+    hands = d.hands; auction = d.auction ?? [];
+    contract = d.contract; trumps = d.trumps; dummy = d.dummy ?? -1;
+    revealed = new Set(d.revealed ?? [HUMAN]);
+    trick = d.trick ?? []; trickWins = d.trickWins ?? [0,0];
+    playedCards = d.playedCards ?? [];
+    $('autoplay').checked = !!d.autoplay;
+    return true;
+  } catch(e){ return false; }
+}
+
+function clearSave(){
+  if(!confirm('清除所有紀錄（總分與進行中的牌局）？')) return;
+  try { localStorage.removeItem(SAVE_KEY); } catch(e){}
+  location.reload();
+}
+
+// ═══════════════════════ 發牌 ═══════════════════════
+function deal(){
+  const deck = [];
+  for(const s of SUITS) for(let r=2;r<=14;r++) deck.push({suit:s, rank:r});
+  for(let i=deck.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [deck[i],deck[j]]=[deck[j],deck[i]];
+  }
+  hands = [[],[],[],[]];
+  deck.forEach((c,i)=>hands[i%4].push(c));
+  hands.forEach(h=>sortHand(h));
+
+  dealer = (dealNo-1)%4;
+  phase = 'bid'; turn = dealer;
+  auction = []; contract = null; trumps = null; dummy = -1;
+  revealed = new Set([HUMAN]);
+  trick = []; trickWins = [0,0]; playedCards = [];
+  busy = false;
+  $('result-holder').innerHTML = '';
+  log(`<span class="imp">── 第 ${dealNo} 副 ── 莊位：${SEAT_SHORT[dealer]}，${vulText().slice(3)}</span>`);
+  saveGame();
+  render();
+  scheduleNext();
+}
+
+function sortHand(h){
+  h.sort((a,b)=>{
+    const sa = DISPLAY_ORDER.indexOf(a.suit), sb = DISPLAY_ORDER.indexOf(b.suit);
+    return sa!==sb ? sa-sb : b.rank-a.rank;
+  });
+}
+
+// ═══════════════════════ 牌力評估 ═══════════════════════
+function hcp(hand){
+  return hand.reduce((t,c)=>t+Math.max(0,c.rank-10),0);
+}
+function suitCards(hand, suit){ return hand.filter(c=>c.suit===suit); }
+function suitLens(hand){
+  const m = {};
+  for(const s of SUITS) m[s] = suitCards(hand,s).length;
+  return m;
+}
+function isBalanced(hand){
+  const lens = Object.values(suitLens(hand)).sort((a,b)=>a-b);
+  return lens[0]>=2 && lens[1]>=3;   // 無單缺門，至多一個雙張
+}
+function hasStopper(hand, suit){
+  const cs = suitCards(hand, suit);
+  return cs.some(c=>c.rank===14) ||
+         (cs.some(c=>c.rank===13)&&cs.length>=2) ||
+         (cs.some(c=>c.rank===12)&&cs.length>=3);
+}
+
+// ═══════════════════════ 叫牌邏輯 ═══════════════════════
+function realBids(){ return auction.filter(a=>a.bid.type==='bid'); }
+function lastRealBid(){
+  const r = realBids();
+  return r.length ? r[r.length-1] : null;
+}
+function isLegalBid(level, strain){
+  const last = lastRealBid();
+  if(!last) return true;
+  return level*5 + STRAIN_RANK[strain] > bidValue(last.bid);
+}
+function seatRealBids(seat){
+  return auction.filter(a=>a.seat===seat && a.bid.type==='bid').map(a=>a.bid);
+}
+
+// 從夥伴的叫牌推估其最低點力
+function partnerMinPoints(seat){
+  const pb = seatRealBids(partnerOf(seat));
+  if(pb.length===0) return 0;
+  const first = pb[0];
+  let est = 0;
+  if(first.strain==='NT' && first.level===1) est = 15;
+  else if(first.strain==='NT' && first.level===2) est = 20;
+  else est = openedFirstOfSide(partnerOf(seat)) ? 12 : 6;
+  // 後續叫高一級視為額外點力
+  if(pb.length>=2) est += 3;
+  if(pb.length>=3) est += 2;
+  return est;
+}
+// 此家是否為其方第一個開叫者
+function openedFirstOfSide(seat){
+  for(const a of auction){
+    if(a.bid.type!=='bid') continue;
+    return a.seat===seat;
+  }
+  return false;
+}
+
+// 找出夥伴叫過的花色中我方有 8 張配合的王牌
+function findFit(seat){
+  const myLens = suitLens(hands[seat]);
+  const pb = seatRealBids(partnerOf(seat)).filter(b=>b.strain!=='NT');
+  for(const b of pb){
+    const assumed = (b===pb[0] && openedFirstOfSide(partnerOf(seat))) ? 5 : 4;
+    if(myLens[b.strain] + assumed >= 8) return b.strain;
+  }
+  return null;
+}
+
+function chooseOpening(hand){
+  const p = hcp(hand);
+  const lens = suitLens(hand);
+  if(p>=20 && isBalanced(hand)) return {level:2, strain:'NT'};
+  if(p>=15 && p<=17 && isBalanced(hand)) return {level:1, strain:'NT'};
+  if(p>=12){
+    // 先找 5 張高花
+    if(lens['♠']>=5 && lens['♠']>=lens['♥']) return {level:1, strain:'♠'};
+    if(lens['♥']>=5) return {level:1, strain:'♥'};
+    // 較長的低花
+    if(lens['♦']>=lens['♣'] && lens['♦']>=3) return {level:1, strain:'♦'};
+    return {level:1, strain:'♣'};
+  }
+  return null;
+}
+
+function aiBid(seat){
+  const hand = hands[seat];
+  const p = hcp(hand);
+  const lens = suitLens(hand);
+  const myBids = seatRealBids(seat);
+  const partnerBids = seatRealBids(partnerOf(seat));
+  const last = lastRealBid();
+  const pass = {type:'pass'};
+  const mk = (level,strain)=> isLegalBid(level,strain) ? {type:'bid',level,strain} : null;
+
+  // ── 開叫 / 蓋叫位置 ──
+  if(myBids.length===0 && partnerBids.length===0){
+    if(!last){
+      const open = chooseOpening(hand);
+      return open ? {type:'bid',...open} : pass;
+    }
+    // 蓋叫：對手已開叫
+    if(p>=15 && p<=18 && isBalanced(hand) && last.bid.strain!=='NT' && hasStopper(hand,last.bid.strain)){
+      const b = mk(1,'NT') || mk(2,'NT');
+      if(b) return b;
+    }
+    if(p>=9){
+      const cands = SUITS.filter(s=>lens[s]>=5).sort((a,b)=>lens[b]-lens[a]);
+      for(const s of cands){
+        for(let lv=1; lv<=(p>=14?3:2); lv++){
+          const b = mk(lv,s);
+          if(b) return b;
+        }
+      }
+    }
+    return pass;
+  }
+
+  // ── 夥伴已叫牌：估算聯手點力決定目標 ──
+  const combined = p + partnerMinPoints(seat);
+  const fit = findFit(seat);
+  const lastIsPartner = last && last.seat===partnerOf(seat);
+  const lastIsOpp = last && sideOf(last.seat)!==sideOf(seat);
+
+  // 目標：聯手 25+ 拚成局，23-24 邀請，其他停低
+  let targetLevel, targetStrain;
+  if(fit && (fit==='♥'||fit==='♠')){
+    targetStrain = fit;
+    targetLevel = combined>=31?6 : combined>=25?4 : combined>=23?3 : 2;
+  } else if(fit){
+    targetStrain = fit;
+    targetLevel = combined>=31?6 : combined>=27?5 : combined>=23?3 : 2;
+  } else if(isBalanced(hand) || p>=12){
+    targetStrain = 'NT';
+    targetLevel = combined>=31?6 : combined>=25?3 : combined>=23?2 : 1;
+  } else {
+    // 不平均又無配合：叫自己長門
+    const longest = SUITS.slice().sort((a,b)=>lens[b]-lens[a])[0];
+    targetStrain = lens[longest]>=5 ? longest : 'NT';
+    targetLevel = combined>=25?3:2;
+  }
+
+  // 夥伴叫的就是目標線位以上 → Pass
+  if(lastIsPartner){
+    const lb = last.bid;
+    if(lb.strain===targetStrain && lb.level>=targetLevel) return pass;
+    if(combined<20) return pass;
+    // NT 成局特例：直接 3NT
+    if(targetStrain==='NT' && combined>=25){
+      const b = mk(3,'NT'); if(b && 3>=targetLevel-1) return b;
+    }
+    // 朝目標前進（最多叫到目標線位）
+    for(let lv=1; lv<=targetLevel; lv++){
+      const b = mk(lv, targetStrain);
+      if(b) return b;
+    }
+    return pass;
+  }
+
+  // 對手插叫：點力夠才競叫
+  if(lastIsOpp){
+    if(combined<21) return pass;
+    for(let lv=1; lv<=targetLevel; lv++){
+      const b = mk(lv, targetStrain);
+      if(b && (lv<=4 || combined>=29)) return b;
+    }
+    return pass;
+  }
+
+  return pass;
+}
+
+// ═══════════════════════ 叫牌流程 ═══════════════════════
+function placeBid(seat, bid){
+  auction.push({seat, bid});
+  const who = seat===HUMAN ? '你' : SEAT_SHORT[seat];
+  const lbl = bid.type==='pass' ? 'Pass' : bidLabel(bid);
+  log(`${who}：<b class="${seat===HUMAN?'me':''}">${lbl}</b>`);
+
+  // 結束判定
+  const n = auction.length;
+  if(n>=4 && auction.slice(n-3).every(a=>a.bid.type==='pass') && realBids().length>0){
+    finishAuction();
+    return;
+  }
+  if(n===4 && realBids().length===0){
+    log('<span class="imp">四家皆 Pass，重新發牌。</span>');
+    dealNo++;
+    setTimeout(deal, 1200);
+    render();
+    return;
+  }
+  turn = next(turn);
+  saveGame();
+  render();
+  scheduleNext();
+}
+
+function finishAuction(){
+  const winning = lastRealBid();
+  const side = sideOf(winning.seat);
+  // 莊家＝該方最先叫出此花色者
+  let declarer = winning.seat;
+  for(const a of auction){
+    if(a.bid.type!=='bid') continue;
+    if(sideOf(a.seat)===side && a.bid.strain===winning.bid.strain){
+      declarer = a.seat; break;
+    }
+  }
+  contract = { level: winning.bid.level, strain: winning.bid.strain, declarer };
+  trumps = contract.strain==='NT' ? null : contract.strain;
+  dummy = partnerOf(declarer);
+  phase = 'play';
+  turn = next(declarer);   // 首引：莊家左手
+  trick = [];
+
+  const declSide = sideOf(declarer)==='ns' ? '我方（南北）' : '對方（東西）';
+  log(`<span class="imp">合約：${contract.level}${contract.strain}，莊家 ${SEAT_SHORT[declarer]}（${declSide}），${SEAT_SHORT[turn]}首引。</span>`);
+
+  // 南北作莊 → 玩家同時操作兩手
+  if(sideOf(declarer)==='ns'){
+    revealed.add(PARTNER);
+  }
+  saveGame();
+  render();
+  scheduleNext();
+}
+
+// ═══════════════════════ 出牌規則 ═══════════════════════
+function legalCards(seat){
+  const hand = hands[seat];
+  if(trick.length===0) return hand.slice();
+  const led = trick[0].card.suit;
+  const follow = hand.filter(c=>c.suit===led);
+  return follow.length ? follow : hand.slice();
+}
+
+function beats(c, w){
+  if(c.suit===w.suit) return c.rank>w.rank;
+  if(trumps && c.suit===trumps && w.suit!==trumps) return true;
+  return false;
+}
+
+function currentWinner(){
+  let win = trick[0];
+  for(let i=1;i<trick.length;i++){
+    if(beats(trick[i].card, win.card)) win = trick[i];
+  }
+  return win;
+}
+
+// ═══════════════════════ 出牌 AI ═══════════════════════
+function aiChooseCard(seat){
+  const legal = legalCards(seat);
+  if(legal.length===1) return legal[0];
+
+  if(trick.length===0) return aiChooseLead(seat);
+
+  const win = currentWinner();
+  const partnerWinning = win.seat===partnerOf(seat);
+  const lastToPlay = trick.length===3;
+  const sorted = legal.slice().sort((a,b)=>a.rank-b.rank);
+  const winners = sorted.filter(c=>beats(c, win.card));
+
+  // 夥伴已贏且夠大 → 墊最小
+  if(partnerWinning && (lastToPlay || win.card.rank>=12)) return discardLow(sorted);
+
+  if(winners.length){
+    if(lastToPlay) return winners[0];                     // 末家：最便宜的贏張
+    if(trick.length===2) return winners[0];               // 第三家：便宜地做高
+    // 第二家：通常出小，但有緊鄰大牌可直接壓
+    if(winners[0].rank>=13 || winners[0].suit===trumps) return winners[0];
+    return discardLow(sorted);
+  }
+  return discardLow(sorted);
+}
+
+function discardLow(sortedAsc){
+  // 不跟張時優先丟非王牌的小牌
+  if(trumps){
+    const nonTrump = sortedAsc.filter(c=>c.suit!==trumps);
+    if(nonTrump.length) return nonTrump[0];
+  }
+  return sortedAsc[0];
+}
+
+function aiChooseLead(seat){
+  const hand = hands[seat];
+  const isDeclSide = contract && sideOf(seat)===sideOf(contract.declarer);
+
+  // 莊方且有王牌合約：清王牌
+  if(isDeclSide && trumps){
+    const myT = suitCards(hand, trumps);
+    const partnerT = revealed.has(partnerOf(seat)) ? suitCards(hands[partnerOf(seat)], trumps) : [];
+    const playedT = playedCards.filter(c=>c.suit===trumps).length;
+    const outT = 13 - myT.length - partnerT.length - (playedT - countPlayedBy(seat, trumps) - countPlayedBy(partnerOf(seat), trumps));
+    if(myT.length>0 && outT>0 && myT.length>=3){
+      const top = myT.slice().sort((a,b)=>b.rank-a.rank)[0];
+      return top.rank>=13 ? top : myT.slice().sort((a,b)=>a.rank-b.rank)[0];
+    }
+  }
+
+  // 找 AK 連張 → 出頂張
+  for(const s of SUITS){
+    if(trumps && s===trumps && !isDeclSide) continue;
+    const cs = suitCards(hand, s).sort((a,b)=>b.rank-a.rank);
+    if(cs.length>=2 && cs[0].rank===14 && cs[1].rank===13) return cs[0];
+  }
+
+  // 最長門第四大（防守原則）
+  const lens = suitLens(hand);
+  let bestSuit = null, bestLen = 0;
+  for(const s of SUITS){
+    if(trumps && s===trumps && !isDeclSide) continue;
+    if(lens[s]>bestLen){ bestLen = lens[s]; bestSuit = s; }
+  }
+  if(!bestSuit) bestSuit = SUITS.find(s=>lens[s]>0);
+  const cs = suitCards(hand, bestSuit).sort((a,b)=>b.rank-a.rank);
+  return cs.length>=4 ? cs[3] : cs[cs.length-1];
+}
+
+function countPlayedBy(seat, suit){
+  // 簡化：無逐家記錄，回傳 0（outT 估計值偏保守，可接受）
+  return 0;
+}
+
+// ═══════════════════════ 出牌流程 ═══════════════════════
+function playCard(seat, card){
+  const hand = hands[seat];
+  const idx = hand.findIndex(c=>c.suit===card.suit && c.rank===card.rank);
+  if(idx<0) return;
+  hand.splice(idx,1);
+  trick.push({seat, card});
+  playedCards.push(card);
+
+  // 首引後攤夢家
+  if(trick.length===1 && trickWins[0]+trickWins[1]===0 && !revealed.has(dummy)){
+    revealed.add(dummy);
+    log(`夢家（${SEAT_SHORT[dummy]}）攤牌。`);
+  }
+
+  if(trick.length===4){
+    busy = true;
+    saveGame();
+    render();
+    setTimeout(resolveTrick, 950);
+  } else {
+    turn = next(turn);
+    saveGame();
+    render();
+    scheduleNext();
+  }
+}
+
+function resolveTrick(){
+  const win = currentWinner();
+  const side = sideOf(win.seat);
+  trickWins[side==='ns'?0:1]++;
+  log(`${SEAT_SHORT[win.seat]} 以 ${cardLabel(win.card)} 贏得此墩（NS ${trickWins[0]}：EW ${trickWins[1]}）`);
+  trick = [];
+  turn = win.seat;
+  busy = false;
+
+  if(trickWins[0]+trickWins[1]===13){
+    finishHand();
+    return;
+  }
+  saveGame();
+  render();
+  scheduleNext();
+}
+
+// ═══════════════════════ 計分 ═══════════════════════
+function scoreContract(level, strain, made, vul){
+  // made = 實際贏墩 - 6 - level（正＝超墩、負＝倒墩）
+  if(made<0){
+    return { score: (vul?100:50)*(-made), toDeclarer: false };
+  }
+  const per = (strain==='♣'||strain==='♦')?20:30;
+  let trickScore = strain==='NT' ? 40+30*(level-1) : per*level;
+  let score = trickScore;
+  score += made * (strain==='NT'?30:per);            // 超墩
+  score += trickScore>=100 ? (vul?500:300) : 50;     // 成局／部分合約獎分
+  if(level===6) score += vul?750:500;                // 小滿貫
+  if(level===7) score += vul?1500:1000;              // 大滿貫
+  return { score, toDeclarer: true };
+}
+
+function finishHand(){
+  phase = 'done';
+  const declSide = sideOf(contract.declarer);
+  const declTricks = trickWins[declSide==='ns'?0:1];
+  const made = declTricks - 6 - contract.level;
+  const vul = vulOf(declSide);
+  const r = scoreContract(contract.level, contract.strain, made, vul);
+
+  let scoreSide, msg;
+  if(r.toDeclarer){
+    scoreSide = declSide;
+    msg = made===0 ? '正好完成！' : `完成並超 ${made} 墩！`;
+  } else {
+    scoreSide = declSide==='ns'?'ew':'ns';
+    msg = `倒 ${-made} 墩。`;
+  }
+  totals[scoreSide] += r.score;
+  saveGame();
+
+  const contractText = `${contract.level}${contract.strain} by ${SEAT_SHORT[contract.declarer]}`;
+  const sideText = scoreSide==='ns'?'我方（南北）':'對方（東西）';
+  log(`<span class="imp">${contractText} ${msg} ${sideText} +${r.score} 分</span>`);
+  $('last-result').textContent = `上一副：${contractText}，${msg} ${sideText} +${r.score}`;
+
+  const holder = $('result-holder');
+  holder.innerHTML = `
+    <div class="result-overlay">
+      <div class="result-box">
+        <h2>${contractText}</h2>
+        <p>${msg}</p>
+        <p>莊方贏 ${declTricks} 墩（需 ${6+contract.level} 墩）</p>
+        <p class="sub">${sideText} 得 ${r.score} 分</p>
+        <button class="btn primary" onclick="nextDeal()">下一副 ▶</button>
+      </div>
+    </div>`;
+  render();
+}
+
+function nextDeal(){
+  dealNo++;
+  deal();
+}
+
+// ═══════════════════════ 回合排程 ═══════════════════════
+function humanControls(seat){
+  if($('autoplay').checked) return false;
+  if(phase==='bid') return seat===HUMAN;
+  if(phase==='play'){
+    if(contract && sideOf(contract.declarer)==='ns') return seat===HUMAN || seat===PARTNER;
+    return seat===HUMAN;
+  }
+  return false;
+}
+
+function scheduleNext(){
+  if(phase==='done' || busy) return;
+  if(humanControls(turn)){ render(); return; }   // 等玩家操作
+  setTimeout(()=>{
+    if(phase==='done' || busy) return;
+    if(humanControls(turn)) { render(); return; }  // 玩家中途關掉代打
+    if(phase==='bid'){
+      placeBid(turn, aiBid(turn));
+    } else if(phase==='play'){
+      playCard(turn, aiChooseCard(turn));
+    }
+  }, 650);
+}
+
+// ═══════════════════════ 畫面 ═══════════════════════
+function makeCardEl(card, faceUp, playable){
+  const div = document.createElement('div');
+  if(!faceUp){
+    div.className = 'card back';
+    div.textContent = '🂠';
+    return div;
+  }
+  div.className = 'card' + (isRed(card.suit)?' red':'') + (playable?' playable':'');
+  div.innerHTML = `<span class="rank">${rankText(card.rank)}</span><span class="suit">${card.suit}</span>`;
+  return div;
+}
+
+function render(){
+  // topbar
+  $('deal-no').textContent = dealNo;
+  $('dealer-label').textContent = SEAT_SHORT[dealer];
+  $('vul-label').textContent = vulText();
+  const v = (dealNo-1)%4;
+  $('vul-label').className = (v===1||v===3) ? 'vul' : 'nonvul';
+  $('score-ns').textContent = totals.ns;
+  $('score-ew').textContent = totals.ew;
+
+  // 座位
+  for(let s=0;s<4;s++){
+    const el = $('seat-'+s);
+    el.classList.toggle('active', turn===s && phase!=='done' && !busy);
+    el.innerHTML = '';
+
+    const head = document.createElement('div');
+    head.className = 'seat-head';
+    let badge = '';
+    if(contract){
+      if(s===contract.declarer) badge = '<span class="role-badge declarer">莊家</span>';
+      else if(s===dummy) badge = '<span class="role-badge dummy">夢家</span>';
+    }
+    head.innerHTML = `${SEAT_NAMES[s]} ${badge} <span class="hand-count">${hands[s].length} 張</span>`;
+    el.appendChild(head);
+
+    const row = document.createElement('div');
+    row.className = 'cards ' + ((s===1||s===3)?'v-col':'h-row');
+
+    const faceUp = revealed.has(s);
+    const myTurn = turn===s && phase==='play' && humanControls(s) && !busy;
+    const legal = myTurn ? legalCards(s) : [];
+
+    for(const c of hands[s]){
+      const canPlay = myTurn && legal.some(l=>l.suit===c.suit&&l.rank===c.rank);
+      const cardEl = makeCardEl(c, faceUp, canPlay);
+      if(myTurn && !canPlay) cardEl.classList.add('disabled');
+      if(canPlay){
+        cardEl.addEventListener('click', ()=>{ if(turn===s && !busy) playCard(s, c); });
+      }
+      row.appendChild(cardEl);
+    }
+    el.appendChild(row);
+  }
+
+  renderCenter();
+  renderControls();
+}
+
+function renderCenter(){
+  const c = $('center');
+  c.innerHTML = '';
+
+  if(phase==='bid'){
+    c.appendChild(buildAuctionTable());
+    return;
+  }
+
+  // 出牌區
+  const area = document.createElement('div');
+  area.className = 'trick-area';
+  const posName = ['pos-north','pos-east','pos-south','pos-west'];
+  for(const t of trick){
+    const cardEl = makeCardEl(t.card, true, false);
+    const wrap = document.createElement('div');
+    wrap.className = 'trick-card ' + posName[t.seat];
+    wrap.appendChild(cardEl);
+    area.appendChild(wrap);
+  }
+  if(contract){
+    const tag = document.createElement('div');
+    tag.className = 'contract-tag';
+    const need = 6 + contract.level;
+    const declSide = sideOf(contract.declarer);
+    const declWins = trickWins[declSide==='ns'?0:1];
+    tag.innerHTML = `
+      <span>合約</span>
+      <b class="${isRed(contract.strain)?'red-suit':''}">${contract.level}${contract.strain} × ${SEAT_SHORT[contract.declarer]}</b>
+      <span class="tricks">莊方 ${declWins}/${need} 墩 ｜ NS ${trickWins[0]}：EW ${trickWins[1]}</span>`;
+    if(trick.length===0) area.appendChild(tag);
+  }
+  c.appendChild(area);
+}
+
+function buildAuctionTable(){
+  const box = document.createElement('div');
+  box.className = 'auction';
+  box.innerHTML = '<h3>叫 牌</h3>';
+  const tbl = document.createElement('table');
+  const head = document.createElement('tr');
+  for(let i=0;i<4;i++){
+    const seat = (dealer+i)%4;
+    head.innerHTML += `<th>${SEAT_SHORT[seat]}${seat===HUMAN?'（你）':''}</th>`;
+  }
+  tbl.appendChild(head);
+
+  let row = document.createElement('tr');
+  let col = 0;
+  for(const a of auction){
+    const lbl = a.bid.type==='pass' ? 'Pass'
+      : `${a.bid.level}<span class="${isRed(a.bid.strain)?'red-suit':''}">${a.bid.strain}</span>`;
+    row.innerHTML += `<td class="${a.seat===HUMAN?'me':''}">${lbl}</td>`;
+    col++;
+    if(col===4){ tbl.appendChild(row); row = document.createElement('tr'); col=0; }
+  }
+  // 目前輪到誰的提示格
+  if(phase==='bid'){
+    row.innerHTML += `<td>…</td>`;
+    col++;
+  }
+  if(col>0){
+    while(col<4){ row.innerHTML += '<td></td>'; col++; }
+    tbl.appendChild(row);
+  }
+  box.appendChild(tbl);
+  return box;
+}
+
+function renderControls(){
+  const c = $('controls');
+  c.innerHTML = '';
+
+  if(phase==='bid' && humanControls(turn) && turn===HUMAN){
+    const tip = document.createElement('div');
+    tip.className = 'status-line';
+    const p = hcp(hands[HUMAN]);
+    tip.innerHTML = `輪到<strong>你</strong>叫牌（大牌點：${p}）`;
+    c.appendChild(tip);
+
+    const grid = document.createElement('div');
+    grid.className = 'bid-grid';
+    for(let lv=1;lv<=7;lv++){
+      for(const st of STRAINS){
+        const btn = document.createElement('button');
+        btn.className = 'bid-btn';
+        btn.innerHTML = `${lv}<span class="${isRed(st)?'rs':''}">${st}</span>`;
+        btn.disabled = !isLegalBid(lv, st);
+        btn.addEventListener('click', ()=>placeBid(HUMAN, {type:'bid', level:lv, strain:st}));
+        grid.appendChild(btn);
+      }
+    }
+    const passBtn = document.createElement('button');
+    passBtn.className = 'bid-btn pass-btn';
+    passBtn.textContent = 'PASS';
+    passBtn.addEventListener('click', ()=>placeBid(HUMAN, {type:'pass'}));
+    grid.appendChild(passBtn);
+    c.appendChild(grid);
+    return;
+  }
+
+  const line = document.createElement('div');
+  line.className = 'status-line';
+  if(phase==='bid'){
+    line.innerHTML = `等待 <strong>${SEAT_SHORT[turn]}</strong> 叫牌…`;
+  } else if(phase==='play'){
+    if(busy){
+      line.textContent = '收墩中…';
+    } else if(humanControls(turn)){
+      const who = turn===HUMAN ? '你的手牌' : `夢家（${SEAT_SHORT[turn]}）`;
+      line.innerHTML = `輪到你出牌 — 請從 <strong>${who}</strong> 點選一張`;
+    } else {
+      line.innerHTML = `等待 <strong>${SEAT_SHORT[turn]}</strong> 出牌…`;
+    }
+  } else {
+    line.textContent = '本副結束';
+  }
+  c.appendChild(line);
+}
+
+// ═══════════════════════ 啟動 ═══════════════════════
+$('btn-redeal').addEventListener('click', ()=>{
+  if(confirm('放棄本副並重新發牌？')) deal();
+});
+$('btn-clear').addEventListener('click', clearSave);
+$('autoplay').addEventListener('change', ()=>{ saveGame(); render(); scheduleNext(); });
+
+// 有進行中的牌局 → 接續；已結束或無存檔 → 發新牌
+const resumed = loadGame();
+if(resumed && phase!=='done'){
+  log('<span class="imp">📂 已還原上次的牌局進度。</span>');
+  if(contract){
+    log(`合約：${contract.level}${contract.strain}，莊家 ${SEAT_SHORT[contract.declarer]}（NS ${trickWins[0]}：EW ${trickWins[1]}）`);
+  }
+  busy = false;
+  render();
+  if(trick.length===4){
+    busy = true;
+    setTimeout(resolveTrick, 800);
+  } else {
+    scheduleNext();
+  }
+} else if(resumed && phase==='done'){
+  nextDeal();      // 上次停在結算畫面 → 直接開下一副
+} else {
+  deal();
+}
+</script>
+</body>
+</html>

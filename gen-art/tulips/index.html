@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Tulips 鬱金香花海 - Generative Art</title>
+  <meta name="description" content="油畫風格室外鬱金香花海：晴天、陰天、下雨、夜晚月光四種場景，多色層次花田，厚塗印象派筆觸。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#0e1208">
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 45%, #1a220e, transparent 55rem),
+        #0e1208;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    canvas {
+      display: block;
+      border: 12px solid #1a2010;
+      outline: 2px solid #3a5820;
+      box-shadow: 0 30px 80px rgba(0,0,0,.70), inset 0 0 40px rgba(0,0,0,.3);
+    }
+    #hint {
+      position: fixed; bottom: 14px; left: 0; right: 0;
+      text-align: center;
+      font: 11px/1.6 monospace;
+      letter-spacing: .22em;
+      color: rgba(160, 210, 120, .35);
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <div id="hint">CLICK · 重新生成 ─ S · 儲存畫作</div>
+  <script>
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'sketch.js?v=' + Date.now();
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Auto Rubik 自動魔方 - Generative Art</title>
+  <meta name="description" content="3×3 魔方自動打亂、自動解題視覺化。Three.js 3D 渲染，easeInOutCubic 流暢轉面動畫，循環展示。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; }
+    canvas { display: block; }
+
+    #back {
+      position: fixed; top: 16px; left: 18px;
+      color: rgba(255,255,255,0.22); font-family: 'Courier New', monospace;
+      font-size: 11px; text-decoration: none; letter-spacing: 0.05em;
+      transition: color 0.2s; z-index: 10;
+    }
+    #back:hover { color: rgba(255,255,255,0.65); }
+
+    /* Move sequence chips - top center */
+    #seq-bar {
+      position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 4px; flex-wrap: wrap;
+      justify-content: center; max-width: 88vw;
+      pointer-events: none; z-index: 10;
+    }
+    .chip {
+      font-family: 'Courier New', monospace; font-size: 9px;
+      padding: 2px 6px; border-radius: 3px;
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.03);
+      transition: all 0.18s;
+      letter-spacing: 0.05em;
+    }
+    .chip.done    { color: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.05); background: transparent; }
+    .chip.current { color: #fff; border-color: rgba(255,220,80,0.8); background: rgba(255,220,80,0.12);
+                    box-shadow: 0 0 8px rgba(255,220,80,0.20); }
+
+    /* Bottom status bar */
+    #status-bar {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+      gap: 5px; pointer-events: none; z-index: 10;
+    }
+    #phase-label {
+      font-family: 'Courier New', monospace; font-size: 11px;
+      letter-spacing: 0.28em; color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+    }
+    #move-info {
+      font-family: 'Courier New', monospace; font-size: 22px;
+      letter-spacing: 0.15em; color: rgba(255,255,255,0.75);
+      min-height: 30px; text-align: center;
+    }
+    #move-counter {
+      font-family: 'Courier New', monospace; font-size: 9px;
+      letter-spacing: 0.12em; color: rgba(255,255,255,0.20);
+    }
+
+    /* Flash overlay for "SOLVED" */
+    #solved-flash {
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,0);
+      pointer-events: none; z-index: 5;
+      transition: background 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <a id="back" href="../">← 返回</a>
+  <div id="seq-bar"></div>
+  <div id="status-bar">
+    <div id="phase-label">READY</div>
+    <div id="move-info"></div>
+    <div id="move-counter"></div>
+  </div>
+  <div id="solved-flash"></div>
+  <script type="module">
+    import(`./sketch.js?t=${Date.now()}`);
+  </script>
+</body>
+</html>

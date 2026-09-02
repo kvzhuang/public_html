@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>踩地雷 Minesweeper</title>
+  <meta name="description" content="經典踩地雷 Minesweeper：初級/中級/高級三種難度，首擊必安全、零格自動展開、旗標與和牌開數字，計時、雷數與存檔。">
+  <meta name="theme-color" content="#2b2f36">
+  <style>
+    :root{ --bg:#20242b; --panel:#2b2f36; --cell:#c3c9d2; --cellhi:#eef1f5; --cell2:#aeb6c2;
+      --rev:#8b95a5; --rev2:#7e889a; --line:#5a6472; --gold:#e9c46a; }
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    #board, #board *{ -webkit-touch-callout:none; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none; }
+    html,body{ margin:0; min-height:100%; color:#eef2f6; font-family:"Noto Sans TC",system-ui,sans-serif;
+      background:radial-gradient(circle at 50% 0%, #313742, #1a1d23); overflow-x:hidden; }
+    .top{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 16px 4px; }
+    .top a.back{ color:#9fb0c4; text-decoration:none; font-size:13px; }
+    .top a.back:hover{ color:var(--gold); }
+    h1{ font-size:19px; margin:0; letter-spacing:.03em; }
+    h1 .en{ font-size:12px; color:#9fb0c4; font-weight:400; letter-spacing:.12em; }
+    .levels{ display:flex; gap:8px; flex-wrap:wrap; padding:8px 16px; }
+    button{ font:inherit; font-size:13px; color:#20242b; background:linear-gradient(#eef1f5,#c8cfda);
+      border:0; border-radius:9px; padding:7px 13px; font-weight:700; cursor:pointer; box-shadow:0 2px 0 #0004; }
+    button:active{ transform:translateY(1px); }
+    button.on{ background:linear-gradient(#f2d888,#e2b64e); }
+    .panel{ display:flex; align-items:center; justify-content:center; gap:18px; margin:6px auto 10px;
+      max-width:560px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:8px 16px; }
+    .lcd{ font-family:"DSEG7",monospace; font-weight:800; font-size:22px; color:#ff5a4d;
+      background:#160b0b; border-radius:6px; padding:2px 10px; min-width:64px; text-align:center; letter-spacing:2px; }
+    .face{ font-size:26px; cursor:pointer; user-select:none; line-height:1; background:none; box-shadow:none; padding:2px 6px; }
+    .flagtoggle{ margin-left:auto; }
+    #wrap{ overflow:auto; padding:2px 10px 40px; }
+    #board{ margin:0 auto; display:grid; gap:2px; background:var(--line); padding:6px; border-radius:8px;
+      width:max-content; touch-action:manipulation; }
+    .c{ width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:16px; border-radius:4px; user-select:none; cursor:pointer;
+      background:linear-gradient(145deg,var(--cellhi),var(--cell2)); box-shadow:inset 0 1px 0 #ffffff88, inset 0 -2px 3px #00000030; color:#20242b; }
+    .c.rev{ background:var(--rev); box-shadow:inset 0 1px 2px #0006; cursor:default; }
+    .c.flag{ }
+    .c.mine{ background:#c0392b; }
+    .c.boom{ background:#ff5a4d; }
+    .c.n1{ color:#1976d2 } .c.n2{ color:#2e7d32 } .c.n3{ color:#d32f2f } .c.n4{ color:#512da8 }
+    .c.n5{ color:#8d3b1f } .c.n6{ color:#00838f } .c.n7{ color:#111 } .c.n8{ color:#555 }
+    .hintbar{ text-align:center; color:#9fb0c4; font-size:12.5px; line-height:1.7; padding:0 16px 6px; }
+    #ov{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:30; background:#0008; }
+    #ov.on{ display:flex; }
+    #ov .box{ background:var(--panel); border:1px solid var(--gold); border-radius:16px; padding:22px 28px; text-align:center; box-shadow:0 20px 60px #000a; }
+    #ov h2{ margin:0 0 6px; font-size:24px; } #ov p{ margin:2px 0 14px; color:#cdd7e2; }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <a class="back" href="../">← 回 gen-art 首頁</a>
+    <h1>踩地雷 <span class="en">Minesweeper</span></h1>
+  </div>
+  <div class="levels">
+    <button data-lv="easy" class="lv">初級 9×9</button>
+    <button data-lv="medium" class="lv">中級 16×16</button>
+    <button data-lv="hard" class="lv">高級 30×16</button>
+  </div>
+  <div class="panel">
+    <div class="lcd" id="mines">010</div>
+    <button class="face" id="face" title="重新開始">🙂</button>
+    <div class="lcd" id="time">000</div>
+    <button class="flagtoggle" id="flagBtn">🚩 插旗：關</button>
+  </div>
+  <div class="hintbar">
+    左鍵／點一下 <b>翻開</b>；右鍵／長按 <b>插旗🚩</b>；已翻開的數字上再點一下＝<b>和牌開數字</b>（旗數對了就展開周圍）。
+    首擊一定安全，翻到全部非雷格即勝。手機可切「插旗模式」。
+  </div>
+  <div id="wrap"><div id="board"></div></div>
+
+  <div id="ov" onclick="this.classList.remove('on')">
+    <div class="box"><h2 id="ovt"></h2><p id="ovp"></p><button onclick="game.again()">再玩一局</button></div>
+  </div>
+
+  <script>
+  function bootMines(){
+    var M=window.__ms;
+    var board=document.getElementById('board');
+    var flagMode=false, lpTimer=null, lpFired=false, curLevel='easy';
+
+    function pad(n){ n=Math.max(0,Math.min(999,n|0)); return ('00'+n).slice(-3); }
+    function setActiveLevelBtn(){ document.querySelectorAll('.lv').forEach(function(b){ b.classList.toggle('on', b.dataset.lv===M.state().level); }); }
+
+    function render(){
+      var st=M.state();
+      board.style.gridTemplateColumns='repeat('+st.w+', 30px)';
+      board.innerHTML='';
+      for(var r=0;r<st.h;r++) for(var c=0;c<st.w;c++){
+        var cell=st.cells[r*st.w+c];
+        var d=document.createElement('div');
+        d.className='c'; d.dataset.r=r; d.dataset.c=c;
+        if(cell.rev){
+          d.classList.add('rev');
+          if(cell.mine){ d.classList.add('mine'); d.textContent='💣'; }
+          else if(cell.adj>0){ d.classList.add('n'+cell.adj); d.textContent=cell.adj; }
+        } else if(cell.flag){ d.textContent='🚩'; }
+        board.appendChild(d);
+      }
+      document.getElementById('mines').textContent=pad(M.minesLeft());
+      updateFace();
+      setActiveLevelBtn();
+      var st2=M.state();
+      if(st2.status!=='playing') showOver(st2);
+    }
+    function updateFace(){ var s=M.state().status; document.getElementById('face').textContent = s==='won'?'😎':(s==='lost'?'😵':'🙂'); }
+
+    function locOf(e){ var t=e.target.closest('.c'); if(!t) return null; return { r:+t.dataset.r, c:+t.dataset.c }; }
+
+    function doReveal(r,c){ var res=M.reveal(r,c); render(); }
+    function doFlag(r,c){ if(M.toggleFlag(r,c)) render(); }
+    function doChordOrReveal(r,c){
+      var st=M.state(), cell=st.cells[r*st.w+c];
+      if(cell.rev && cell.adj>0){ M.chord(r,c); render(); }
+      else if(!cell.rev){ if(flagMode) doFlag(r,c); else doReveal(r,c); }
+    }
+
+    // 滑鼠
+    board.addEventListener('click', function(e){
+      if(lpFired){ lpFired=false; return; }
+      var l=locOf(e); if(!l) return;
+      doChordOrReveal(l.r,l.c);
+    });
+    board.addEventListener('contextmenu', function(e){
+      e.preventDefault(); var l=locOf(e); if(!l) return;
+      var cell=M.state().cells[l.r*M.state().w+l.c];
+      if(!cell.rev) doFlag(l.r,l.c);
+    });
+    board.addEventListener('dblclick', function(e){ var l=locOf(e); if(!l) return; var cell=M.state().cells[l.r*M.state().w+l.c]; if(cell.rev&&cell.adj>0){ M.chord(l.r,l.c); render(); } });
+    // 觸控長按插旗
+    board.addEventListener('touchstart', function(e){
+      var l=locOf(e); if(!l) return; lpFired=false;
+      lpTimer=setTimeout(function(){ lpFired=true; if(navigator.vibrate) navigator.vibrate(30); var cell=M.state().cells[l.r*M.state().w+l.c]; if(!cell.rev) doFlag(l.r,l.c); }, 350);
+    }, {passive:true});
+    board.addEventListener('touchend', function(){ clearTimeout(lpTimer); });
+    board.addEventListener('touchmove', function(){ clearTimeout(lpTimer); });
+
+    document.querySelectorAll('.lv').forEach(function(b){ b.onclick=function(){ curLevel=b.dataset.lv; M.newGame(curLevel); render(); }; });
+    document.getElementById('face').onclick=function(){ M.newGame(M.state().level); render(); };
+    document.getElementById('flagBtn').onclick=function(){ flagMode=!flagMode; this.textContent='🚩 插旗：'+(flagMode?'開':'關'); this.classList.toggle('on',flagMode); };
+
+    function showOver(st){
+      document.getElementById('ovt').textContent = st.status==='won'?'🎉 過關！':'💥 踩到地雷';
+      document.getElementById('ovp').textContent = st.status==='won'
+        ? ('用時 '+M.elapsed()+' 秒，'+M.LEVELS[st.level].name+' 完成！')
+        : '再接再厲，點笑臉或難度重來。';
+      document.getElementById('ov').classList.add('on');
+    }
+
+    setInterval(function(){ var st=M.state(); if(st){ document.getElementById('time').textContent=pad(M.elapsed()); } },250);
+
+    window.game={ again:function(){ document.getElementById('ov').classList.remove('on'); M.newGame(M.state().level); render(); } };
+
+    function start(){ if(!M.load()) M.newGame('easy'); render(); }
+    start();
+  }
+  (function(){ var s=document.createElement('script'); s.src='minesweeper.js?v='+Date.now(); s.onload=bootMines; (document.body||document.documentElement).appendChild(s); })();
+  </script>
+</body>
+</html>

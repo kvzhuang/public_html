@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Slime Mold 黏菌 - Generative Art</title>
+  <meta name="description" content="黏菌 Physarum 博物繪圖風生成藝術：中央原生質團向外放射羽狀分支，空間殖民演算法逐級分岔生長。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#0a0906">
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      background: #0a0906;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #holder {
+      position: relative; cursor: pointer;
+      box-shadow: 0 24px 70px rgba(0,0,0,.7);
+    }
+    #holder canvas { display: block; }
+    #label {
+      position: fixed; top: 16px; left: 0; right: 0;
+      text-align: center;
+      font: 13px/1.5 "Georgia", serif;
+      letter-spacing: .16em;
+      color: rgba(230, 200, 120, .6);
+      pointer-events: none; user-select: none;
+    }
+    #hint {
+      position: fixed; bottom: 14px; left: 0; right: 0;
+      text-align: center;
+      font: 11px/1.6 monospace;
+      letter-spacing: .2em;
+      color: rgba(210, 185, 120, .34);
+      pointer-events: none; user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="label"></div>
+  <div id="holder"></div>
+  <div id="hint">CLICK · 重新培養 ─ SPACE · 暫停 ─ S · 儲存</div>
+  <script>
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'sketch.js?v=' + Date.now();
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

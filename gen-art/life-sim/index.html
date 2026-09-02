@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>🎲 擲骰模擬人生 · Dice of Life</title>
+  <meta name="description" content="擲骰子模擬人生的文字遊戲：用 d6/d10/d12/d20 決定人生各階段的隨機事件與檢定，做選擇累積健康/智力/體魄/魅力/幸福/財富，走完晚年給你一份人生總結(稱號＋評分＋壽命)。每局都不一樣。">
+  <meta name="theme-color" content="#1a1530">
+  <meta property="og:title" content="🎲 擲骰模擬人生 · Dice of Life">
+  <meta property="og:description" content="擲 d6/d10/d12/d20 走過人生各階段、做選擇、看結局的文字遊戲。">
+  <meta property="og:type" content="website">
+  <style>
+    :root{ --gold:#e9c46a; --up:#5ad19a; --dn:#ef7d7d; }
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; min-height:100%; color:#ece7f5;
+      background:radial-gradient(circle at 50% 0%, #2a2150, #100c1e);
+      font-family:"Noto Sans TC","Hiragino Sans",system-ui,sans-serif; }
+    .wrap{ max-width:640px; margin:0 auto; padding:12px 12px 40px; }
+    .bar{ display:flex; align-items:center; gap:8px; }
+    .bar a{ color:#a99fce; text-decoration:none; font-size:13px; }
+    .bar h1{ font-size:18px; margin:0; } .bar .sp{ flex:1; }
+    .bar button{ background:#ffffff18; color:#ece7f5; border:1px solid #ffffff33; border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer; margin-left:8px; }
+
+    .stats{ display:grid; grid-template-columns:repeat(2,1fr); gap:6px 12px; margin:10px 0; }
+    @media(min-width:520px){ .stats{ grid-template-columns:repeat(3,1fr); } }
+    .stat{ display:flex; align-items:center; gap:6px; font-size:13px; }
+    .stat .se{ width:18px; } .stat .sl{ color:#b3a9d4; width:34px; }
+    .stat .sbar{ flex:1; height:8px; background:#ffffff18; border-radius:5px; overflow:hidden; }
+    .stat .sbar i{ display:block; height:100%; background:linear-gradient(90deg,#8a6ff0,#e9c46a); }
+    .stat .sv{ width:26px; text-align:right; font-weight:700; }
+    .stat.wealth .sv{ color:var(--gold); width:auto; }
+
+    .stagebar{ text-align:center; font-size:17px; font-weight:800; color:var(--gold); margin:6px 0; }
+    .stagebar span{ font-size:13px; color:#b3a9d4; font-weight:400; }
+    .log{ background:#00000030; border:1px solid #ffffff18; border-radius:12px; padding:10px 12px; height:46vh; overflow-y:auto; }
+    .row{ padding:7px 0; border-bottom:1px dashed #ffffff12; }
+    .row:last-child{ border-bottom:0; }
+    .row.newrow{ animation:fade .5s ease; }
+    @keyframes fade{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; } }
+    .dl{ margin-bottom:3px; }
+    .die{ display:inline-block; font-size:11px; font-weight:700; background:#3a2f66; border:1px solid #6b57b0; border-radius:6px; padding:1px 6px; margin-right:5px; }
+    .die.d6{ background:#3a4d6b; } .die.d10{ background:#3a5d4d; } .die.d12{ background:#6b4d3a; } .die.d20{ background:#5a3a66; }
+    .chk{ font-size:11px; border-radius:6px; padding:1px 6px; }
+    .chk.ok{ background:#1f5d43; color:#9ff0c6; } .chk.no{ background:#5d2a2a; color:#f5aaaa; }
+    .row.special{ background:linear-gradient(90deg,#4a2a5e40,#2a1a3e00); border-left:3px solid var(--gold); padding-left:8px; border-radius:6px; }
+    .row.special .tx{ color:#ffe9b0; font-weight:600; }
+    .tx{ font-size:14.5px; line-height:1.5; }
+    .eff b{ font-size:12px; margin-left:4px; } .eff .up{ color:var(--up); } .eff .dn{ color:var(--dn); }
+
+    .choices{ margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+    .q{ font-size:15px; font-weight:700; color:#f0e9ff; margin-bottom:2px; }
+    .q .qn{ font-size:12px; font-weight:400; color:#b3a9d4; }
+
+    .progress{ margin-top:18px; padding-top:6px; }
+    .ptitle{ font-size:12px; color:#b3a9d4; text-align:center; margin-bottom:12px; letter-spacing:.5px; }
+    .ptrack{ position:relative; height:4px; background:#ffffff16; border-radius:3px; margin:0 8.3%; }
+    .pfill{ position:absolute; left:0; top:0; height:100%; border-radius:3px; transition:width .55s ease;
+      background:linear-gradient(90deg,#8a6ff0,#e9c46a); box-shadow:0 0 8px #e9c46a66; }
+    .pnodes{ display:flex; margin-top:-15px; }
+    .pnode{ width:16.66%; display:flex; flex-direction:column; align-items:center; }
+    .pdot{ width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+      font-size:15px; background:#241d40; border:2px solid #4a3f70; transition:all .3s; }
+    .pnode.done .pdot{ border-color:#8a6ff0; background:#31285a; }
+    .pnode.cur .pdot{ border-color:var(--gold); background:#3a2f66; transform:scale(1.22); box-shadow:0 0 0 4px #e9c46a33; }
+    .pnode.died .pdot{ border-color:var(--dn); background:#4a2020; }
+    .pnode.future{ opacity:.42; }
+    .pl{ font-size:10.5px; color:#b3a9d4; margin-top:4px; white-space:nowrap; }
+    .page{ font-size:9px; color:#8f85b3; }
+    .pnode.cur .pl{ color:var(--gold); font-weight:700; }
+    .pnode.died .pl{ color:var(--dn); }
+    .opt{ background:linear-gradient(#3a2f66,#2b2350); border:1px solid #6b57b0; color:#f0e9ff; border-radius:11px; padding:12px 14px; font-size:15px; cursor:pointer; text-align:left; }
+    .opt:hover{ border-color:var(--gold); }
+    .opt.big{ text-align:center; background:var(--gold); color:#3a2c00; font-weight:800; border:0; }
+    .opt .ck{ font-size:11px; color:#c9b8ff; }
+
+    #overlay{ position:fixed; inset:0; background:#000c; display:none; align-items:center; justify-content:center; padding:16px; z-index:20; }
+    #overlay.show{ display:flex; }
+    .modal{ background:linear-gradient(#2a2150,#140f28); border:1px solid var(--gold); border-radius:16px; padding:22px; max-width:460px; width:100%; text-align:center; box-shadow:0 24px 70px #000c; max-height:90vh; overflow:auto; }
+    #ov-title{ font-size:22px; color:var(--gold); margin-bottom:10px; }
+    #ov-body{ font-size:15px; color:#ece7f5; line-height:1.6; }
+    .grade{ font-size:52px; font-weight:900; line-height:1; margin:4px 0; }
+    .grade.gS{ color:#ffd54a; } .grade.gA{ color:#7ce0a3; } .grade.gB{ color:#7cc5e0; } .grade.gC{ color:#e0c07c; } .grade.gD{ color:#c99; }
+    .title{ font-size:22px; font-weight:800; margin:4px 0; }
+    .cause{ color:#b3a9d4; font-size:14px; margin-bottom:10px; }
+    .ergrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:10px 0; }
+    .er{ background:#ffffff12; border-radius:8px; padding:6px; font-size:13px; } .er b{ display:block; font-size:17px; color:var(--gold); }
+    .scoreline{ font-size:16px; margin-top:8px; } .scoreline b{ color:var(--gold); font-size:22px; }
+    .badges{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:10px; }
+    .badge{ font-size:12.5px; background:#ffffff14; border:1px solid var(--gold); color:#ffe9b0; border-radius:20px; padding:3px 10px; }
+    .hach{ font-size:11.5px; color:#ffe0a0; margin-top:2px; }
+    .mile{ font-size:13px; color:#b3a9d4; margin-top:6px; }
+    #ov-actions{ margin-top:16px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+    .ovbtn{ background:var(--gold); color:#3a2c00; border:0; border-radius:10px; padding:11px 20px; font-size:15px; font-weight:700; cursor:pointer; }
+    .ovbtn:nth-child(n+2){ background:#ffffff18; color:#ece7f5; border:1px solid #ffffff33; }
+    .rulestxt{ text-align:left; font-size:14px; line-height:1.8; } .rulestxt b{ color:var(--gold); }
+    .hstat{ font-size:13px; color:#b3a9d4; margin-bottom:8px; } .hstat b{ color:var(--gold); }
+    .hlist{ text-align:left; max-height:52vh; overflow:auto; display:flex; flex-direction:column; gap:6px; }
+    .hrow{ display:flex; align-items:center; gap:10px; background:#ffffff10; border-radius:10px; padding:8px 10px; }
+    .hg{ flex:none; width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; background:#00000040; }
+    .hg.gS{ color:#ffd54a; } .hg.gA{ color:#7ce0a3; } .hg.gB{ color:#7cc5e0; } .hg.gC{ color:#e0c07c; } .hg.gD{ color:#c99; }
+    .hmain{ flex:1; min-width:0; } .ht{ font-size:14.5px; font-weight:700; } .hsub{ font-size:12.5px; color:#cdbff0; } .hdate{ font-size:11.5px; color:#8f85b3; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bar"><a href="../">← gen-art</a><h1>🎲 擲骰模擬人生</h1><span class="sp"></span>
+      <button id="history">📜 記錄</button><button id="rules">玩法</button></div>
+    <div id="game"></div>
+  </div>
+  <div id="overlay"><div class="modal"><div id="ov-title"></div><div id="ov-body"></div><div id="ov-actions"></div></div></div>
+  <script>
+    (function(){ var s=document.createElement('script'); s.src='game.js?v='+Date.now(); document.body.appendChild(s); })();
+  </script>
+</body>
+</html>

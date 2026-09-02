@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Tiny Planet 小星球 - God Finger</title>
+  <meta name="description" content="3D 箱庭小星球神明遊戲：施展降雨、閃電、火山、隕石等神力，守護或捉弄你的小村民。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#000008">
+
+  <script id="fxhash-snippet">
+    let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+    var fxhash = "oo" + Array(49).fill(0).map(_ => alphabet[(Math.random() * alphabet.length) | 0]).join("");
+    let b58dec = function(str) {
+      return [...str].reduce((p, c) => p * alphabet.length + alphabet.indexOf(c) | 0, 0);
+    };
+    let fxhashTrunc = fxhash.slice(2);
+    let regex = new RegExp(".{" + ((fxhashTrunc.length / 4) | 0) + "}", "g");
+    let hashes = fxhashTrunc.match(regex).map(h => b58dec(h));
+    let sfc32 = function(a, b, c, d) {
+      return function() {
+        a |= 0; b |= 0; c |= 0; d |= 0;
+        var t = (a + b | 0) + d | 0;
+        d = d + 1 | 0;
+        a = b ^ (b >>> 9);
+        b = c + (c << 3) | 0;
+        c = (c << 21) | (c >>> 11);
+        c = c + t | 0;
+        return (t >>> 0) / 4294967296;
+      };
+    };
+    var fxrand = sfc32(hashes[0], hashes[1], hashes[2], hashes[3]);
+    window.$fxhashFeatures = {};
+  </script>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #000008; }
+    canvas { display: block; }
+
+    #back {
+      position: fixed;
+      top: 14px;
+      left: 16px;
+      color: rgba(255,255,255,0.25);
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      text-decoration: none;
+      transition: color 0.2s;
+      z-index: 10;
+    }
+    #back:hover { color: rgba(255,255,255,0.7); }
+
+    #meta {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.30);
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    /* God bar */
+    #god-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      padding: 10px 16px 12px;
+      background: rgba(0,0,0,0.70);
+      border-radius: 20px 20px 0 0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+    .god-btn {
+      width: 48px;
+      height: 48px;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      font-size: 22px;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+    }
+    .god-btn span.label {
+      font-family: 'Courier New', monospace;
+      font-size: 7px;
+      color: rgba(255,255,255,0.45);
+      margin-top: 1px;
+      letter-spacing: 0.04em;
+    }
+    .god-btn:hover {
+      background: rgba(255,255,255,0.16);
+      border-color: rgba(255,255,255,0.40);
+    }
+    .god-btn.active {
+      border-color: rgba(255,215,80,0.9);
+      background: rgba(255,215,80,0.16);
+      box-shadow: 0 0 16px rgba(255,215,80,0.30);
+    }
+    .god-btn.active span.label { color: rgba(255,215,80,0.8); }
+    .god-btn:active { transform: scale(0.88); }
+
+    /* Loading overlay */
+    #loading {
+      position: fixed;
+      inset: 0;
+      background: #000008;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 99;
+      transition: opacity 0.8s;
+    }
+    #loading .label {
+      color: rgba(255,255,255,0.5);
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+    }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-top-color: rgba(255,255,255,0.5);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="spinner"></div>
+    <div class="label">生成星球中…</div>
+  </div>
+  <a id="back" href="../">← 返回</a>
+  <div id="meta"></div>
+  <div id="god-bar">
+    <button class="god-btn active" data-mode="poke" title="戳一戳 (1)">
+      <span>👆</span><span class="label">戳</span>
+    </button>
+    <button class="god-btn" data-mode="rain" title="降雨 (2)">
+      <span>🌧️</span><span class="label">降雨</span>
+    </button>
+    <button class="god-btn" data-mode="lightning" title="閃電 (3)">
+      <span>⚡</span><span class="label">閃電</span>
+    </button>
+    <button class="god-btn" data-mode="volcano" title="火山 (4)">
+      <span>🌋</span><span class="label">火山</span>
+    </button>
+    <button class="god-btn" data-mode="bless" title="祝福 (5)">
+      <span>✨</span><span class="label">祝福</span>
+    </button>
+    <button class="god-btn" data-mode="meteor" title="隕石 (6)">
+      <span>☄️</span><span class="label">隕石</span>
+    </button>
+  </div>
+  <script type="module">
+    import(`./sketch.js?t=${Date.now()}`);
+  </script>
+</body>
+</html>

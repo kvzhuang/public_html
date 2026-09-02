@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>集合論圖解 Set Theory - Generative Art</title>
+  <meta name="description" content="離散數學集合論的互動式圖解。聯集、交集、差集、補集、對稱差、冪集、笛卡兒積，搭配 Venn Diagram 動態展示。">
+  <meta name="author" content="kvzhuang">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      line-height: 1.8;
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px 30px;
+      background: linear-gradient(180deg, #1a1a30 0%, #0f0f1a 100%);
+    }
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #fff;
+    }
+    header p {
+      margin-top: 10px;
+      color: #888;
+      font-size: 0.95rem;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .nav a {
+      padding: 6px 16px;
+      border-radius: 20px;
+      background: #1e1e35;
+      color: #8888cc;
+      text-decoration: none;
+      font-size: 0.85rem;
+      border: 1px solid #2a2a44;
+      transition: all 0.2s;
+    }
+    .nav a:hover {
+      background: #2a2a50;
+      color: #aaaaee;
+      border-color: #4444aa;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 20px 24px 80px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+      background: #151525;
+      border-radius: 16px;
+      padding: 32px;
+      border: 1px solid #222240;
+    }
+
+    .section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .section h2 .symbol {
+      color: #7B68EE;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .section .subtitle {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    .section p {
+      font-size: 0.95rem;
+      color: #bbb;
+      margin-bottom: 12px;
+    }
+    .section .formula {
+      font-family: 'JetBrains Mono', monospace;
+      background: #1a1a30;
+      padding: 12px 18px;
+      border-radius: 8px;
+      border-left: 3px solid #7B68EE;
+      color: #c8c8ff;
+      font-size: 0.9rem;
+      margin: 12px 0;
+      overflow-x: auto;
+    }
+    .section .example {
+      background: #12122a;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #aaa;
+      margin: 8px 0;
+    }
+    .section .example span { color: #7BED9F; }
+
+    .venn-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    canvas.venn {
+      border-radius: 12px;
+      background: #0d0d1a;
+    }
+
+    .law-box {
+      background: #1a1a2e;
+      border: 1px solid #333355;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 12px 0;
+    }
+    .law-box h4 {
+      color: #DDA0DD;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+    .law-box .formula {
+      margin: 6px 0;
+      border-left-color: #DDA0DD;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 600px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .section { padding: 20px; }
+      header h1 { font-size: 1.5rem; }
+    }
+
+    .highlight-a { color: #FF6B6B; }
+    .highlight-b { color: #4ECDC4; }
+    .highlight-ab { color: #FFD93D; }
+    .highlight-u { color: #A0A0C0; }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #555;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>集合論 Set Theory</h1>
+  <p>離散數學基礎 — 互動式圖解</p>
+</header>
+
+<nav class="nav">
+  <a href="#set">集合</a>
+  <a href="#subset">子集</a>
+  <a href="#union">聯集 ∪</a>
+  <a href="#intersection">交集 ∩</a>
+  <a href="#difference">差集 −</a>
+  <a href="#complement">補集 ʼ</a>
+  <a href="#symmetric">對稱差 △</a>
+  <a href="#powerset">冪集 P(A)</a>
+  <a href="#cartesian">笛卡兒積 ×</a>
+  <a href="#laws">重要定律</a>
+</nav>
+
+<div class="container">
+
+  <!-- 集合 -->
+  <div class="section" id="set">
+    <h2>集合 <span class="symbol">Set</span></h2>
+    <div class="subtitle">一群不重複元素的無序聚集</div>
+    <p>集合是數學中最基本的概念之一。一個集合就是把一些東西放在一起，這些東西叫做<strong>元素</strong>（element）。</p>
+    <div class="formula">A = {1, 2, 3, 4, 5}</div>
+    <p>元素屬於集合用 <strong>∈</strong> 表示，不屬於用 <strong>∉</strong> 表示：</p>
+    <div class="example">3 ∈ A &nbsp;&nbsp;✓ &nbsp;&nbsp;&nbsp; <span>6 ∉ A</span> &nbsp;&nbsp;✓</div>
+    <p>集合的特性：<strong>無序性</strong>（{1,2,3} = {3,1,2}）、<strong>互異性</strong>（元素不重複）、<strong>確定性</strong>（任何物件要嘛屬於、要嘛不屬於）。</p>
+    <div class="venn-container">
+      <canvas class="venn" id="venn-set" width="300" height="200"></canvas>
+    </div>
+    <p><strong>空集合 ∅</strong>：不含任何元素的集合。∅ 是所有集合的子集。</p>
+    <p><strong>全集 U</strong>：討論範圍內所有元素的集合（通常是一個矩形框）。</p>
+  </div>
+
+  <!-- 子集 -->
+  <div class="section" id="subset">
+    <h2>子集 <span class="symbol">⊆ Subset</span></h2>
+    <div class="subtitle">A 的每個元素都在 B 中</div>
+    <p>若集合 A 的每個元素都是集合 B 的元素，則 A 是 B 的<strong>子集</strong>，記作 A ⊆ B。</p>
+    <div class="formula">A ⊆ B ⟺ ∀x (x ∈ A → x ∈ B)</div>
+    <div class="example">A = {1, 2} &nbsp; B = {1, 2, 3, 4}<br>A ⊆ B &nbsp;&nbsp;<span>✓ A 的每個元素都在 B 中</span></div>
+    <div class="venn-container">
+      <canvas class="venn" id="venn-subset" width="300" height="200"></canvas>
+    </div>
+    <p><strong>真子集 ⊂</strong>：A ⊂ B 表示 A ⊆ B 且 A ≠ B（B 至少多一個元素）。</p>
+  </div>
+
+  <!-- 聯集 -->
+  <div class="section" id="union">
+    <h2>聯集 <span class="symbol">A ∪ B — Union</span></h2>
+    <div class="subtitle">在 A 或 B 中（或兩者皆有）的所有元素</div>
+    <p>聯集包含了兩個集合中<strong>所有</strong>的元素。只要在其中一個就算。</p>
+    <div class="formula">A ∪ B = {x | x ∈ A 或 x ∈ B}</div>
+    <div class="example">A = {<span class="highlight-a">1, 2, 3</span>} &nbsp; B = {<span class="highlight-b">3, 4, 5</span>}<br>A ∪ B = {<span>1, 2, 3, 4, 5</span>}</div>
+    <div class="venn-container">
+      <canvas class="venn" id="venn-union" width="300" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- 交集 -->
+  <div class="section" id="intersection">
+    <h2>交集 <span class="symbol">A ∩ B — Intersection</span></h2>
+    <div class="subtitle">同時在 A 和 B 中的元素</div>
+    <p>交集只包含<strong>兩個集合都有</strong>的元素。</p>
+    <div class="formula">A ∩ B = {x | x ∈ A 且 x ∈ B}</div>
+    <div class="example">A = {1, 2, <span class="highlight-ab">3</span>} &nbsp; B = {<span class="highlight-ab">3</span>, 4, 5}<br>A ∩ B = {<span>3</span>}</div>
+    <div class="venn-container">
+      <canvas class="venn" id="venn-intersection" width="300" height="200"></canvas>
+    </div>
+    <p>若 A ∩ B = ∅，則稱 A 和 B <strong>互斥</strong>（disjoint）。</p>
+  </div>
+
+  <!-- 差集 -->
+  <div class="section" id="difference">
+    <h2>差集 <span class="symbol">A − B — Difference</span></h2>
+    <div class="subtitle">在 A 但不在 B 中的元素</div>
+    <p>差集是從 A 中「<strong>扣掉</strong>」跟 B 重疊的部分。</p>
+    <div class="formula">A − B = {x | x ∈ A 且 x ∉ B}</div>
+    <div class="example">A = {<span class="highlight-a">1, 2</span>, 3} &nbsp; B = {3, 4, 5}<br>A − B = {<span>1, 2</span>}</div>
+    <div class="venn-container">
+      <canvas class="venn" id="venn-difference" width="300" height="200"></canvas>
+    </div>
+    <p>注意：A − B ≠ B − A（差集不滿足交換律）。</p>
+  </div>
+
+  <!-- 補集 -->
+  <div class="section" id="complement">
+    <h2>補集 <span class="symbol">Aʼ — Complement</span></h2>
+    <div class="subtitle">全集 U 中不在 A 的所有元素</div>
+    <p>補集就是「<strong>A 以外的所有東西</strong>」，前提是有定義全集 U。</p>
+    <div class="formula">A' = U − A = {x | x ∈ U 且 x ∉ A}</div>
+    <div class="example">U = {1, 2, 3, 4, 5} &nbsp; A = {1, 2, 3}<br>A' = {<span>4, 5</span>}</div>
+    <div class="venn-container">
+      <canvas class="venn" id="venn-complement" width="300" height="200"></canvas>
+    </div>
+    <p>重要性質：(A')' = A，A ∪ A' = U，A ∩ A' = ∅</p>
+  </div>
+
+  <!-- 對稱差 -->
+  <div class="section" id="symmetric">
+    <h2>對稱差 <span class="symbol">A △ B — Symmetric Difference</span></h2>
+    <div class="subtitle">只在其中一個集合中的元素（XOR）</div>
+    <p>對稱差包含「在 A 或在 B，但<strong>不同時在兩者</strong>」的元素。就像邏輯的 XOR。</p>
+    <div class="formula">A △ B = (A − B) ∪ (B − A) = (A ∪ B) − (A ∩ B)</div>
+    <div class="example">A = {<span class="highlight-a">1, 2</span>, 3} &nbsp; B = {3, <span class="highlight-b">4, 5</span>}<br>A △ B = {<span>1, 2, 4, 5</span>}</div>
+    <div class="venn-container">
+      <canvas class="venn" id="venn-symmetric" width="300" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- 冪集 -->
+  <div class="section" id="powerset">
+    <h2>冪集 <span class="symbol">P(A) — Power Set</span></h2>
+    <div class="subtitle">A 的所有子集組成的集合</div>
+    <p>冪集就是把一個集合的<strong>所有可能子集</strong>（包含空集合和自身）收集起來。</p>
+    <div class="formula">|P(A)| = 2^|A|</div>
+    <div class="example">A = {1, 2, 3}<br>P(A) = {<span>∅, {1}, {2}, {3}, {1,2}, {1,3}, {2,3}, {1,2,3}</span>}<br>|P(A)| = 2³ = 8 個子集</div>
+    <div class="venn-container">
+      <canvas class="venn" id="venn-powerset" width="300" height="260"></canvas>
+    </div>
+  </div>
+
+  <!-- 笛卡兒積 -->
+  <div class="section" id="cartesian">
+    <h2>笛卡兒積 <span class="symbol">A × B — Cartesian Product</span></h2>
+    <div class="subtitle">所有有序對 (a, b) 的集合</div>
+    <p>笛卡兒積是把 A 的每個元素和 B 的每個元素<strong>配對</strong>，產生所有可能的有序對。</p>
+    <div class="formula">A × B = {(a, b) | a ∈ A 且 b ∈ B}</div>
+    <div class="example">A = {1, 2} &nbsp; B = {a, b, c}<br>A × B = {<span>(1,a), (1,b), (1,c), (2,a), (2,b), (2,c)</span>}<br>|A × B| = 2 × 3 = 6</div>
+    <div class="venn-container">
+      <canvas class="venn" id="venn-cartesian" width="300" height="240"></canvas>
+    </div>
+    <p>注意：A × B ≠ B × A（有序對順序不同）。</p>
+  </div>
+
+  <!-- 重要定律 -->
+  <div class="section" id="laws">
+    <h2>重要定律 <span class="symbol">Laws</span></h2>
+    <div class="subtitle">集合運算的代數性質</div>
+
+    <div class="grid-2">
+      <div class="law-box">
+        <h4>交換律 Commutative</h4>
+        <div class="formula">A ∪ B = B ∪ A<br>A ∩ B = B ∩ A</div>
+      </div>
+      <div class="law-box">
+        <h4>結合律 Associative</h4>
+        <div class="formula">(A ∪ B) ∪ C = A ∪ (B ∪ C)<br>(A ∩ B) ∩ C = A ∩ (B ∩ C)</div>
+      </div>
+      <div class="law-box">
+        <h4>分配律 Distributive</h4>
+        <div class="formula">A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C)<br>A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C)</div>
+      </div>
+      <div class="law-box">
+        <h4>德摩根定律 De Morgan's</h4>
+        <div class="formula">(A ∪ B)' = A' ∩ B'<br>(A ∩ B)' = A' ∪ B'</div>
+      </div>
+      <div class="law-box">
+        <h4>恆等律 Identity</h4>
+        <div class="formula">A ∪ ∅ = A<br>A ∩ U = A</div>
+      </div>
+      <div class="law-box">
+        <h4>補集律 Complement</h4>
+        <div class="formula">A ∪ A' = U<br>A ∩ A' = ∅<br>(A')' = A</div>
+      </div>
+    </div>
+
+    <div class="venn-container" style="margin-top: 24px;">
+      <canvas class="venn" id="venn-demorgan" width="600" height="200"></canvas>
+    </div>
+    <p style="text-align:center; color:#888; font-size:0.85rem;">▲ 德摩根定律：(A ∪ B)' = A' ∩ B'</p>
+  </div>
+
+</div>
+
+<footer>
+  Built with ❤ and Set Theory
+</footer>
+
+<script>
+// ===== Venn Diagram 繪製 =====
+const COLOR_A = 'rgba(255, 107, 107, 0.55)';
+const COLOR_B = 'rgba(78, 205, 196, 0.55)';
+const COLOR_AB = 'rgba(255, 217, 61, 0.7)';
+const COLOR_HIGHLIGHT = 'rgba(123, 104, 238, 0.5)';
+const COLOR_U = 'rgba(160, 160, 192, 0.15)';
+const OUTLINE = '#888';
+const TEXT_COLOR = '#ccc';
+const BG = '#0d0d1a';
+
+function drawVennBase(ctx, w, h, opts = {}) {
+  ctx.fillStyle = BG;
+  ctx.fillRect(0, 0, w, h);
+
+  const cx = w / 2;
+  const cy = h / 2;
+  const r = Math.min(w, h) * 0.28;
+  const offset = r * 0.55;
+
+  // 全集框
+  if (opts.showU) {
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(15, 15, w - 30, h - 30);
+    ctx.fillStyle = '#666';
+    ctx.font = '13px JetBrains Mono';
+    ctx.fillText('U', 22, 30);
+  }
+
+  return { cx, cy, r, offset };
+}
+
+function drawCircle(ctx, x, y, r, fillStyle, label, labelX, labelY) {
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = fillStyle;
+  ctx.fill();
+  ctx.strokeStyle = OUTLINE;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  if (label) {
+    ctx.fillStyle = TEXT_COLOR;
+    ctx.font = 'bold 16px JetBrains Mono';
+    ctx.fillText(label, labelX || x, labelY || y);
+  }
+}
+
+// --- 集合 ---
+(function() {
+  const canvas = document.getElementById('venn-set');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const { cx, cy, r } = drawVennBase(ctx, 300, 200);
+
+  drawCircle(ctx, cx, cy, r * 1.1, COLOR_A, 'A', cx - 8, cy - r * 1.1 - 10);
+
+  // 元素
+  ctx.fillStyle = '#fff';
+  ctx.font = '14px JetBrains Mono';
+  const elements = ['1', '2', '3', '4', '5'];
+  const positions = [[-25,-15],[25,-15],[0,15],[-20,35],[20,35]];
+  positions.forEach((p, i) => {
+    ctx.fillText(elements[i], cx + p[0] - 4, cy + p[1]);
+  });
+})();
+
+// --- 子集 ---
+(function() {
+  const canvas = document.getElementById('venn-subset');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  drawVennBase(ctx, 300, 200);
+
+  const cx = 150, cy = 100, r = 65;
+  drawCircle(ctx, cx, cy, r, COLOR_B, 'B', cx + r - 15, cy - r - 8);
+  drawCircle(ctx, cx - 10, cy + 5, r * 0.55, COLOR_A, 'A', cx - 10 - r * 0.55 + 5, cy + 5 - r * 0.55 - 5);
+
+  ctx.fillStyle = '#888';
+  ctx.font = '12px Noto Sans TC';
+  ctx.fillText('A ⊆ B', cx + 30, cy + r + 20);
+})();
+
+// --- 聯集 ---
+(function() {
+  const canvas = document.getElementById('venn-union');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const { cx, cy, r, offset } = drawVennBase(ctx, 300, 200);
+
+  // 高亮整個區域
+  ctx.beginPath();
+  ctx.arc(cx - offset, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = COLOR_A;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx + offset, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = COLOR_B;
+  ctx.fill();
+
+  // 輪廓
+  ctx.beginPath();
+  ctx.arc(cx - offset, cy, r, 0, Math.PI * 2);
+  ctx.strokeStyle = OUTLINE;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx + offset, cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.fillStyle = TEXT_COLOR;
+  ctx.font = 'bold 16px JetBrains Mono';
+  ctx.fillText('A', cx - offset - r * 0.5, cy - 5);
+  ctx.fillText('B', cx + offset + r * 0.3, cy - 5);
+
+  ctx.fillStyle = '#FFD93D';
+  ctx.font = 'bold 13px JetBrains Mono';
+  ctx.fillText('A ∪ B', cx - 18, cy + r + 18);
+})();
+
+// --- 交集 ---
+(function() {
+  const canvas = document.getElementById('venn-intersection');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const { cx, cy, r, offset } = drawVennBase(ctx, 300, 200);
+
+  // 圓輪廓
+  ctx.beginPath();
+  ctx.arc(cx - offset, cy, r, 0, Math.PI * 2);
+  ctx.strokeStyle = OUTLINE;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx + offset, cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // 交集高亮（用 clip）
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx - offset, cy, r, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.beginPath();
+  ctx.arc(cx + offset, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = COLOR_AB;
+  ctx.fill();
+  ctx.restore();
+
+  ctx.fillStyle = TEXT_COLOR;
+  ctx.font = 'bold 16px JetBrains Mono';
+  ctx.fillText('A', cx - offset - r * 0.5, cy - 5);
+  ctx.fillText('B', cx + offset + r * 0.3, cy - 5);
+
+  ctx.fillStyle = '#FFD93D';
+  ctx.font = 'bold 13px JetBrains Mono';
+  ctx.fillText('A ∩ B', cx - 18, cy + r + 18);
+})();
+
+// --- 差集 ---
+(function() {
+  const canvas = document.getElementById('venn-difference');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const { cx, cy, r, offset } = drawVennBase(ctx, 300, 200);
+
+  // A 的部分（不含交集）用 clip 實現
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx - offset, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = COLOR_A;
+  ctx.fill();
+  ctx.restore();
+
+  // 用 B 的圓來「蓋掉」交集部分
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx - offset, cy, r, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.beginPath();
+  ctx.arc(cx + offset, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = BG;
+  ctx.fill();
+  ctx.restore();
+
+  // 輪廓
+  ctx.beginPath();
+  ctx.arc(cx - offset, cy, r, 0, Math.PI * 2);
+  ctx.strokeStyle = OUTLINE;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx + offset, cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.fillStyle = TEXT_COLOR;
+  ctx.font = 'bold 16px JetBrains Mono';
+  ctx.fillText('A', cx - offset - r * 0.5, cy - 5);
+  ctx.fillText('B', cx + offset + r * 0.3, cy - 5);
+
+  ctx.fillStyle = '#FF6B6B';
+  ctx.font = 'bold 13px JetBrains Mono';
+  ctx.fillText('A − B', cx - 20, cy + r + 18);
+})();
+
+// --- 補集 ---
+(function() {
+  const canvas = document.getElementById('venn-complement');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const { cx, cy, r } = drawVennBase(ctx, 300, 200, { showU: true });
+
+  // 全集填色
+  ctx.fillStyle = COLOR_HIGHLIGHT;
+  ctx.fillRect(16, 16, 268, 168);
+
+  // A 圓挖掉
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = BG;
+  ctx.fill();
+  ctx.strokeStyle = OUTLINE;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.fillStyle = TEXT_COLOR;
+  ctx.font = 'bold 16px JetBrains Mono';
+  ctx.fillText('A', cx - 6, cy + 5);
+  ctx.fillStyle = '#b0b0e0';
+  ctx.fillText("A'", 30, 50);
+})();
+
+// --- 對稱差 ---
+(function() {
+  const canvas = document.getElementById('venn-symmetric');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const { cx, cy, r, offset } = drawVennBase(ctx, 300, 200);
+
+  // 先畫 A 和 B
+  ctx.beginPath();
+  ctx.arc(cx - offset, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = COLOR_A;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx + offset, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = COLOR_B;
+  ctx.fill();
+
+  // 用背景色蓋掉交集
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx - offset, cy, r, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.beginPath();
+  ctx.arc(cx + offset, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = BG;
+  ctx.fill();
+  ctx.restore();
+
+  // 輪廓
+  ctx.beginPath();
+  ctx.arc(cx - offset, cy, r, 0, Math.PI * 2);
+  ctx.strokeStyle = OUTLINE;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx + offset, cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.fillStyle = TEXT_COLOR;
+  ctx.font = 'bold 16px JetBrains Mono';
+  ctx.fillText('A', cx - offset - r * 0.5, cy - 5);
+  ctx.fillText('B', cx + offset + r * 0.3, cy - 5);
+
+  ctx.fillStyle = '#aaa';
+  ctx.font = 'bold 13px JetBrains Mono';
+  ctx.fillText('A △ B', cx - 20, cy + r + 18);
+})();
+
+// --- 冪集 ---
+(function() {
+  const canvas = document.getElementById('venn-powerset');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = BG;
+  ctx.fillRect(0, 0, 300, 260);
+
+  const subsets = ['∅', '{1}', '{2}', '{3}', '{1,2}', '{1,3}', '{2,3}', '{1,2,3}'];
+  const colors = ['#555', '#FF6B6B', '#4ECDC4', '#7BED9F', '#FFD93D', '#DDA0DD', '#54A0FF', '#FF9FF3'];
+
+  ctx.font = 'bold 14px JetBrains Mono';
+  ctx.fillStyle = '#aaa';
+  ctx.fillText('P({1,2,3}) = 2³ = 8 subsets', 30, 25);
+
+  subsets.forEach((s, i) => {
+    const col = i % 4;
+    const row = Math.floor(i / 4);
+    const x = 25 + col * 70;
+    const y = 50 + row * 95;
+
+    ctx.fillStyle = colors[i];
+    ctx.globalAlpha = 0.2;
+    ctx.beginPath();
+    ctx.roundRect(x, y, 62, 36, 8);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    ctx.strokeStyle = colors[i];
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(x, y, 62, 36, 8);
+    ctx.stroke();
+
+    ctx.fillStyle = colors[i];
+    ctx.font = '12px JetBrains Mono';
+    ctx.fillText(s, x + 5, y + 23);
+  });
+})();
+
+// --- 笛卡兒積 ---
+(function() {
+  const canvas = document.getElementById('venn-cartesian');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = BG;
+  ctx.fillRect(0, 0, 300, 240);
+
+  const aElems = ['1', '2'];
+  const bElems = ['a', 'b', 'c'];
+
+  ctx.font = '12px JetBrains Mono';
+
+  // 畫網格
+  const startX = 80, startY = 50;
+  const cellW = 60, cellH = 50;
+
+  // B 標題
+  ctx.fillStyle = '#4ECDC4';
+  bElems.forEach((b, j) => {
+    ctx.fillText(b, startX + j * cellW + 22, startY - 12);
+  });
+
+  // A 標題
+  ctx.fillStyle = '#FF6B6B';
+  aElems.forEach((a, i) => {
+    ctx.fillText(a, startX - 25, startY + i * cellH + 30);
+  });
+
+  // 有序對
+  aElems.forEach((a, i) => {
+    bElems.forEach((b, j) => {
+      const x = startX + j * cellW;
+      const y = startY + i * cellH;
+
+      ctx.fillStyle = 'rgba(123, 104, 238, 0.15)';
+      ctx.beginPath();
+      ctx.roundRect(x + 2, y + 2, cellW - 4, cellH - 4, 6);
+      ctx.fill();
+
+      ctx.strokeStyle = '#4444aa';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(x + 2, y + 2, cellW - 4, cellH - 4, 6);
+      ctx.stroke();
+
+      ctx.fillStyle = '#ddd';
+      ctx.font = '12px JetBrains Mono';
+      ctx.fillText(`(${a},${b})`, x + 8, y + 30);
+    });
+  });
+
+  ctx.fillStyle = '#888';
+  ctx.font = '12px Noto Sans TC';
+  ctx.fillText('A × B = 2 × 3 = 6 pairs', 65, 175);
+
+  // A, B 標示
+  ctx.fillStyle = '#FF6B6B';
+  ctx.font = 'bold 14px JetBrains Mono';
+  ctx.fillText('A', 20, startY + 55);
+  ctx.fillStyle = '#4ECDC4';
+  ctx.fillText('B', startX + 70, startY - 28);
+})();
+
+// --- 德摩根定律 ---
+(function() {
+  const canvas = document.getElementById('venn-demorgan');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = BG;
+  ctx.fillRect(0, 0, 600, 200);
+
+  // 左圖：(A ∪ B)'
+  const lx = 150, ly = 95, lr = 50, lo = 28;
+
+  ctx.fillStyle = COLOR_HIGHLIGHT;
+  ctx.fillRect(16, 16, 268, 168);
+
+  // 挖掉 A ∪ B
+  ctx.beginPath();
+  ctx.arc(lx - lo, ly, lr, 0, Math.PI * 2);
+  ctx.fillStyle = BG;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(lx + lo, ly, lr, 0, Math.PI * 2);
+  ctx.fillStyle = BG;
+  ctx.fill();
+
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(16, 16, 268, 168);
+  ctx.beginPath();
+  ctx.arc(lx - lo, ly, lr, 0, Math.PI * 2);
+  ctx.strokeStyle = OUTLINE;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(lx + lo, ly, lr, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.fillStyle = TEXT_COLOR;
+  ctx.font = 'bold 13px JetBrains Mono';
+  ctx.fillText("(A ∪ B)'", lx - 30, ly + lr + 30);
+
+  // = 號
+  ctx.fillStyle = '#7B68EE';
+  ctx.font = 'bold 24px JetBrains Mono';
+  ctx.fillText('=', 290, 100);
+
+  // 右圖：A' ∩ B'
+  const rx = 450, ry = 95, rr = 50, ro = 28;
+
+  // A' 填色（全集扣 A）
+  ctx.fillStyle = COLOR_HIGHLIGHT;
+  ctx.fillRect(316, 16, 268, 168);
+
+  // 扣掉 A
+  ctx.beginPath();
+  ctx.arc(rx - ro, ry, rr, 0, Math.PI * 2);
+  ctx.fillStyle = BG;
+  ctx.fill();
+
+  // 再扣掉 B
+  ctx.beginPath();
+  ctx.arc(rx + ro, ry, rr, 0, Math.PI * 2);
+  ctx.fillStyle = BG;
+  ctx.fill();
+
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(316, 16, 268, 168);
+  ctx.beginPath();
+  ctx.arc(rx - ro, ry, rr, 0, Math.PI * 2);
+  ctx.strokeStyle = OUTLINE;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(rx + ro, ry, rr, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.fillStyle = TEXT_COLOR;
+  ctx.font = 'bold 13px JetBrains Mono';
+  ctx.fillText("A' ∩ B'", rx - 25, ry + rr + 30);
+})();
+</script>
+
+</body>
+</html>

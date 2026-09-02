@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>🖼️ 描線揭圖 · Unveil — Qix/天蠶變 風</title>
+  <meta name="description" content="Qix／天蠶變風的圈地揭圖小遊戲：用方向鍵拉線圍出封閉區揭開底圖，避開亂彈的敵人，揭開達 75% 過關看完整立繪。">
+  <meta name="theme-color" content="#0c1420">
+  <meta property="og:title" content="🖼️ 描線揭圖 · Unveil">
+  <meta property="og:description" content="方向鍵拉線圈地、逐步揭開隱藏圖片的 Qix/天蠶變風小遊戲。">
+  <meta property="og:type" content="website">
+  <style>
+    :root{ --gold:#e9c46a; }
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body{ margin:0; min-height:100%; color:#eef2ea; background:radial-gradient(circle at 50% 8%, #1b2b3f, #070c14);
+      font-family:"Noto Sans TC","Hiragino Sans",system-ui,sans-serif; user-select:none; overflow-x:hidden; }
+    .wrap{ max-width:520px; margin:0 auto; padding:8px 10px 24px; }
+    .bar{ display:flex; align-items:center; gap:8px; }
+    .bar a{ color:#9fc0b2; text-decoration:none; font-size:13px; }
+    .bar h1{ font-size:17px; margin:0; } .bar .sp{ flex:1; }
+    #hud{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin:6px 0; }
+    .pill{ background:#ffffff14; border:1px solid #ffffff22; border-radius:8px; padding:4px 10px; font-size:13px; }
+    .pill b{ color:var(--gold); }
+    .stage{ text-align:center; }
+    #cv{ border:3px solid #24344a; border-radius:8px; background:#141c2b; box-shadow:0 8px 26px #000a; touch-action:none; }
+
+    .controls{ display:flex; justify-content:center; margin-top:12px; }
+    .dpad{ display:grid; grid-template-columns:repeat(3,54px); grid-template-rows:repeat(3,54px); gap:6px; }
+    .dpad button{ background:#ffffff18; border:1px solid #ffffff33; border-radius:12px; color:#eef2ea; font-size:22px; }
+    .dpad button:active{ background:var(--gold); color:#3a2c00; }
+    .dpad .e{ visibility:hidden; }
+
+    #overlay{ position:fixed; inset:0; background:#000c; display:none; align-items:center; justify-content:center; padding:16px; z-index:20; }
+    #overlay.show{ display:flex; }
+    .modal{ background:linear-gradient(#1a2b3f,#0c1826); border:1px solid var(--gold); border-radius:16px; padding:22px; max-width:460px; width:100%; text-align:center; box-shadow:0 24px 70px #000c; max-height:90vh; overflow:auto; }
+    #ov-title{ font-size:21px; color:var(--gold); margin-bottom:10px; }
+    #ov-body{ font-size:15px; color:#e6efe8; line-height:1.6; }
+    #ov-actions{ display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
+    .ovbtn{ background:var(--gold); color:#3a2c00; border:0; border-radius:10px; padding:11px 18px; font-size:15px; font-weight:700; cursor:pointer; }
+    .fullart{ max-width:100%; max-height:66vh; border-radius:10px; box-shadow:0 10px 40px #000a; }
+    #toast{ position:fixed; left:50%; bottom:78px; transform:translateX(-50%) translateY(16px); background:#0c1826ee; border:1px solid var(--gold);
+      color:#fff; padding:9px 15px; border-radius:10px; font-size:14px; opacity:0; transition:.25s; z-index:30; pointer-events:none; }
+    #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bar"><a href="../">← gen-art</a><h1>🖼️ 描線揭圖</h1><span class="sp"></span></div>
+    <div id="hud"></div>
+    <div class="stage"><canvas id="cv"></canvas></div>
+    <div class="controls">
+      <div class="dpad">
+        <button class="e"></button><button id="du">▲</button><button class="e"></button>
+        <button id="dl">◀</button><button class="e"></button><button id="dr">▶</button>
+        <button class="e"></button><button id="dd">▼</button><button class="e"></button>
+      </div>
+    </div>
+  </div>
+  <div id="overlay"><div class="modal"><div id="ov-title"></div><div id="ov-body"></div><div id="ov-actions"></div></div></div>
+  <div id="toast"></div>
+
+  <script>
+    (function(){ var s=document.createElement('script'); s.src='game.js?v='+Date.now(); document.body.appendChild(s); })();
+  </script>
+</body>
+</html>

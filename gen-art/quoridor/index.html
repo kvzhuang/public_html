@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-3GP0KMK7NS');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>🧱 步步為營 · Quoridor</title>
+  <meta name="description" content="Quoridor 步步為營：9×9 棋盤，移動棋子或放置擋牆，搶先抵達對向底線。對電腦（BFS 尋路＋擋牆 AI），不可把對手完全封死。">
+  <meta name="theme-color" content="#12303a">
+  <style>
+    :root{--gold:#e9c46a;--p:#3ac0b0;--a:#e2724c;}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    html,body{margin:0;min-height:100%;color:#e7eef0;background:radial-gradient(circle at 50% 6%,#173a48,#08131a);
+      font-family:"Noto Sans TC","Hiragino Sans",system-ui,sans-serif;}
+    .wrap{max-width:560px;margin:0 auto;padding:14px 12px 40px;}
+    .back{color:#9fc0c9;text-decoration:none;font-size:13px;}.back:hover{color:var(--gold);}
+    h1{font-size:22px;margin:6px 0 2px;}h1 .en{font-size:13px;color:#9fb6bd;font-weight:400;letter-spacing:.12em;}
+    .sub{color:#b9c8bd;font-size:12.5px;margin:2px 0 10px;line-height:1.6;}
+    .hud{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;margin:6px 2px;}
+    .chip{background:#12303a;border:1px solid #ffffff1c;border-radius:20px;padding:3px 10px;}
+    .dotc{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:middle;margin-right:4px;}
+    .stage{background:#0c2530;border:1px solid #ffffff18;border-radius:12px;padding:10px;text-align:center;}
+    #board{display:block;margin:0 auto;max-width:100%;touch-action:manipulation;}
+    #msg{font-size:13px;color:#ffd98a;min-height:18px;margin:8px 0 2px;text-align:center;}
+    .bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+    button{font-family:inherit;border:0;border-radius:9px;padding:9px 14px;font-size:13.5px;font-weight:700;cursor:pointer;background:#1c3a44;color:#dcebef;border:1px solid #ffffff26;}
+    button.on{background:var(--gold);color:#12251d;}
+    button.pri{background:var(--gold);color:#12251d;}
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,14,18,.86);z-index:9;padding:20px;text-align:center;}
+    .overlay.show{display:flex;}
+    .panel{max-width:360px;background:#12303a;border:1px solid #ffffff22;border-radius:14px;padding:22px;}
+    .panel h2{margin:0 0 8px;}.panel button{margin-top:12px;border:0;border-radius:9px;padding:9px 18px;font-weight:700;background:var(--gold);color:#12251d;cursor:pointer;font-family:inherit;}
+    .note{color:#9fb6bd;font-size:12px;line-height:1.7;margin-top:14px;background:#0f2620;border:1px solid #ffffff14;border-radius:10px;padding:10px 14px;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../poker/">← 返回遊戲合輯</a>
+    <h1>🧱 步步為營 <span class="en">QUORIDOR</span></h1>
+    <div class="sub">輪流「移動棋子一格」或「放一塊擋牆」，搶先讓自己的棋子抵達對向底線。你是 <b style="color:var(--p)">綠（下方，往上）</b>，電腦是 <b style="color:var(--a)">橘（上方，往下）</b>。擋牆不能把任一方的路完全封死。</div>
+
+    <div class="hud">
+      <span class="chip" id="turn">你的回合</span>
+      <span class="chip"><span class="dotc" style="background:var(--p)"></span>牆 <b id="pw">10</b></span>
+      <span class="chip"><span class="dotc" style="background:var(--a)"></span>牆 <b id="aw">10</b></span>
+    </div>
+
+    <div class="stage"><canvas id="board" width="520" height="520"></canvas></div>
+    <div id="msg"></div>
+
+    <div class="bar">
+      <button id="mvBtn" class="on">🚶 移動</button>
+      <button id="hBtn">🧱 放橫牆</button>
+      <button id="vBtn">🧱 放直牆</button>
+      <button id="newBtn" class="pri">🆕 新局</button>
+    </div>
+
+    <div class="note">
+      <b>操作</b>：「移動」模式點<b>亮起的格子</b>走棋（正面撞到對手可跳過）。「放橫牆／放直牆」模式點<b>格線交叉點</b>放牆（每塊長 2 格，不可重疊/交叉，也<b>不能把任一方封死</b>）。牆用完就只能移動。先到對面底線者勝。
+    </div>
+  </div>
+
+  <div id="over" class="overlay"><div class="panel"><h2 id="ottl"></h2><button id="oBtn">再來一局</button></div></div>
+
+  <script>
+  (function(){
+    var s=document.createElement('script'); s.src='quoridor.js?v='+Date.now();
+    s.onload=function(){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot(); };
+    document.body.appendChild(s);
+
+    var A, cv, ctx, DPR=1, N=9, CS=44, G=12, M=16, mode='move', busy=false, tween=null;
+    var COLP='#3ac0b0', COLA='#e2724c';
+
+    function boot(){
+      A=window.__q; N=A.N;
+      cv=document.getElementById('board'); ctx=cv.getContext('2d');
+      var px=M*2 + N*CS + (N-1)*G;
+      DPR=Math.min(window.devicePixelRatio||1,2);
+      cv.width=px*DPR; cv.height=px*DPR; cv.style.width=px+'px'; cv.style.height=px+'px'; ctx.setTransform(DPR,0,0,DPR,0,0);
+      cv.addEventListener('click', onClick);
+      document.getElementById('mvBtn').onclick=function(){ setMode('move'); };
+      document.getElementById('hBtn').onclick=function(){ setMode('H'); };
+      document.getElementById('vBtn').onclick=function(){ setMode('V'); };
+      document.getElementById('newBtn').onclick=function(){ A.clearSave(); A.newGame(); busy=false; setMode('move'); render(); };
+      document.getElementById('oBtn').onclick=function(){ document.getElementById('over').className='overlay'; A.clearSave(); A.newGame(); busy=false; setMode('move'); render(); };
+      if(!A.load()) A.newGame();
+      render();
+    }
+    function setMode(m){ mode=m;
+      document.getElementById('mvBtn').className=(m==='move'?'on':'');
+      document.getElementById('hBtn').className=(m==='H'?'on':'');
+      document.getElementById('vBtn').className=(m==='V'?'on':'');
+      setMsg(m==='move'?'點亮起的格子移動':(m==='H'?'點交叉點放「橫牆」':'點交叉點放「直牆」'));
+      render();
+    }
+    function setMsg(t){ document.getElementById('msg').textContent=t||''; }
+
+    function cellXY(r,c){ return { x: M + c*(CS+G), y: M + r*(CS+G) }; }
+    function cellCenter(r,c){ var p=cellXY(r,c); return { x:p.x+CS/2, y:p.y+CS/2 }; }
+
+    function render(){
+      var S=A.state(); if(!S) return;
+      ctx.clearRect(0,0,cv.width,cv.height);
+      var full=M*2+N*CS+(N-1)*G;
+      ctx.fillStyle='#0c2530'; ctx.fillRect(0,0,full,full);
+      // 目標底線提示
+      for(var c=0;c<N;c++){
+        var t0=cellXY(0,c), b0=cellXY(N-1,c);
+        ctx.fillStyle='rgba(226,114,76,0.14)'; roundRect(t0.x,t0.y,CS,CS,7); ctx.fill();   // A 目標(下) / 但頂列是A起點；標成A色
+        ctx.fillStyle='rgba(58,192,176,0.14)'; roundRect(b0.x,b0.y,CS,CS,7); ctx.fill();
+      }
+      // 格子
+      for(var r=0;r<N;r++) for(c=0;c<N;c++){ var p=cellXY(r,c);
+        ctx.fillStyle='#123642'; ctx.strokeStyle='#ffffff14'; ctx.lineWidth=1;
+        roundRect(p.x,p.y,CS,CS,7); ctx.fill(); ctx.stroke();
+      }
+      // 合法移動提示
+      if(!busy && S.turn==='P' && S.status==='playing' && mode==='move'){
+        A.legalMoves(S,'P').forEach(function(m){ var ce=cellCenter(m[0],m[1]);
+          ctx.beginPath(); ctx.arc(ce.x,ce.y,8,0,7); ctx.fillStyle='rgba(233,196,106,0.55)'; ctx.fill(); });
+      }
+      // 牆
+      S.walls.forEach(function(w){ drawWall(w.r,w.c,w.dir,'#caa14f'); });
+      // 棋子
+      drawPawn('A', S.pawns.A, COLA);
+      drawPawn('P', S.pawns.P, COLP);
+      updateHud();
+    }
+    function drawPawn(who, pw, col){
+      var ce;
+      if(tween && tween.who===who){ var a=cellCenter(tween.from.r,tween.from.c), b=cellCenter(tween.to.r,tween.to.c), t=tween.t;
+        ce={x:a.x+(b.x-a.x)*t, y:a.y+(b.y-a.y)*t}; }
+      else ce=cellCenter(pw.r,pw.c);
+      ctx.beginPath(); ctx.arc(ce.x,ce.y,CS*0.34,0,7); ctx.fillStyle=col;
+      ctx.strokeStyle='#0009'; ctx.lineWidth=2; ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(ce.x-4,ce.y-5,CS*0.12,0,7); ctx.fillStyle='#ffffff55'; ctx.fill();
+    }
+    function drawWall(r,c,dir,col){
+      ctx.fillStyle=col; ctx.strokeStyle='#0006'; ctx.lineWidth=1;
+      var a=cellXY(r,c);
+      if(dir==='H'){ var x=a.x, y=a.y+CS+ (G-8)/2, w=CS*2+G, h=8; roundRect(x,y,w,h,4); ctx.fill(); ctx.stroke(); }
+      else { var x2=a.x+CS+(G-8)/2, y2=a.y, w2=8, h2=CS*2+G; roundRect(x2,y2,w2,h2,4); ctx.fill(); ctx.stroke(); }
+    }
+    function roundRect(x,y,w,h,rd){ ctx.beginPath(); ctx.moveTo(x+rd,y); ctx.arcTo(x+w,y,x+w,y+h,rd); ctx.arcTo(x+w,y+h,x,y+h,rd); ctx.arcTo(x,y+h,x,y,rd); ctx.arcTo(x,y,x+w,y,rd); ctx.closePath(); }
+
+    function updateHud(){
+      var S=A.state();
+      document.getElementById('pw').textContent=S.wallsLeft.P;
+      document.getElementById('aw').textContent=S.wallsLeft.A;
+      document.getElementById('turn').textContent = S.status!=='playing' ? '結束' : (S.turn==='P'?'你的回合':'電腦思考中…');
+    }
+
+    function nearestIntersection(mx,my){
+      // 交叉點 (r,c) 中心 x=M+c*(CS+G)+CS+G/2, y=M+r*(CS+G)+CS+G/2  (r,c ∈ 0..N-2)
+      var c=Math.round((mx - (M+CS+G/2))/(CS+G));
+      var r=Math.round((my - (M+CS+G/2))/(CS+G));
+      r=Math.max(0,Math.min(N-2,r)); c=Math.max(0,Math.min(N-2,c));
+      return {r:r,c:c};
+    }
+    function cellAt(mx,my){
+      var c=Math.floor((mx-M)/(CS+G)), r=Math.floor((my-M)/(CS+G));
+      if(r<0||r>=N||c<0||c>=N) return null; return {r:r,c:c};
+    }
+
+    function onClick(e){
+      var S=A.state(); if(!S||busy||S.status!=='playing'||S.turn!=='P') return;
+      var rect=cv.getBoundingClientRect(), mx=(e.clientX-rect.left), my=(e.clientY-rect.top);
+      if(mode==='move'){
+        var cell=cellAt(mx,my); if(!cell) return;
+        var ok=A.legalMoves(S,'P').some(function(m){return m[0]===cell.r&&m[1]===cell.c;});
+        if(!ok){ setMsg('那格不能走'); return; }
+        doAction({t:'move',r:cell.r,c:cell.c});
+      } else {
+        if(S.wallsLeft.P<=0){ setMsg('你的牆用完了，只能移動'); return; }
+        var it=nearestIntersection(mx,my);
+        if(!A.legalWall(S,it.r,it.c,mode)){ setMsg('這裡不能放牆（重疊/交叉，或會封死路）'); return; }
+        doAction({t:'wall',r:it.r,c:it.c,dir:mode});
+      }
+    }
+
+    function doAction(act){
+      var S=A.state(); var who=S.turn; var from={r:S.pawns[who].r,c:S.pawns[who].c};
+      if(!A.applyAction(S,act)) { setMsg('無效行動'); return; }
+      setMsg('');
+      if(act.t==='move'){ startTween(who,from,{r:act.r,c:act.c}, afterAction); }
+      else { render(); afterAction(); }
+      A.save();
+    }
+    function afterAction(){
+      var S=A.state(); render();
+      if(S.status!=='playing'){ setTimeout(showOver,250); return; }
+      if(S.turn==='A'){ busy=true; updateHud(); setTimeout(aiTurn, 380); }
+    }
+    function aiTurn(){
+      var S=A.state(); if(S.status!=='playing'){ busy=false; return; }
+      var act=A.aiChoose(S); var who='A'; var from={r:S.pawns.A.r,c:S.pawns.A.c};
+      A.applyAction(S,act); A.save();
+      if(act.t==='move'){ startTween(who,from,{r:act.r,c:act.c}, function(){ busy=false; afterAI(); }); }
+      else { render(); busy=false; afterAI(); }
+    }
+    function afterAI(){ var S=A.state(); render(); if(S.status!=='playing') setTimeout(showOver,250); }
+
+    function startTween(who,from,to,done){
+      tween={who:who,from:from,to:to,t:0}; var t0=null, DUR=220;
+      function step(ts){ if(t0===null)t0=ts; var el=ts-t0; tween.t=Math.min(1,el/DUR); render();
+        if(tween.t<1) requestAnimationFrame(step); else { tween=null; render(); if(done)done(); } }
+      requestAnimationFrame(step);
+    }
+
+    function showOver(){
+      var S=A.state(); if(S.status!=='playing'){
+        document.getElementById('ottl').textContent = S.winner==='P' ? '🏆 你抵達底線，獲勝！' : '💻 電腦先抵達，你輸了';
+        document.getElementById('over').className='overlay show';
+      }
+    }
+  })();
+  </script>
+</body>
+</html>

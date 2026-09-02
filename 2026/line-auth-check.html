@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LINE Mini App 授權檢查</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px 24px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      background: #06C755;
+      border-radius: 20px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: white;
+      font-weight: bold;
+    }
+
+    h1 { font-size: 20px; color: #111; margin-bottom: 8px; }
+
+    .subtitle {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .env-badge {
+      display: inline-block;
+      font-size: 11px;
+      background: #eee;
+      color: #666;
+      border-radius: 20px;
+      padding: 2px 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn:active { opacity: 0.8; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: #06C755; color: white; }
+    .btn-open { background: #4A90D9; color: white; margin-top: 12px; }
+    .btn-secondary { background: #f0f0f0; color: #666; margin-top: 12px; font-size: 14px; }
+
+    .status {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      text-align: center;
+    }
+    .status.show { display: block; }
+    .status.detecting { background: #FFF8E1; color: #F59E0B; }
+    .status.found     { background: #E8F5E9; color: #16a34a; }
+    .status.not-found { background: #FEF2F2; color: #dc2626; }
+    .status.error     { background: #FEF2F2; color: #dc2626; }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .profile-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 20px;
+      padding: 16px;
+      background: #fafafa;
+      border-radius: 12px;
+      text-align: left;
+    }
+    .profile-card img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid #06C755;
+    }
+    .profile-card .info { flex: 1; min-width: 0; }
+    .profile-card .name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111;
+    }
+    .profile-card .status-msg {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .profile-card .uid {
+      font-size: 10px;
+      color: #bbb;
+      margin-top: 4px;
+      word-break: break-all;
+    }
+
+    .detail-list {
+      margin-top: 16px;
+      text-align: left;
+    }
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 13px;
+    }
+    .detail-item:last-child { border-bottom: none; }
+    .detail-label { color: #888; }
+    .detail-value { color: #333; font-weight: 500; }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-weight: 600;
+    }
+    .badge-yes { background: #E8F5E9; color: #16a34a; }
+    .badge-no  { background: #FEF2F2; color: #dc2626; }
+
+    #resultSection { display: none; }
+    #resultSection.show { display: block; }
+
+    .note {
+      margin-top: 20px;
+      padding: 12px;
+      background: #f8f8f8;
+      border-radius: 8px;
+      font-size: 11px;
+      color: #999;
+      line-height: 1.6;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">LIFF</div>
+    <h1>LINE Mini App 授權檢查</h1>
+    <p class="subtitle">自動偵測您是否已授權此 Mini App</p>
+    <div class="env-badge" id="envBadge">初始化中...</div>
+
+    <div class="status" id="status">
+      <span class="spinner"></span> 初始化中...
+    </div>
+
+    <div id="actionSection" style="display:none">
+      <button class="btn btn-primary" id="loginBtn" onclick="doLogin()" style="display:none">
+        使用 LINE 帳號授權
+      </button>
+      <button class="btn btn-open" id="openMiniAppBtn" onclick="openMiniApp()" style="display:none">
+        開啟 LINE Mini App
+      </button>
+      <button class="btn btn-secondary" id="logoutBtn" onclick="doLogout()" style="display:none">
+        取消授權（登出）
+      </button>
+      <button class="btn btn-secondary" id="recheckBtn" onclick="location.reload()" style="display:none">
+        重新檢查
+      </button>
+    </div>
+
+    <div id="resultSection">
+      <div id="profileCard" class="profile-card" style="display:none">
+        <img id="profileImg" src="" alt="" />
+        <div class="info">
+          <div class="name" id="profileName"></div>
+          <div class="status-msg" id="profileStatus"></div>
+          <div class="uid" id="profileUid"></div>
+        </div>
+      </div>
+      <div class="detail-list" id="detailList"></div>
+    </div>
+
+    <div class="note">
+      <strong>說明：</strong>在外部瀏覽器中，偵測的是「是否有有效的登入 session」。
+      若 session 過期需重新授權。在 LINE App 內開啟則會自動授權。
+    </div>
+  </div>
+
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+    const LIFF_ID = '2009787311-qvoxBAsc';
+    let liffReady = false;
+
+    function showStatus(type, html) {
+      const el = document.getElementById('status');
+      el.className = 'status show ' + type;
+      el.innerHTML = html;
+    }
+
+    function addDetail(label, value) {
+      const el = document.createElement('div');
+      el.className = 'detail-item';
+      el.innerHTML = '<span class="detail-label">' + label + '</span><span class="detail-value">' + value + '</span>';
+      document.getElementById('detailList').appendChild(el);
+    }
+
+    function badgeHtml(val) {
+      if (val === true)  return '<span class="badge badge-yes">Yes</span>';
+      if (val === false) return '<span class="badge badge-no">No</span>';
+      return '<span class="badge" style="background:#f0f0f0;color:#999">N/A</span>';
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    // ── 頁面載入自動偵測 ──
+    window.addEventListener('DOMContentLoaded', async () => {
+      showStatus('detecting', '<span class="spinner"></span> 初始化 LIFF SDK...');
+
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        liffReady = true;
+      } catch (e) {
+        showStatus('error', '❌ LIFF 初始化失敗：' + escapeHtml(e.message || String(e)));
+        document.getElementById('envBadge').textContent = '初始化失敗';
+        return;
+      }
+
+      // 環境
+      const inClient = liff.isInClient();
+      document.getElementById('envBadge').textContent =
+        inClient ? '📱 LINE App 內開啟' : '🌐 外部瀏覽器';
+
+      // 檢查登入
+      const isLoggedIn = liff.isLoggedIn();
+
+      const actionSection = document.getElementById('actionSection');
+      actionSection.style.display = 'block';
+
+      if (isLoggedIn) {
+        // 從 LINE Login 授權回來時，URL 會帶有 code 或 access_token 參數
+        // 偵測到是授權後的 redirect → 自動跳轉到 Mini App
+        const params = new URLSearchParams(window.location.search);
+        const isRedirectBack = params.has('code') || params.has('liffRedirectUri');
+        if (isRedirectBack && !inClient) {
+          showStatus('found', '✅ 授權成功！正在開啟 LINE Mini App...');
+          setTimeout(() => {
+            window.location.href = 'line://app/' + LIFF_ID;
+          }, 1500);
+          return;
+        }
+        await showAuthorized();
+      } else {
+        showNotAuthorized(inClient);
+      }
+    });
+
+    async function showAuthorized() {
+      showStatus('detecting', '<span class="spinner"></span> 讀取使用者資訊...');
+
+      const section = document.getElementById('resultSection');
+      section.className = 'show';
+
+      addDetail('授權狀態', badgeHtml(true));
+      addDetail('LIFF ID', LIFF_ID);
+      addDetail('環境', liff.isInClient() ? 'LINE App' : '外部瀏覽器');
+      addDetail('OS', escapeHtml(liff.getOS() || 'unknown'));
+
+      // Access Token
+      const token = liff.getAccessToken();
+      if (token) {
+        addDetail('Access Token', '<code style="font-size:10px">' + escapeHtml(token.slice(0, 16)) + '…</code>');
+      }
+
+      // Profile
+      try {
+        const profile = await liff.getProfile();
+        const card = document.getElementById('profileCard');
+        document.getElementById('profileImg').src = profile.pictureUrl || '';
+        document.getElementById('profileName').textContent = profile.displayName;
+        document.getElementById('profileStatus').textContent = profile.statusMessage || '';
+        document.getElementById('profileUid').textContent = 'UID: ' + profile.userId;
+        card.style.display = profile.pictureUrl ? 'flex' : 'none';
+
+        addDetail('Display Name', escapeHtml(profile.displayName));
+      } catch (e) {
+        addDetail('Profile', badgeHtml(false));
+      }
+
+      // Friendship
+      try {
+        const f = await liff.getFriendship();
+        addDetail('官方帳號好友', badgeHtml(f.friendFlag));
+      } catch (e) {
+        addDetail('官方帳號好友', badgeHtml(null));
+      }
+
+      // ID Token email
+      try {
+        const decoded = liff.getDecodedIDToken();
+        if (decoded && decoded.email) {
+          addDetail('Email', escapeHtml(decoded.email));
+        }
+      } catch (e) { /* ignore */ }
+
+      showStatus('found', '✅ 已授權 — 使用者已登入此 Mini App');
+
+      document.getElementById('openMiniAppBtn').style.display = 'block';
+      document.getElementById('logoutBtn').style.display = 'block';
+      document.getElementById('recheckBtn').style.display = 'block';
+    }
+
+    function showNotAuthorized(inClient) {
+      const section = document.getElementById('resultSection');
+      section.className = 'show';
+
+      addDetail('授權狀態', badgeHtml(false));
+      addDetail('LIFF ID', LIFF_ID);
+      addDetail('環境', inClient ? 'LINE App' : '外部瀏覽器');
+
+      showStatus('not-found', '❌ 尚未授權此 Mini App');
+
+      if (!inClient) {
+        document.getElementById('loginBtn').style.display = 'block';
+      }
+      document.getElementById('recheckBtn').style.display = 'block';
+    }
+
+    function openMiniApp() {
+      // Universal Link（iOS / Android 通用，推薦）
+      // LINE 會直接在 app 內以 Mini App 開啟，且因已授權過會跳過 consent
+      window.location.href = 'line://app/' + LIFF_ID;
+    }
+
+    function doLogin() {
+      if (!liffReady) return;
+      liff.login({ redirectUri: window.location.href });
+    }
+
+    function doLogout() {
+      if (!liffReady) return;
+      liff.logout();
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>

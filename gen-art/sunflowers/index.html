@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Sunflowers 向日葵 - Generative Art</title>
+  <meta name="description" content="以演算法重現梵谷《向日葵》的厚塗筆觸：phyllotaxis 花心、放射狀花瓣、鉻黃色調，每次生成獨一無二的花束。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#171310">
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 40%, #2a2218, transparent 60rem),
+        #171310;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    canvas {
+      display: block;
+      border: 12px solid #2c2014;
+      outline: 2px solid #6e5a30;
+      box-shadow: 0 30px 80px rgba(0,0,0,.65), inset 0 0 40px rgba(0,0,0,.3);
+    }
+    #hint {
+      position: fixed; bottom: 14px; left: 0; right: 0;
+      text-align: center;
+      font: 11px/1.6 monospace;
+      letter-spacing: .22em;
+      color: rgba(220, 190, 120, .4);
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+  <script id="fxhash-snippet">
+    let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+    var fxhash = "oo" + Array(49).fill(0).map(_ => alphabet[(Math.random() * alphabet.length) | 0]).join("");
+    let b58dec = function(str) {
+      return [...str].reduce((p, c) => p * alphabet.length + alphabet.indexOf(c) | 0, 0);
+    };
+    let fxhashTrunc = fxhash.slice(2);
+    let regex = new RegExp(".{" + ((fxhashTrunc.length / 4) | 0) + "}", "g");
+    let hashes = fxhashTrunc.match(regex).map(h => b58dec(h));
+    let sfc32 = function(a, b, c, d) {
+      return function() {
+        a |= 0; b |= 0; c |= 0; d |= 0;
+        var t = (a + b | 0) + d | 0;
+        d = d + 1 | 0;
+        a = b ^ (b >>> 9);
+        b = c + (c << 3) | 0;
+        c = (c << 21) | (c >>> 11);
+        c = c + t | 0;
+        return (t >>> 0) / 4294967296;
+      };
+    };
+    var fxrand = sfc32(hashes[0], hashes[1], hashes[2], hashes[3]);
+    var isFxpreview = new URLSearchParams(window.location.search).get("preview") === "1";
+    function fxpreview() { window.dispatchEvent(new Event("fxhash-preview")); }
+    window.$fxhashFeatures = {};
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <div id="hint">CLICK · 重新生成 ─ S · 儲存畫作</div>
+  <script>
+    // 以時間戳記破壞快取，確保每次載入都是最新的 sketch.js
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'sketch.js?v=' + Date.now();
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

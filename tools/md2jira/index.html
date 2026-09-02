@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown to Jira Converter (Table Supported)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 1000px; margin: 40px auto; padding: 20px; background-color: #f4f5f7; color: #172b4d; }
+        h1 { text-align: center; color: #0747a6; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .box { display: flex; flex-direction: column; }
+        label { font-weight: bold; margin-bottom: 8px; color: #5e6c84; }
+        textarea { height: 450px; padding: 15px; border: 2px solid #dfe1e6; border-radius: 8px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 13px; line-height: 1.5; box-sizing: border-box; }
+        textarea:focus { border-color: #0052cc; outline: none; background: #fff; }
+        .btn-container { text-align: center; margin: 20px 0; }
+        button { background-color: #0052cc; color: white; border: none; padding: 12px 40px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: 600; transition: 0.2s; }
+        button:hover { background-color: #0747a6; transform: translateY(-1px); }
+        .tip { font-size: 12px; color: #6b778c; margin-top: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <h1>📝 MD ➔ Jira 轉換器 (含表格支援)</h1>
+
+    <div class="grid">
+        <div class="box">
+            <label>Markdown (輸入)</label>
+            <textarea id="mdInput" placeholder="請在此貼上您的 Markdown 文字或表格..."></textarea>
+        </div>
+        <div class="box">
+            <label>Jira Wiki Format (輸出)</label>
+            <textarea id="jiraOutput" readonly placeholder="轉換後的結果..."></textarea>
+        </div>
+    </div>
+
+    <div class="btn-container">
+        <button onclick="doConvert()">立即轉換</button>
+        <div class="tip">支援標題、粗體、行內程式碼、清單及表格</div>
+    </div>
+
+    <script>
+ function doConvert() {
+    let input = document.getElementById('mdInput').value;
+    
+    // 1. 先處理多行程式碼區塊 (Code Blocks)
+    // 這樣可以避免裡面的內容被後續的標題、列表規則干擾
+    let output = input.replace(/```([\s\S]*?)```/g, function(match, content) {
+        return "{code}\n" + content.trim() + "\n{code}";
+    });
+
+    let lines = output.split('\n');
+    let result = [];
+    let isTable = false;
+    let tableHeaderProcessed = false;
+
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i]; // 不要在這裡 trim()，否則會影響縮排
+
+        // 2. 表格處理邏輯
+        if (line.trim().startsWith('|')) {
+            let trimmedLine = line.trim();
+            if (trimmedLine.match(/^\|[ \t]*:?-+:?[ \t]*\|/)) continue;
+
+            if (!tableHeaderProcessed) {
+                let header = trimmedLine.replace(/^\||\|$/g, '').split('|')
+                                 .map(cell => cell.trim()).join('||');
+                result.push('||' + header + '||');
+                tableHeaderProcessed = true;
+            } else {
+                let row = trimmedLine.replace(/^\||\|$/g, '').split('|')
+                                  .map(cell => cell.trim()).join('|');
+                result.push('|' + row + '|');
+            }
+            isTable = true;
+            continue;
+        } else {
+            if (isTable) { tableHeaderProcessed = false; isTable = false; }
+        }
+
+        // 3. 處理標題與清單 (只針對行首)
+        let processedLine = line
+            .replace(/^###### (.*)$/g, 'h6. $1')
+            .replace(/^##### (.*)$/g, 'h5. $1')
+            .replace(/^#### (.*)$/g, 'h4. $1')
+            .replace(/^### (.*)$/g, 'h3. $1')
+            .replace(/^## (.*)$/g, 'h2. $1')
+            .replace(/^# (.*)$/g, 'h1. $1')
+            .replace(/^[ \t]*[\*\-\+] /g, '* ') 
+            .replace(/^[ \t]*(\d+)\. /g, '# ');
+
+        // 4. 處理行內樣式 (粗體、行內程式碼)
+        processedLine = processedLine
+            .replace(/\*\*(.*?)\*\*/g, '*$1*') // Markdown ** -> Jira *
+            .replace(/`(.*?)`/g, '{{$1}}')     // Markdown ` -> Jira {{}}
+            .replace(/\[(.*?)\]\((.*?)\)/g, '[$1|$2]'); // Links
+
+        result.push(processedLine);
+    }
+
+    document.getElementById('jiraOutput').value = result.join('\n');
+}
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auto Top Battle Gen-Art</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="art" aria-label="自動陀螺對戰生成藝術"></canvas>
+
+  <div class="hud">
+    <div class="title">
+      <h1>Auto Top Battle</h1>
+      <div class="meta" id="meta">seed</div>
+    </div>
+    <div class="controls">
+      <button id="toggle" type="button" title="暫停 / 播放" aria-label="暫停 / 播放">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button id="reset" type="button" title="新對戰" aria-label="新對戰">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v6h-6" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button id="save" type="button" title="下載 PNG" aria-label="下載 PNG">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 4v10m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="score">
+    <div class="fighter">
+      <strong><span class="red">Crimson</span><span id="redEnergy">100</span></strong>
+      <div class="meter"><div class="bar redbar" id="redBar"></div></div>
+    </div>
+    <div class="fighter">
+      <strong><span class="cyan">Ion</span><span id="cyanEnergy">100</span></strong>
+      <div class="meter"><div class="bar cyanbar" id="cyanBar"></div></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

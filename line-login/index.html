@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LINE Login (LIFF)</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, "Helvetica Neue", "Noto Sans TC", Arial, sans-serif;
+      background: linear-gradient(160deg, #06c755 0%, #04a043 50%, #028037 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #1a1a1a;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+      max-width: 480px;
+      width: 100%;
+      padding: 28px 26px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+    .logo {
+      display: inline-block;
+      background: #06c755;
+      color: #fff;
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: 1px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 1.25rem;
+      color: #1a1a1a;
+      font-weight: 600;
+    }
+    .status {
+      background: #f6f6f8;
+      border-left: 3px solid #06c755;
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      font-size: 0.92rem;
+      color: #555;
+    }
+    .status.error {
+      background: #fff1f1;
+      border-left-color: #ff3b30;
+      color: #b00020;
+    }
+    .row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #ececef;
+      font-size: 0.92rem;
+    }
+    .row:last-child { border-bottom: none; }
+    .row .label {
+      flex: 0 0 110px;
+      color: #777;
+      font-weight: 500;
+    }
+    .row .value {
+      flex: 1;
+      color: #1a1a1a;
+      word-break: break-all;
+      font-family: -apple-system, "SF Mono", "Menlo", monospace;
+      font-size: 0.86rem;
+    }
+    .value.muted { color: #999; font-style: italic; }
+    .actions { margin-top: 22px; text-align: center; }
+    button {
+      background: #06c755;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active { opacity: 0.7; }
+    button.outline {
+      background: #fff;
+      color: #06c755;
+      border: 2px solid #06c755;
+    }
+    .picture {
+      display: block;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      border: 3px solid #06c755;
+      object-fit: cover;
+      background: #eee;
+    }
+    .hide { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <span class="logo">LINE</span>
+      <h1>LIFF Login 範例</h1>
+    </div>
+
+    <div id="status" class="status">初始化 LIFF 中…</div>
+
+    <div id="loginPrompt" class="hide">
+      <p style="text-align:center; color:#555; margin-bottom:18px; font-size:0.92rem;">
+        請使用 LINE 帳號登入以查看使用者資訊
+      </p>
+      <div class="actions">
+        <button id="loginBtn">用 LINE 登入</button>
+      </div>
+    </div>
+
+    <div id="profile" class="hide">
+      <img id="pictureUrl" class="picture" alt="頭像">
+      <div class="row">
+        <span class="label">User ID</span>
+        <span class="value" id="userId"></span>
+      </div>
+      <div class="row">
+        <span class="label">Display Name</span>
+        <span class="value" id="displayName"></span>
+      </div>
+      <div class="row">
+        <span class="label">Email</span>
+        <span class="value" id="email"></span>
+      </div>
+      <div class="row">
+        <span class="label">Status Msg</span>
+        <span class="value" id="statusMessage"></span>
+      </div>
+      <div class="row">
+        <span class="label">Channel ID</span>
+        <span class="value" id="channelId"></span>
+      </div>
+      <div class="row">
+        <span class="label">LIFF ID</span>
+        <span class="value" id="liffId"></span>
+      </div>
+      <div class="row">
+        <span class="label">OS / Browser</span>
+        <span class="value" id="env"></span>
+      </div>
+      <div class="actions">
+        <button id="logoutBtn" class="outline">登出</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const LIFF_ID = '2010014916-P9Zg6UTA';
+
+    const $ = (id) => document.getElementById(id);
+    const setText = (id, val, muted) => {
+      const el = $(id);
+      el.textContent = val || '(無)';
+      el.classList.toggle('muted', muted || !val);
+    };
+    const showStatus = (msg, isErr) => {
+      const el = $('status');
+      el.textContent = msg;
+      el.classList.toggle('error', !!isErr);
+    };
+
+    async function main() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+      } catch (e) {
+        showStatus('LIFF 初始化失敗：' + (e.message || e), true);
+        return;
+      }
+
+      if (!liff.isLoggedIn()) {
+        showStatus('尚未登入');
+        $('loginPrompt').classList.remove('hide');
+        $('loginBtn').onclick = () => liff.login();
+        return;
+      }
+
+      // 已登入：取得資料
+      try {
+        const profile = await liff.getProfile();
+        const idToken = liff.getDecodedIDToken();   // 需要 openid + email scope
+        const ctx = liff.getContext() || {};
+
+        setText('userId',        profile.userId);
+        setText('displayName',   profile.displayName);
+        setText('statusMessage', profile.statusMessage, !profile.statusMessage);
+        $('pictureUrl').src = profile.pictureUrl || '';
+
+        // Email 需要 LIFF 設定有 email scope，並且使用者同意
+        if (idToken && idToken.email) {
+          setText('email', idToken.email);
+        } else {
+          setText('email', '(未授權 email scope 或未設定)', true);
+        }
+
+        // Channel ID 來自 ID Token 的 aud claim
+        setText('channelId', (idToken && idToken.aud) || '(未取得，需要 openid scope)',
+                !(idToken && idToken.aud));
+
+        setText('liffId', LIFF_ID);
+        setText('env', (liff.getOS() || '?') + ' / ' + (ctx.type || '?'));
+
+        showStatus('✓ 已登入');
+        $('profile').classList.remove('hide');
+        $('logoutBtn').onclick = () => {
+          liff.logout();
+          location.reload();
+        };
+      } catch (e) {
+        showStatus('取得使用者資料失敗：' + (e.message || e), true);
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>

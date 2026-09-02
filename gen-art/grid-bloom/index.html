@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Grid Bloom 方格綻放 - Generative Art</title>
+
+  <!-- Basic Meta -->
+  <meta name="description" content="一張類 QR code 的方格會「呼吸」：中央湧出大量彩色手繪亂線圈圈，向外綻放鋪滿畫面，再收合回乾淨方格。每次載入依 fxhash 種子生成獨一無二的方格與亂線雲。">
+  <meta name="keywords" content="fxhash, generative art, grid, QR, scribble, bloom, p5.js, algorithmic art, creative coding">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#f4f2ec">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Grid Bloom 方格綻放 - Generative Art">
+  <meta property="og:description" content="類 QR 方格的呼吸：中央綻放出彩色手繪亂線，鋪滿再收合。fxhash 種子驅動。">
+  <meta property="og:site_name" content="fxhash">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Grid Bloom 方格綻放 - fxhash Generative Art">
+  <meta name="twitter:description" content="類 QR 方格的呼吸：中央綻放出彩色手繪亂線，鋪滿再收合。fxhash 種子驅動。">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #f4f2ec;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+
+  <!-- fxhash snippet -->
+  <script id="fxhash-snippet">
+    //---- fxhash snippet (simplified for local development)
+    let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+
+    // 生成隨機 hash（在 fxhash 平台上會被真實的 hash 取代）
+    var fxhash = "oo" + Array(49).fill(0).map(_ => alphabet[(Math.random() * alphabet.length) | 0]).join("");
+
+    // base58 解碼
+    let b58dec = function(str) {
+      return [...str].reduce((p, c) => p * alphabet.length + alphabet.indexOf(c) | 0, 0);
+    };
+
+    // 取得 hash 的數值種子
+    let fxhashTrunc = fxhash.slice(2);
+    let regex = new RegExp(".{" + ((fxhashTrunc.length / 4) | 0) + "}", "g");
+    let hashes = fxhashTrunc.match(regex).map(h => b58dec(h));
+
+    // 隨機數產生器 (sfc32)
+    let sfc32 = function(a, b, c, d) {
+      return function() {
+        a |= 0; b |= 0; c |= 0; d |= 0;
+        var t = (a + b | 0) + d | 0;
+        d = d + 1 | 0;
+        a = b ^ (b >>> 9);
+        b = c + (c << 3) | 0;
+        c = (c << 21) | (c >>> 11);
+        c = c + t | 0;
+        return (t >>> 0) / 4294967296;
+      };
+    };
+
+    // fxrand - 使用此函數取代 Math.random()
+    var fxrand = sfc32(hashes[0], hashes[1], hashes[2], hashes[3]);
+
+    // 預覽模式
+    var isFxpreview = new URLSearchParams(window.location.search).get("preview") === "1";
+
+    // 呼叫此函數通知預覽完成
+    function fxpreview() {
+      window.dispatchEvent(new Event("fxhash-preview"));
+    }
+
+    // fxhash features
+    window.$fxhashFeatures = {};
+    //---- /fxhash snippet
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <script>
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'sketch.js?v=' + Date.now();
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Tilework 磁磚排版 - Generative Art</title>
+
+  <meta name="description" content="裝飾磁磚排版生成藝術：結合各種鋪貼版型（直排、錯縫、旋轉拼接、籃編、風車）與磁磚花樣傳統（葡萄牙 azulejo、荷蘭 Delft、墨西哥 Talavera、摩洛哥 zellige、水泥花磚、Art Deco、維多利亞）。每次載入依 fxhash 種子生成一面磁磚牆。">
+  <meta name="keywords" content="fxhash, generative art, tiles, azulejo, zellige, encaustic, pattern, p5.js, creative coding">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#e6dfce">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Tilework 磁磚排版 - Generative Art">
+  <meta property="og:description" content="各種鋪貼版型與磁磚花樣傳統的生成磁磚牆。fxhash 種子驅動。">
+  <meta property="og:site_name" content="fxhash">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Tilework 磁磚排版 - fxhash Generative Art">
+  <meta name="twitter:description" content="各種鋪貼版型與磁磚花樣傳統的生成磁磚牆。fxhash 種子驅動。">
+
+  <style>
+    html, body { margin: 0; padding: 0; overflow: hidden; background: #d8cdb4; }
+    canvas { display: block; }
+  </style>
+
+  <script id="fxhash-snippet">
+    let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+    var fxhash = "oo" + Array(49).fill(0).map(_ => alphabet[(Math.random() * alphabet.length) | 0]).join("");
+    let b58dec = function(str) { return [...str].reduce((p, c) => p * alphabet.length + alphabet.indexOf(c) | 0, 0); };
+    let fxhashTrunc = fxhash.slice(2);
+    let regex = new RegExp(".{" + ((fxhashTrunc.length / 4) | 0) + "}", "g");
+    let hashes = fxhashTrunc.match(regex).map(h => b58dec(h));
+    let sfc32 = function(a, b, c, d) {
+      return function() {
+        a |= 0; b |= 0; c |= 0; d |= 0;
+        var t = (a + b | 0) + d | 0; d = d + 1 | 0;
+        a = b ^ (b >>> 9); b = c + (c << 3) | 0;
+        c = (c << 21) | (c >>> 11); c = c + t | 0;
+        return (t >>> 0) / 4294967296;
+      };
+    };
+    var fxrand = sfc32(hashes[0], hashes[1], hashes[2], hashes[3]);
+    var isFxpreview = new URLSearchParams(window.location.search).get("preview") === "1";
+    function fxpreview() { window.dispatchEvent(new Event("fxhash-preview")); }
+    window.$fxhashFeatures = {};
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <script>
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'sketch.js?v=' + Date.now();
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

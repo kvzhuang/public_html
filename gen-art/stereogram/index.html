@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Stereogram 立體視覺圖 - Generative Art</title>
+  <meta name="description" content="隱藏式 3D 立體視覺圖（Autostereogram / Magic Eye）產生器：球體、甜甜圈、愛心、文字等隨機隱藏圖案，四種紋理風格。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#0c0e14">
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 45%, #161a26, transparent 55rem),
+        #0c0e14;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #holder canvas {
+      display: block;
+      border: 12px solid #141824;
+      outline: 2px solid #2e3a58;
+      box-shadow: 0 30px 80px rgba(0,0,0,.70), inset 0 0 40px rgba(0,0,0,.3);
+      cursor: pointer;
+    }
+    #hint {
+      position: fixed; bottom: 14px; left: 0; right: 0;
+      text-align: center;
+      font: 11px/1.6 monospace;
+      letter-spacing: .18em;
+      color: rgba(140, 170, 230, .4);
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="holder"></div>
+  <div id="hint">平行眼觀看．上方兩點融合成三點即成功 ─ CLICK 重新生成 · A 顯示答案 · S 儲存</div>
+  <script>
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'sketch.js?v=' + Date.now();
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

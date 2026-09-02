@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Neon Street 夜の街 - Generative Art</title>
+  <meta name="description" content="three.js 程序生成的日本夜晚街道穿梭：無限延伸的窄樓與直式霓虹袖看板、紅提灯、自動販賣機、頭頂糾纏電線、濕路面霓虹倒影，霧氣與 bloom 輝光。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#08060f">
+  <meta property="og:title" content="Neon Street 夜の街 - Generative Art">
+  <meta property="og:description" content="無限穿梭程序生成的日本霓虹夜街，每次生成獨一無二。">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    html, body { margin: 0; padding: 0; overflow: hidden; background: #08060f; }
+    #c { display: block; width: 100vw; height: 100vh; cursor: pointer; }
+    #label {
+      position: fixed; top: 16px; left: 0; right: 0; text-align: center;
+      font: 13px/1.5 monospace; letter-spacing: .18em;
+      color: rgba(255, 140, 200, .6); pointer-events: none; user-select: none;
+      text-shadow: 0 1px 6px #000;
+    }
+    #hint {
+      position: fixed; bottom: 14px; left: 0; right: 0; text-align: center;
+      font: 11px/1.6 monospace; letter-spacing: .2em;
+      color: rgba(200, 210, 255, .38); pointer-events: none; user-select: none;
+      text-shadow: 0 1px 4px #000;
+    }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="label"></div>
+  <div id="hint">← → / A D · 左右移動 ─ 拖曳 · 左右移動 ─ CLICK · 重新生成 ─ S · 儲存</div>
+  <script type="module">
+    import('./sketch.js?v=' + Date.now());
+  </script>
+</body>
+</html>

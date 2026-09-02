@@ -93,6 +93,51 @@ const palettes = [
     bg: "#1A1028", border: "#E8A87C",
     colors: ["#FF4466", "#FFD700", "#00E5CC", "#FF8C00", "#FF69B4", "#A0E8FF"]
   },
+  {
+    name: "秋柿",
+    bg: "#FFF8F0", border: "#5C3317",
+    colors: ["#D2691E", "#FF8C00", "#8B4513", "#2E5339", "#FFD700", "#F4A460"]
+  },
+  {
+    name: "水墨",
+    bg: "#F5F0E8", border: "#1A1A1A",
+    colors: ["#1A1A1A", "#4A4A4A", "#808080", "#C0C0C0", "#C41E3A", "#D4AF37"]
+  },
+  {
+    name: "廟宇金",
+    bg: "#2C0A0A", border: "#D4AF37",
+    colors: ["#D4AF37", "#FFD700", "#C41E3A", "#8B0000", "#F5DEB3", "#FF6347"]
+  },
+  {
+    name: "海洋",
+    bg: "#F0F8FF", border: "#0D4F6F",
+    colors: ["#0D4F6F", "#1A8CA0", "#40BFA0", "#87CEEB", "#F5DEB3", "#005577"]
+  },
+  {
+    name: "玫瑰灰",
+    bg: "#F2EAEA", border: "#6B4C50",
+    colors: ["#8B5E6B", "#C08090", "#D4A0A8", "#6B4C50", "#E8C8C8", "#A07080"]
+  },
+  {
+    name: "客家花布",
+    bg: "#1A0A28", border: "#D4AF37",
+    colors: ["#E8284A", "#FF69B4", "#2E8B57", "#FFD700", "#FF6EB4", "#00C78C"]
+  },
+  {
+    name: "摩洛哥土橙",
+    bg: "#F5E6D0", border: "#5C3D2E",
+    colors: ["#C87941", "#D4A574", "#2A6496", "#5B8FA8", "#3D3D3D", "#E8C8A0"]
+  },
+  {
+    name: "伊斯蘭藍",
+    bg: "#F0EDE5", border: "#1A3350",
+    colors: ["#1A3350", "#2A6496", "#C87941", "#D4AF37", "#7BAFD4", "#E8D5B5"]
+  },
+  {
+    name: "青綠花磚",
+    bg: "#FFFFF5", border: "#2A7A5A",
+    colors: ["#1A8C6A", "#40BF90", "#D4A017", "#5BAF5A", "#F5F0D0", "#0D6050"]
+  },
 ];
 
 let palette;
@@ -114,6 +159,16 @@ const PATTERN = {
   OCTAGON: 8,     // 八角窗櫺
   PEONY: 9,       // 牡丹
   SWIRL: 10,      // 水渦紋
+  STAR_8: 11,     // 八角星
+  CONCENTRIC_SQ: 12, // 同心方框
+  INTERLOCK: 13,  // 連鎖幾何
+  HEX_MESH: 14,   // 六角蜂巢
+  ARROW_COMPASS: 15, // 箭頭羅盤
+  ZIGZAG_RING: 16,   // 鋸齒環
+  DIAMOND_FLOWER: 17, // 菱框花卉（圖1+圖3風格）
+  QUATREFOIL: 18,     // 四瓣花窗（伊斯蘭風格）
+  WEAVE: 19,          // 編織幾何紋
+  MOROCCAN_STAR: 20,  // 摩洛哥八角星
 };
 
 function setup() {
@@ -130,7 +185,7 @@ function setup() {
   tileSize = (size - margin * 2) / gridCols;
 
   // 決定這次用哪些圖案（1~3 種混搭）
-  const allTypes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const allTypes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
   shuffle(allTypes);
   const numTypes = floor(rand() * 3) + 1;
   patternTypes = allTypes.slice(0, numTypes);
@@ -249,6 +304,36 @@ function drawTile(x, y, size, params) {
       break;
     case PATTERN.SWIRL:
       drawSwirl(0, 0, s, params);
+      break;
+    case PATTERN.STAR_8:
+      drawStar8(0, 0, s, params);
+      break;
+    case PATTERN.CONCENTRIC_SQ:
+      drawConcentricSquares(0, 0, s, params);
+      break;
+    case PATTERN.INTERLOCK:
+      drawInterlock(0, 0, s, params);
+      break;
+    case PATTERN.HEX_MESH:
+      drawHexMesh(0, 0, s, params);
+      break;
+    case PATTERN.ARROW_COMPASS:
+      drawArrowCompass(0, 0, s, params);
+      break;
+    case PATTERN.ZIGZAG_RING:
+      drawZigzagRing(0, 0, s, params);
+      break;
+    case PATTERN.DIAMOND_FLOWER:
+      drawDiamondFlower(0, 0, s, params);
+      break;
+    case PATTERN.QUATREFOIL:
+      drawQuatrefoil(0, 0, s, params);
+      break;
+    case PATTERN.WEAVE:
+      drawWeave(0, 0, s, params);
+      break;
+    case PATTERN.MOROCCAN_STAR:
+      drawMoroccanStar(0, 0, s, params);
       break;
   }
 
@@ -933,6 +1018,671 @@ function drawSwirl(cx, cy, s, params) {
   ellipse(0, 0, maxR * 0.12, maxR * 0.12);
 }
 
+// ===== 八角星 =====
+function drawStar8(cx, cy, s, params) {
+  const maxR = s * 0.38;
+  const c1 = palette.colors[params.colorIdx];
+  const c2 = palette.colors[(params.colorIdx + 1) % palette.colors.length];
+  const c3 = palette.colors[(params.colorIdx + 2) % palette.colors.length];
+  const c4 = palette.colors[(params.colorIdx + 3) % palette.colors.length];
+
+  // 底圓
+  fill(c3);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  ellipse(0, 0, maxR * 2.2, maxR * 2.2);
+
+  // 外層八角星（兩個正方形疊合）
+  for (let rot = 0; rot < 2; rot++) {
+    fill(rot === 0 ? c1 : c2);
+    stroke(palette.border);
+    strokeWeight(s * 0.005);
+    push();
+    rotate(rot * PI / 4);
+    rectMode(CENTER);
+    rect(0, 0, maxR * 1.4, maxR * 1.4);
+    rectMode(CORNER);
+    pop();
+  }
+
+  // 內層八角星（縮小）
+  for (let rot = 0; rot < 2; rot++) {
+    fill(rot === 0 ? c3 : c4);
+    stroke(palette.border);
+    strokeWeight(s * 0.004);
+    push();
+    rotate(rot * PI / 4);
+    rectMode(CENTER);
+    rect(0, 0, maxR * 0.75, maxR * 0.75);
+    rectMode(CORNER);
+    pop();
+  }
+
+  // 八個方位小圓點
+  for (let i = 0; i < 8; i++) {
+    const a = (TWO_PI / 8) * i;
+    const px = cos(a) * maxR * 0.85;
+    const py = sin(a) * maxR * 0.85;
+    fill(c4);
+    noStroke();
+    ellipse(px, py, s * 0.04, s * 0.04);
+  }
+
+  // 中心
+  fill(c1);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  ellipse(0, 0, maxR * 0.3, maxR * 0.3);
+
+  fill(c4);
+  noStroke();
+  ellipse(0, 0, maxR * 0.15, maxR * 0.15);
+}
+
+// ===== 同心方框 =====
+function drawConcentricSquares(cx, cy, s, params) {
+  const layers = params.layerCount + 2;
+  const maxR = s * 0.38;
+
+  // 底圓
+  fill(palette.colors[(params.colorIdx + 2) % palette.colors.length]);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  ellipse(0, 0, maxR * 2.2, maxR * 2.2);
+
+  rectMode(CENTER);
+  for (let l = layers; l >= 1; l--) {
+    const size = maxR * 2 * (l / layers);
+    const c = palette.colors[(params.colorIdx + l) % palette.colors.length];
+    fill(c);
+    stroke(palette.border);
+    strokeWeight(s * 0.005);
+    // 交替旋轉 22.5 度
+    push();
+    if (l % 2 === 0) rotate(PI / 8);
+    rect(0, 0, size, size);
+    pop();
+  }
+  rectMode(CORNER);
+
+  // 中心菱形
+  const innerS = maxR * 0.25;
+  fill(palette.colors[params.colorIdx]);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  push();
+  rotate(PI / 4);
+  rectMode(CENTER);
+  rect(0, 0, innerS, innerS);
+  rectMode(CORNER);
+  pop();
+
+  // 中心圓
+  fill(palette.colors[(params.colorIdx + 3) % palette.colors.length]);
+  noStroke();
+  ellipse(0, 0, innerS * 0.5, innerS * 0.5);
+}
+
+// ===== 連鎖幾何 =====
+function drawInterlock(cx, cy, s, params) {
+  const maxR = s * 0.36;
+  const c1 = palette.colors[params.colorIdx];
+  const c2 = palette.colors[(params.colorIdx + 1) % palette.colors.length];
+  const c3 = palette.colors[(params.colorIdx + 2) % palette.colors.length];
+  const c4 = palette.colors[(params.colorIdx + 3) % palette.colors.length];
+
+  // 底圓
+  fill(c3);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  ellipse(0, 0, maxR * 2.2, maxR * 2.2);
+
+  // 四個交疊的菱形環
+  const ringR = maxR * 0.55;
+  const ringW = maxR * 0.3;
+  for (let i = 0; i < 4; i++) {
+    const angle = (TWO_PI / 4) * i;
+    const px = cos(angle) * ringR * 0.4;
+    const py = sin(angle) * ringR * 0.4;
+    fill(i % 2 === 0 ? c1 : c2);
+    stroke(palette.border);
+    strokeWeight(s * 0.004);
+    push();
+    translate(px, py);
+    rotate(angle);
+    beginShape();
+    vertex(0, -ringW);
+    vertex(ringW, 0);
+    vertex(0, ringW);
+    vertex(-ringW, 0);
+    endShape(CLOSE);
+    pop();
+  }
+
+  // 交錯十字線
+  stroke(palette.border);
+  strokeWeight(s * 0.006);
+  line(-maxR * 0.7, 0, maxR * 0.7, 0);
+  line(0, -maxR * 0.7, 0, maxR * 0.7);
+
+  // 四角小三角
+  for (let i = 0; i < 4; i++) {
+    const a = HALF_PI * i + PI / 4;
+    const d = maxR * 0.75;
+    const px = cos(a) * d;
+    const py = sin(a) * d;
+    fill(c4);
+    noStroke();
+    push();
+    translate(px, py);
+    rotate(a + PI);
+    beginShape();
+    vertex(0, -s * 0.05);
+    vertex(s * 0.04, s * 0.03);
+    vertex(-s * 0.04, s * 0.03);
+    endShape(CLOSE);
+    pop();
+  }
+
+  // 中心
+  fill(c4);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  ellipse(0, 0, maxR * 0.3, maxR * 0.3);
+
+  fill(c1);
+  noStroke();
+  ellipse(0, 0, maxR * 0.15, maxR * 0.15);
+}
+
+// ===== 六角蜂巢 =====
+function drawHexMesh(cx, cy, s, params) {
+  const maxR = s * 0.38;
+  const c1 = palette.colors[params.colorIdx];
+  const c2 = palette.colors[(params.colorIdx + 1) % palette.colors.length];
+  const c3 = palette.colors[(params.colorIdx + 2) % palette.colors.length];
+  const c4 = palette.colors[(params.colorIdx + 3) % palette.colors.length];
+
+  // 底圓
+  fill(c3);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  ellipse(0, 0, maxR * 2.2, maxR * 2.2);
+
+  // 大六角形
+  fill(c2);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  drawPolygon(0, 0, maxR * 0.95, 6, 0);
+
+  // 中六角形
+  fill(c1);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  drawPolygon(0, 0, maxR * 0.65, 6, PI / 6);
+
+  // 六個小六角形圍繞
+  const smallR = maxR * 0.22;
+  for (let i = 0; i < 6; i++) {
+    const a = (TWO_PI / 6) * i;
+    const px = cos(a) * maxR * 0.58;
+    const py = sin(a) * maxR * 0.58;
+    fill(i % 2 === 0 ? c4 : c2);
+    stroke(palette.border);
+    strokeWeight(s * 0.003);
+    drawPolygon(px, py, smallR, 6, 0);
+  }
+
+  // 連結線
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  for (let i = 0; i < 6; i++) {
+    const a = (TWO_PI / 6) * i;
+    line(0, 0, cos(a) * maxR * 0.4, sin(a) * maxR * 0.4);
+  }
+
+  // 內六角形
+  fill(c4);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  drawPolygon(0, 0, maxR * 0.32, 6, 0);
+
+  // 中心
+  fill(c1);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  ellipse(0, 0, maxR * 0.2, maxR * 0.2);
+
+  fill(c3);
+  noStroke();
+  ellipse(0, 0, maxR * 0.1, maxR * 0.1);
+}
+
+// ===== 箭頭羅盤 =====
+function drawArrowCompass(cx, cy, s, params) {
+  const maxR = s * 0.38;
+  const arrows = 8;
+  const c1 = palette.colors[params.colorIdx];
+  const c2 = palette.colors[(params.colorIdx + 1) % palette.colors.length];
+  const c3 = palette.colors[(params.colorIdx + 2) % palette.colors.length];
+  const c4 = palette.colors[(params.colorIdx + 3) % palette.colors.length];
+
+  // 底圓
+  fill(c3);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  ellipse(0, 0, maxR * 2.2, maxR * 2.2);
+
+  // 外環
+  noFill();
+  stroke(palette.border);
+  strokeWeight(s * 0.006);
+  ellipse(0, 0, maxR * 1.8, maxR * 1.8);
+
+  // 長短交替箭頭
+  for (let i = 0; i < arrows; i++) {
+    const angle = (TWO_PI / arrows) * i;
+    const isMain = i % 2 === 0;
+    const len = isMain ? maxR * 0.85 : maxR * 0.6;
+    const w = isMain ? s * 0.06 : s * 0.04;
+
+    fill(isMain ? c1 : c2);
+    stroke(palette.border);
+    strokeWeight(s * 0.004);
+
+    push();
+    rotate(angle);
+    // 箭頭
+    beginShape();
+    vertex(0, -len);
+    vertex(-w, -len + w * 1.5);
+    vertex(-w * 0.35, -len + w * 1.2);
+    vertex(-w * 0.35, 0);
+    vertex(w * 0.35, 0);
+    vertex(w * 0.35, -len + w * 1.2);
+    vertex(w, -len + w * 1.5);
+    endShape(CLOSE);
+    pop();
+  }
+
+  // 內圈裝飾
+  fill(c4);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  ellipse(0, 0, maxR * 0.45, maxR * 0.45);
+
+  // 中心八角
+  fill(c2);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  drawPolygon(0, 0, maxR * 0.2, 8, PI / 8);
+
+  fill(c1);
+  noStroke();
+  ellipse(0, 0, maxR * 0.1, maxR * 0.1);
+}
+
+// ===== 鋸齒環 =====
+function drawZigzagRing(cx, cy, s, params) {
+  const maxR = s * 0.38;
+  const teeth = params.petalCount + 4;
+  const c1 = palette.colors[params.colorIdx];
+  const c2 = palette.colors[(params.colorIdx + 1) % palette.colors.length];
+  const c3 = palette.colors[(params.colorIdx + 2) % palette.colors.length];
+  const c4 = palette.colors[(params.colorIdx + 3) % palette.colors.length];
+
+  // 底圓
+  fill(c3);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  ellipse(0, 0, maxR * 2.2, maxR * 2.2);
+
+  // 外鋸齒環
+  fill(c1);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  beginShape();
+  for (let i = 0; i < teeth; i++) {
+    const a = (TWO_PI / teeth) * i;
+    const aNext = (TWO_PI / teeth) * (i + 0.5);
+    const outerR = maxR * 0.95;
+    const innerR = maxR * 0.72;
+    vertex(cos(a) * outerR, sin(a) * outerR);
+    vertex(cos(aNext) * innerR, sin(aNext) * innerR);
+  }
+  endShape(CLOSE);
+
+  // 內圓
+  fill(c2);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  ellipse(0, 0, maxR * 1.3, maxR * 1.3);
+
+  // 內鋸齒環（方向相反）
+  fill(c4);
+  stroke(palette.border);
+  strokeWeight(s * 0.003);
+  beginShape();
+  const innerTeeth = floor(teeth * 0.7);
+  for (let i = 0; i < innerTeeth; i++) {
+    const a = (TWO_PI / innerTeeth) * i;
+    const aNext = (TWO_PI / innerTeeth) * (i + 0.5);
+    vertex(cos(a) * maxR * 0.6, sin(a) * maxR * 0.6);
+    vertex(cos(aNext) * maxR * 0.42, sin(aNext) * maxR * 0.42);
+  }
+  endShape(CLOSE);
+
+  // 中心裝飾
+  fill(c3);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  ellipse(0, 0, maxR * 0.55, maxR * 0.55);
+
+  // 中心星形
+  fill(c1);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  beginShape();
+  for (let i = 0; i < 8; i++) {
+    const a = (TWO_PI / 8) * i;
+    const aM = a + PI / 8;
+    vertex(cos(a) * maxR * 0.22, sin(a) * maxR * 0.22);
+    vertex(cos(aM) * maxR * 0.1, sin(aM) * maxR * 0.1);
+  }
+  endShape(CLOSE);
+
+  fill(c2);
+  noStroke();
+  ellipse(0, 0, maxR * 0.08, maxR * 0.08);
+}
+
+// ===== 菱框花卉（圖1+圖3 台灣花磚經典） =====
+function drawDiamondFlower(cx, cy, s, params) {
+  const maxR = s * 0.4;
+  const c1 = palette.colors[params.colorIdx];
+  const c2 = palette.colors[(params.colorIdx + 1) % palette.colors.length];
+  const c3 = palette.colors[(params.colorIdx + 2) % palette.colors.length];
+  const c4 = palette.colors[(params.colorIdx + 3) % palette.colors.length];
+  const c5 = palette.colors[(params.colorIdx + 4) % palette.colors.length];
+
+  // 菱形外框（45度旋轉的方形）
+  push();
+  rotate(PI / 4);
+  fill(c3);
+  stroke(palette.border);
+  strokeWeight(s * 0.006);
+  rectMode(CENTER);
+  rect(0, 0, maxR * 1.85, maxR * 1.85);
+
+  // 菱形內框
+  fill(palette.bg);
+  stroke(c1);
+  strokeWeight(s * 0.005);
+  rect(0, 0, maxR * 1.55, maxR * 1.55);
+  rectMode(CORNER);
+  pop();
+
+  // 中央四瓣花（台灣花磚常見樣式）
+  const petalR = maxR * 0.45;
+  for (let i = 0; i < 4; i++) {
+    const angle = (TWO_PI / 4) * i;
+    push();
+    rotate(angle);
+    fill(c1);
+    stroke(palette.border);
+    strokeWeight(s * 0.003);
+    drawLotusPetal(0, -petalR * 0.15, petalR * 0.7, petalR * 0.35);
+    pop();
+  }
+
+  // 花瓣間的小葉
+  for (let i = 0; i < 4; i++) {
+    const angle = (TWO_PI / 4) * i + PI / 4;
+    push();
+    rotate(angle);
+    fill(c4);
+    noStroke();
+    drawLeafShape(0, -petalR * 0.35, petalR * 0.3, petalR * 0.12, 0);
+    pop();
+  }
+
+  // 花心同心圓
+  fill(c2);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  ellipse(0, 0, petalR * 0.5, petalR * 0.5);
+
+  fill(c5);
+  noStroke();
+  ellipse(0, 0, petalR * 0.25, petalR * 0.25);
+
+  // 四角落小圓點裝飾（菱形角上）
+  for (let i = 0; i < 4; i++) {
+    const a = HALF_PI * i;
+    fill(c1);
+    noStroke();
+    ellipse(cos(a) * maxR * 0.85, sin(a) * maxR * 0.85, s * 0.04, s * 0.04);
+  }
+}
+
+// ===== 四瓣花窗（伊斯蘭/摩洛哥風格） =====
+function drawQuatrefoil(cx, cy, s, params) {
+  const maxR = s * 0.38;
+  const c1 = palette.colors[params.colorIdx];
+  const c2 = palette.colors[(params.colorIdx + 1) % palette.colors.length];
+  const c3 = palette.colors[(params.colorIdx + 2) % palette.colors.length];
+  const c4 = palette.colors[(params.colorIdx + 3) % palette.colors.length];
+
+  // 底層八角形
+  fill(c3);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  drawPolygon(0, 0, maxR * 0.95, 8, PI / 8);
+
+  // 四個大圓弧交疊形成花窗
+  const lobeR = maxR * 0.52;
+  const lobeD = maxR * 0.38;
+
+  // 外層四瓣
+  for (let i = 0; i < 4; i++) {
+    const a = HALF_PI * i;
+    fill(c1);
+    stroke(palette.border);
+    strokeWeight(s * 0.004);
+    ellipse(cos(a) * lobeD, sin(a) * lobeD, lobeR, lobeR);
+  }
+
+  // 內層四瓣（偏45度）
+  for (let i = 0; i < 4; i++) {
+    const a = HALF_PI * i + PI / 4;
+    fill(c2);
+    stroke(palette.border);
+    strokeWeight(s * 0.003);
+    ellipse(cos(a) * lobeD * 0.7, sin(a) * lobeD * 0.7, lobeR * 0.55, lobeR * 0.55);
+  }
+
+  // 花窗間的尖角裝飾
+  for (let i = 0; i < 4; i++) {
+    const a = HALF_PI * i + PI / 4;
+    const px = cos(a) * maxR * 0.72;
+    const py = sin(a) * maxR * 0.72;
+    fill(c4);
+    noStroke();
+    push();
+    translate(px, py);
+    rotate(a);
+    beginShape();
+    vertex(0, -s * 0.04);
+    vertex(s * 0.025, 0);
+    vertex(0, s * 0.04);
+    vertex(-s * 0.025, 0);
+    endShape(CLOSE);
+    pop();
+  }
+
+  // 中心
+  fill(c4);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  ellipse(0, 0, maxR * 0.35, maxR * 0.35);
+
+  fill(c1);
+  noStroke();
+  ellipse(0, 0, maxR * 0.18, maxR * 0.18);
+
+  fill(c3);
+  ellipse(0, 0, maxR * 0.08, maxR * 0.08);
+}
+
+// ===== 編織幾何紋 =====
+function drawWeave(cx, cy, s, params) {
+  const maxR = s * 0.38;
+  const c1 = palette.colors[params.colorIdx];
+  const c2 = palette.colors[(params.colorIdx + 1) % palette.colors.length];
+  const c3 = palette.colors[(params.colorIdx + 2) % palette.colors.length];
+  const c4 = palette.colors[(params.colorIdx + 3) % palette.colors.length];
+
+  // 底圓
+  fill(c3);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  ellipse(0, 0, maxR * 2.2, maxR * 2.2);
+
+  // 編織格紋：交錯的寬條帶
+  const bandW = s * 0.07;
+  const gap = s * 0.14;
+  const range = maxR * 0.9;
+
+  // 先畫水平帶
+  fill(c1);
+  stroke(palette.border);
+  strokeWeight(s * 0.003);
+  for (let y = -range; y <= range; y += gap) {
+    rect(-range, y - bandW / 2, range * 2, bandW, bandW * 0.15);
+  }
+
+  // 再畫垂直帶（交錯覆蓋）
+  for (let x = -range; x <= range; x += gap) {
+    const idx = round((x + range) / gap);
+    for (let y = -range; y <= range; y += gap) {
+      const yIdx = round((y + range) / gap);
+      // 交錯：奇偶交替在上下
+      if ((idx + yIdx) % 2 === 0) {
+        fill(c2);
+        stroke(palette.border);
+        strokeWeight(s * 0.003);
+        rect(x - bandW / 2, y - bandW / 2, bandW, gap, bandW * 0.15);
+      }
+    }
+  }
+
+  // 再補垂直帶的另一半
+  fill(c2);
+  stroke(palette.border);
+  strokeWeight(s * 0.003);
+  for (let x = -range; x <= range; x += gap) {
+    const idx = round((x + range) / gap);
+    for (let y = -range; y <= range; y += gap) {
+      const yIdx = round((y + range) / gap);
+      if ((idx + yIdx) % 2 === 1) {
+        fill(c2);
+        rect(x - bandW / 2, y - gap / 2 - bandW / 2, bandW, gap, bandW * 0.15);
+      }
+    }
+  }
+
+  // 交叉點小方塊裝飾
+  for (let x = -range; x <= range; x += gap) {
+    for (let y = -range; y <= range; y += gap) {
+      fill(c4);
+      noStroke();
+      rectMode(CENTER);
+      rect(x, y, bandW * 0.5, bandW * 0.5);
+      rectMode(CORNER);
+    }
+  }
+
+  // 中心圓
+  fill(c4);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  ellipse(0, 0, maxR * 0.25, maxR * 0.25);
+
+  fill(c1);
+  noStroke();
+  ellipse(0, 0, maxR * 0.12, maxR * 0.12);
+}
+
+// ===== 摩洛哥八角星（圖2風格） =====
+function drawMoroccanStar(cx, cy, s, params) {
+  const maxR = s * 0.4;
+  const c1 = palette.colors[params.colorIdx];
+  const c2 = palette.colors[(params.colorIdx + 1) % palette.colors.length];
+  const c3 = palette.colors[(params.colorIdx + 2) % palette.colors.length];
+  const c4 = palette.colors[(params.colorIdx + 3) % palette.colors.length];
+  const c5 = palette.colors[(params.colorIdx + 4) % palette.colors.length];
+
+  // 底層八角形
+  fill(c3);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  drawPolygon(0, 0, maxR, 8, PI / 8);
+
+  // 八角星：由兩個正方形 45 度交疊，中間鏤空形成星形
+  // 外星形尖角
+  fill(c1);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  beginShape();
+  for (let i = 0; i < 8; i++) {
+    const aOuter = (TWO_PI / 8) * i - PI / 8;
+    const aInner = aOuter + PI / 8;
+    vertex(cos(aOuter) * maxR * 0.92, sin(aOuter) * maxR * 0.92);
+    vertex(cos(aInner) * maxR * 0.55, sin(aInner) * maxR * 0.55);
+  }
+  endShape(CLOSE);
+
+  // 中層八角形
+  fill(c2);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  drawPolygon(0, 0, maxR * 0.55, 8, PI / 8);
+
+  // 內層裝飾：小菱形排列
+  for (let i = 0; i < 8; i++) {
+    const a = (TWO_PI / 8) * i;
+    const d = maxR * 0.38;
+    fill(c4);
+    noStroke();
+    push();
+    translate(cos(a) * d, sin(a) * d);
+    rotate(a);
+    beginShape();
+    vertex(0, -s * 0.035);
+    vertex(s * 0.025, 0);
+    vertex(0, s * 0.035);
+    vertex(-s * 0.025, 0);
+    endShape(CLOSE);
+    pop();
+  }
+
+  // 內八角形
+  fill(c5);
+  stroke(palette.border);
+  strokeWeight(s * 0.004);
+  drawPolygon(0, 0, maxR * 0.32, 8, 0);
+
+  // 中心圓
+  fill(c1);
+  stroke(palette.border);
+  strokeWeight(s * 0.005);
+  ellipse(0, 0, maxR * 0.22, maxR * 0.22);
+
+  fill(c3);
+  noStroke();
+  ellipse(0, 0, maxR * 0.1, maxR * 0.1);
+}
+
 // ===== 基礎形狀工具 =====
 
 // 花瓣形狀（尖橢圓）
@@ -998,7 +1748,7 @@ function keyPressed() {
   // 空白鍵：重新生成
   if (key === ' ') {
     palette = palettes[floor(rand() * palettes.length)];
-    const allTypes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const allTypes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
     shuffle(allTypes);
     const numTypes = floor(rand() * 3) + 1;
     patternTypes = allTypes.slice(0, numTypes);

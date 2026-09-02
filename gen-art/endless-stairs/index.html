@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Endless Stairs 無盡階梯 - Generative Art</title>
+  <meta name="description" content="Escher 式等軸測不可能建築生成藝術：重複階梯、拱門、疊層金字塔鋪滿畫面，緞帶路徑穿梭其間。素描、霓虹夜、復古印刷三種色調。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#1a1a20">
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 42%, #26262e, transparent 55rem),
+        #1a1a20;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #holder canvas {
+      display: block;
+      border: 12px solid #22222a;
+      outline: 2px solid #4a4a58;
+      box-shadow: 0 30px 80px rgba(0,0,0,.72), inset 0 0 40px rgba(0,0,0,.3);
+      cursor: pointer;
+    }
+    #hint {
+      position: fixed; bottom: 12px; left: 0; right: 0;
+      text-align: center;
+      font: 11px/1.6 monospace;
+      letter-spacing: .2em;
+      color: rgba(200, 200, 220, .38);
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="holder"></div>
+  <div id="hint">CLICK · 重新生成 ─ T · 切換色調 ─ S · 儲存畫作</div>
+  <script>
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'sketch.js?v=' + Date.now();
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

@@ -1,8 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <title>Generative Art Gallery</title>
   <meta name="description" content="kvzhuang 的生成藝術作品集，使用 p5.js 與 fxhash 創作的互動藝術。">
   <meta name="author" content="kvzhuang">
@@ -33,6 +43,36 @@
       font-size: 1rem;
       color: #888;
       letter-spacing: 0.05em;
+    }
+
+    .lang-switcher {
+      margin-top: 22px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 0 20px;
+    }
+    .lang-switcher a {
+      font-size: 0.78rem;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: #1e1e30;
+      color: #8888cc;
+      border: 1px solid #2a2a44;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+    .lang-switcher a:hover {
+      background: #2a2a44;
+      color: #b0b0e0;
+      border-color: #3a3a55;
+    }
+    .lang-switcher a.active {
+      background: #3a3a66;
+      color: #fff;
+      border-color: #5555aa;
     }
 
     .gallery {
@@ -123,6 +163,11 @@
       padding: 30px 20px 40px;
       color: #555;
       font-size: 0.85rem;
+      line-height: 1.8;
+    }
+    footer .contact {
+      color: #666;
+      letter-spacing: 0.04em;
     }
 
     @media (max-width: 640px) {
@@ -138,13 +183,1161 @@
 <header>
   <h1>GENERATIVE ART</h1>
   <p>kvzhuang — 以程式碼創作的視覺實驗</p>
+  <nav class="lang-switcher" id="lang-switcher" aria-label="Language">
+    <a href="?lang=zh" data-lang="zh">中文</a>
+    <a href="?lang=en" data-lang="en">English</a>
+    <a href="?lang=ja" data-lang="ja">日本語</a>
+    <a href="?lang=ko" data-lang="ko">한국어</a>
+  </nav>
 </header>
 
 <div class="gallery">
 
+    <a class="card" href="./sunflowers/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./sunflowers/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Sunflowers 向日葵</h2>
+      <p>以演算法重現梵谷《向日葵》的厚塗油畫。八層 impasto 筆觸引擎疊出鬃毛紋、高光稜線與中央反光帶；noise 流場加漩渦驅動的星夜式流動背景；phyllotaxis 黃金角花心籽粒；四種瓶形 × 四種釉色隨機組合，三種色調變體（鉻黃、土耳其藍、淡青綠）。每次生成獨一無二，開頁逐筆作畫約 4 秒。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">van gogh</span>
+        <span class="tag">impasto</span>
+        <span class="tag">flow field</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+
+
+  <a class="card" href="./impression-sunrise/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./impression-sunrise/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Impression Sunrise 印象・日出</h2>
+      <p>以演算法重現莫內《印象・日出》。沿用向日葵的厚塗筆觸引擎：霧藍灰的勒阿弗爾港、不透明橘紅日盤與水面搖曳的橘色碎筆倒影；霧中桅杆群、煙囪飄煙與 1–3 艘剪影小船。三種色調變體（經典藍灰、紫霧、玫瑰晨光），每次生成獨一無二，開頁逐筆作畫約 4 秒。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">monet</span>
+        <span class="tag">impressionism</span>
+        <span class="tag">flow field</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./starry-night/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./starry-night/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Starry Night 星夜</h2>
+      <p>以演算法重現梵谷《星夜》(1889) 的漩渦夜空與厚塗油畫。八層 impasto 筆觸引擎疊出鬃毛紋、高光稜線；noise 亂流加多個漩渦驅動旋轉的星雲，招牌雙渦落在畫面中偏左；橘暈弦月與約 11 顆放光的星以同心亮環鋪成；遠山起伏、山村與刺入夜空的教堂尖塔、前景如火焰般竄升的絲柏。每次依 fxhash 種子生成獨一無二的夜，開頁逐筆作畫約 4 秒。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">van gogh</span>
+        <span class="tag">impasto</span>
+        <span class="tag">flow field</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+
+  <a class="card" href="./oil-paint/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./oil-paint/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Oil Paint</h2>
+      <p>厚塗油畫生成藝術。弧形 bezier 筆觸由中心放射展開，疊加鬃毛紋、假 3D 光影與顏料噴濺，搭配紙底紋理模擬油畫顏料的隆起質感。10 組色盤可隨機抽取。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">impasto</span>
+        <span class="tag">brush</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+    <a class="card" href="./pointillism/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./pointillism/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Pointillism 點描印象</h2>
+      <p>以數萬顆圓點、光學混色（相鄰互補色點並置）的點描手法，概念式重現 33 幅印象派／後印象派名作。每次載入依 fxhash 種子挑一幅並套用該畫代表色盤——涵蓋莫內（日出印象、睡蓮、罌粟花田、乾草堆、盧昂大教堂、日本橋、威尼斯黃昏、霧中國會、喜鵲雪景、懸崖步道、吉維尼花徑…）、梵谷（星夜、隆河星夜、麥田絲柏、夜間咖啡館、鳶尾花、橄欖樹、杏花）、秀拉（大碗島、阿尼埃爾浴場）、席涅克（聖特羅佩港、亞維儂教皇宮）、雷諾瓦、畢沙羅、希斯里、竇加、塞尚、卡玉伯特。底畫由垂直漸層、漩渦流光、水面流紋與柔邊色塊程序化組成，再鋪兩層圓點（柔底＋清晰點），部分點改用口音色並置產生閃爍。左下角附美術館式標籤。點擊或空白鍵換一幅，S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">fxhash</span>
+        <span class="tag">p5.js</span>
+        <span class="tag">pointillism</span>
+        <span class="tag">impressionism</span>
+        <span class="tag">generative</span>
+      </div>
+    </div>
+  </a>
+
+
+  <a class="card" href="./pong-wars/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./pong-wars/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>領地爭奪 Pong Wars</h2>
+      <p>兩顆彈跳球各據一方，撞到對方領地就反彈並把該格翻成自己的顏色——像素前線無限來回。薄荷 vs 深海，即時比分、可調速度／每邊球數／格數、拖尾與存檔。（參考自 Koen van Gilst 的 Pong Wars：pong-wars.koenvangilst.nl）</p>
+      <div class="card-tags">
+        <span class="tag">game</span>
+        <span class="tag">simulation</span>
+        <span class="tag">pong</span>
+        <span class="tag">generative</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./voxel-village/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./voxel-village/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>體素村莊 Voxel Village</h2>
+      <p>three.js 體素世界觀察模式：小人自動挖方塊、採集材料、逐格蓋房子並不斷擴建，含晝夜循環與夜晚窗戶燈光。可拖曳環顧、縮放、調速，狀態存於 localStorage。</p>
+      <div class="card-tags">
+        <span class="tag">3d</span>
+        <span class="tag">three.js</span>
+        <span class="tag">voxel</span>
+        <span class="tag">simulation</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./cross-drift/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./cross-drift/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>叉點漂移 Cross Drift</h2>
+      <p>n×n 點陣生成動畫：由相鄰四點連成一個「叉叉」，多個叉叉在格點上平滑地上下左右漂移，配上各種配色（普普、霓虹、粉彩、大地、賽博、海洋…）。每次載入依 fxhash 種子決定格數（15–25）、叉叉數與色盤，獨一無二。點擊重生、S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">fxhash</span>
+        <span class="tag">p5.js</span>
+        <span class="tag">grid</span>
+        <span class="tag">animation</span>
+        <span class="tag">generative</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./unveil/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./unveil/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>描線揭圖 Unveil</h2>
+      <p>Qix／天蠶變風的圈地揭圖小遊戲：用方向鍵把游標拉進黑幕拉線，回到已揭開的邊界圍出封閉區，沒有敵人的那一側就揭開底層圖片（原創立繪）。避開在黑幕中亂彈的紅色敵人——碰到你正在拉的線就扣一命。揭開達 75% 過關看完整圖，關卡越高敵人越多越快。方向鍵／WASD 或畫面方向鍵操作，支援手機。</p>
+      <div class="card-tags">
+        <span class="tag">game</span>
+        <span class="tag">qix</span>
+        <span class="tag">canvas</span>
+        <span class="tag">reveal</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./minesweeper/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./minesweeper/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>踩地雷 Minesweeper</h2>
+      <p>經典踩地雷：初級／中級／高級三種難度，左鍵翻開、右鍵或長按插旗，數字代表周圍八格的地雷數，翻開所有非雷格即獲勝。首擊一定安全、零格自動展開、已翻開的數字可「和牌開數字」一次展開周圍。含計時、剩餘雷數、笑臉重開與存檔，支援手機（插旗模式）。</p>
+      <div class="card-tags">
+        <span class="tag">game</span>
+        <span class="tag">minesweeper</span>
+        <span class="tag">puzzle</span>
+        <span class="tag">classic</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./life-sim/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./life-sim/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>擲骰模擬人生 Dice of Life</h2>
+      <p>擲骰子模擬人生的文字遊戲：從出生到晚年共六個階段，每階段先擲 d10／d12 觸發隨機事件，再做選擇——部分選擇需 d20 檢定（骰值＋屬性修正 ≥ 門檻才成功）。選擇會累積 健康／智力／體魄／魅力／幸福／財富，塑造你的職涯與命運。走完晚年給你一份人生總結：稱號、評分（S～D）與壽命。每局都不一樣，來看看這輩子能活成什麼樣子。</p>
+      <div class="card-tags">
+        <span class="tag">game</span>
+        <span class="tag">dice</span>
+        <span class="tag">text</span>
+        <span class="tag">roguelike</span>
+        <span class="tag">simulation</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./tilework/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./tilework/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Tilework 磁磚排版</h2>
+      <p>裝飾磁磚牆生成藝術：每次載入依 fxhash 種子挑「鋪貼版型 × 花樣傳統 × 配色」。分兩類——彩繪磁磚牆（直排、錯縫、旋轉拼接）搭配幾何花樣（伊斯蘭八角星、四葉飾、azulejo 花草、水泥花磚圓弧、交織帶、zellige 星芒），旋轉拼接會讓相鄰磁磚的圓弧接成連續流動花樣；以及幾何編織版型（籃編 basketweave、風車 pinwheel）的純色磚。配色參考各地磁磚傳統：葡萄牙 Azulejo、荷蘭 Delft、墨西哥 Talavera、摩洛哥 Zellige、水泥花磚 Encaustic、Art Deco、維多利亞；磚間留灰縫、外加邊框，左下角附標籤。點擊或空白鍵換一面牆，S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">fxhash</span>
+        <span class="tag">p5.js</span>
+        <span class="tag">tiles</span>
+        <span class="tag">pattern</span>
+        <span class="tag">generative</span>
+      </div>
+    </div>
+  </a>
+
+    <a class="card" href="./tulips/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./tulips/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Tulips 鬱金香花海</h2>
+      <p>油畫風格室外鬱金香花海。晴天、陰天、下雨、夜晚月光四種場景；水平色帶、對角斜紋、放射透視三種田野佈局；八種花色分帶種植，Perlin noise 疏密叢聚與偶發異色株模擬真實花田，遠景大氣霧化褪色、近景完整莖葉與杯形花瓣，花行間田壟土溝帶出農田質感。厚塗筆觸引擎：bezier 板狀筆觸＋鬃毛紋＋高光稜線。點擊重新生成，S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">油畫</span>
+        <span class="tag">impasto</span>
+        <span class="tag">landscape</span>
+        <span class="tag">generative</span>
+      </div>
+    </div>
+  </a>
+
+
+  <a class="card" href="./dorm-life/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./dorm-life/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Dorm Life 宿舍人生</h2>
+      <p>Gather Town 風格的像素宿舍自動人生。六位角色（三男三女）住在大學宿舍，各有寢室與衛浴，共用客廳、廚房餐廳與書房；依作息上課、用餐、讀書、社交、睡覺，靠近彼此便交談，對話全程記錄。整個世界是「伺服器時間＋當日種子」的純函數（PHP 提供標準時鐘），所以每位訪客看到完全相同的角色位置、行程與對話——不需資料庫即同步。暖色磚牆木地板、立體家具與 Gather 風角色，窗外可見太陽月亮軌跡與晴／陰／雨天氣、日夜光照。一天約六分鐘循環，換日重新展開。</p>
+      <div class="card-tags">
+        <span class="tag">canvas</span>
+        <span class="tag">pixel-art</span>
+        <span class="tag">php</span>
+        <span class="tag">simulation</span>
+        <span class="tag">deterministic</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./kowloon/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./kowloon/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Kowloon 九龍城寨</h2>
+      <p>three.js 程序生成的九龍城寨風格巨構。密集網格上堆疊高低參差的違建高樓，每棟以 canvas 即時繪製立面貼圖（窗格、亮燈、冷氣機、鏽水痕、底層霓虹招牌），頂樓散布水塔、冷氣、天線與加蓋鐵皮屋，屋頂之間拉起下垂的糾纏電纜。中央高、邊緣留光井，懸挑違建向外凸出。三種時段色調（霓虹夜、黃昏霾、雨霧綠），霧氣景深與 bloom 霓虹光暈。概念參考 BuildingGeneratorThreeJS 的參數化組裝，改為純程式幾何。點擊重新生成，拖曳旋轉，S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">three.js</span>
+        <span class="tag">webgl</span>
+        <span class="tag">procedural</span>
+        <span class="tag">cityscape</span>
+        <span class="tag">generative</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./slime-mold/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./slime-mold/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Slime Mold 黏菌培養皿</h2>
+      <p>真實 Physarum polycephalum 多頭絨泡菌的 agent-based 覓食模擬。數萬顆粒子各自感測前方費洛蒙、轉向、移動、沉積，自組織出黏菌招牌的「網狀脈管」——大量迴路與 degree-3 節點交織，成功脈管變粗成輸送主幹、失敗者縮退，外圍是細密毛茸的扇形覓食前緣。菌落自接種點向外擴張，agent 持續汰換讓網路在探索相與輸送相之間呼吸。四種配色（經典黃、橙紅、白化、螢光青）。點擊重新培養，空白鍵暫停，S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">canvas</span>
+        <span class="tag">physarum</span>
+        <span class="tag">agent-based</span>
+        <span class="tag">simulation</span>
+        <span class="tag">generative</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./circuit-board-sim/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./circuit-board-sim/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Breadboard Circuit Simulator</h2>
+      <p>網頁電路模擬器。把麵包板、元件與跳線做成瀏覽器中的互動工作區，可放置 5V 電池、電阻、LED、開關，點兩個孔位即可拉線或放元件，並即時模擬 LED 是否亮起。</p>
+      <div class="card-tags">
+        <span class="tag">electronics</span>
+        <span class="tag">simulator</span>
+        <span class="tag">breadboard</span>
+        <span class="tag">interactive</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./nature-particles/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./nature-particles/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Nature Particles</h2>
+      <p>自然粒子場景生成藝術。1500+ 粒子在 3D 空間中飄動、層疊，組成山脊、雲霧、洋流、潮汐、極光幕等有機景觀。每個 fxhash 種子生成獨特場景：漸層背景、配色、粒子密度、漂移速度、湍流強度、地平線高度、曲率皆不同。支援滑鼠/觸控互動推開粒子。使用 Perlin noise 模擬自然飄動，細微呼吸脈動營造生命感。響應式設計。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">fxhash</span>
+        <span class="tag">particles</span>
+        <span class="tag">nature</span>
+        <span class="tag">3D</span>
+        <span class="tag">interactive</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./taipei-bus/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./taipei-bus/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Taipei Bus</h2>
+      <p>台北公車即時動態 gen-art。以 Data.Taipei 公車資料在地圖上繪出車輛位置、速度色彩與發光軌跡，可切換路線並顯示路線形狀、車輛數、平均速度與資料更新時間。</p>
+      <div class="card-tags">
+        <span class="tag">Leaflet</span>
+        <span class="tag">Data.Taipei</span>
+        <span class="tag">bus</span>
+        <span class="tag">realtime</span>
+        <span class="tag">map</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./neko/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./neko/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Neko</h2>
+      <p>自動養貓 gen-art。2~4 隻像素貓在一間寬廣的房間裡自由活動：吃飯、睡覺、玩耍、跳上沙發/書桌/牆架/貓樹/貓床，偶爾互動。8 種隨機毛色（虎斑、三花、黑、白、灰、橘子、暹羅、賓士），每次隨機抽取且家具位置每場不同。日夜循環影響環境光、太陽月亮位置與星空，閒置一陣子會自動餵食、清貓砂、開關窗簾與檯燈。可點貓撫摸冒愛心、點窗簾/碗/砂/燈互動。移植自我自己寫的 ESP32-2432S028 (CYD) 電子養貓。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">cats</span>
+        <span class="tag">pixel-art</span>
+        <span class="tag">simulation</span>
+        <span class="tag">day/night</span>
+        <span class="tag">ESP32-port</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./auto-city/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./auto-city/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Auto City</h2>
+      <p>SimCity 風格自動建城 gen-art（45 度等距投影）。AI 規劃井字主路 + 隨機支路 / 死巷；flood-fill 偵測街廓，整個街廓統一分區（R/C/I 不混雜）。大型街廓會出現 2×2 / 2×3 大型建案。道路有車流動畫；天氣循環（晴 / 陰 / 雨 / 夜，含閃電、雨幕、星空、霓虹窗），建築會老舊拆遷重蓋。HUD 顯示居住人口、稅收、政府支出與預算盈虧。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">SimCity</span>
+        <span class="tag">isometric</span>
+        <span class="tag">city</span>
+        <span class="tag">traffic</span>
+        <span class="tag">weather</span>
+        <span class="tag">simulation</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./auto-tower/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./auto-tower/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Auto Tower</h2>
+      <p>Yoot Tower / SimTower 風格自動經營高樓 gen-art（側視剖面）。B10 ~ 20F 共 31 層 17 種設施：辦公室、商城、地下街、餐廳、健身房、電影院、旅店客房 + 接待、SPA、泳池、洗衣店、停車場、地鐵站、垃圾清運、監控室與機房。四座電梯井共 16 部電梯，兩座一般全層停靠、兩座高速採 skip-stop 只服務 B10 ~ B3 + GF + 10F ~ 20F，SCAN 排程沿途同方向接客；雙向電扶梯貫穿 B10 ~ 10F。行人按時段從地鐵或大廳進入、上樓進駐目的設施、停留結束反向離開，並對每間房給出評分與留言。HUD 即時統計在樓人數、各類人流、最熱樓層、營收支出與滿意度，時鐘與天空同步晝夜及天氣（晴 / 雨 / 閃電 / 夜空），進度自動存到 LocalStorage。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">SimTower</span>
+        <span class="tag">elevator</span>
+        <span class="tag">pedestrian</span>
+        <span class="tag">simulation</span>
+        <span class="tag">day/night</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./auto-snake/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./auto-snake/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Auto Snake</h2>
+      <p>AI 自動玩貪吃蛇。用 BFS 找食物 + tail-reachability safety check（模擬吃完後能否 BFS 到尾巴）決定走法，不安全時 fallback 追尾巴繞圈拖時間。死亡會自動重生並換配色。6 組配色、可切換速度。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">snake</span>
+        <span class="tag">BFS</span>
+        <span class="tag">AI</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./liquid-glass/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./liquid-glass/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Liquid Glass</h2>
+      <p>受 iOS 26 液態玻璃啟發。多彩流動色塊背景上飄浮多個透明玻璃形狀，real-time backdrop blur + 內側 highlight gradient + 雙層 rim 邊框 + 鏡面反光弧。3 種形狀模式（Bubbles 圓 / Lozenges 藥丸 / Cards 卡片）、6 組配色、可點擊推開或新增玻璃。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">liquid-glass</span>
+        <span class="tag">iOS</span>
+        <span class="tag">interactive</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./arrows-chain/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./arrows-chain/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Arrows Chain</h2>
+      <p>受 Arrows GO! 啟發的箭頭連鎖反應 gen-art。每關 AI 在不同造型（圓、心、星、螺旋、葡萄串、菱形、外框、對角、散布、字母）的箭頭排列中找出最長連鎖起點，射線一格格清空。6 組配色、可切換速度、可手動點箭頭觸發。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">puzzle</span>
+        <span class="tag">chain</span>
+        <span class="tag">AI</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./anime-fireworks/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./anime-fireworks/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Anime Fireworks</h2>
+      <p>連續自動煙火秀。anime.js 控制火箭升空 ease curve 與爆炸 flash 環擴張，p5.js 渲染粒子物理。8 種爆炸樣式（牡丹、菊花、垂柳、環、棕櫚、心形、螺旋、Crossette 分裂）、多段子爆、火箭軌跡、Crackle 火花、星空 + 城市剪影。9 組配色，按 Finale 觸發 5 秒終曲狂炸。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">anime.js</span>
+        <span class="tag">particles</span>
+        <span class="tag">fireworks</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./anime-constellation/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./anime-constellation/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Anime Constellation</h2>
+      <p>參考 anime.js demo 常見的 stagger grid、timeline 編排與 SVG motion path，生成一張會呼吸的星圖。每次隨機種子產生不同軌道、星點、連線與色盤；3 種模式（radial / rings / lattice），可重新生成、切換模式與暫停。</p>
+      <div class="card-tags">
+        <span class="tag">anime.js</span>
+        <span class="tag">SVG</span>
+        <span class="tag">stagger</span>
+        <span class="tag">motion-path</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./backtracking/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./backtracking/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Backtracking Visualizer</h2>
+      <p>視覺化說明回溯法：決策樹邊探索邊長出來，當前 cursor 發光、找到解的分支轉金色、失敗的分支變灰。循環展示 Permutations、Combinations、N-Queens 三類問題。可切換速度（慢/正常/快/極速）。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">backtracking</span>
+        <span class="tag">algorithm</span>
+        <span class="tag">教學</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./auto-battle/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./auto-battle/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Auto Battle — Puyo vs Tetris</h2>
+      <p>Puyo Puyo 對戰 Tetris 自動對戰。兩個 AI 同時跑，Tetris 消行送對手垃圾 puyo、Puyo 連鎖送對手垃圾行。任一方爆頂判勝，自動 reset 下一場。5 組配色。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">puyo</span>
+        <span class="tag">tetris</span>
+        <span class="tag">AI</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./auto-tetris/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./auto-tetris/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Auto Tetris</h2>
+      <p>自動玩的俄羅斯方塊。AI 用 Dellacherie 啟發式（最大化消行、最小化高度/洞/凹凸）為每個方塊算最佳落點，無限連續玩。8 組配色，可切換速度（×0.5 ~ ×4）。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">tetris</span>
+        <span class="tag">AI</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./anime-loaders/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./anime-loaders/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Anime Loaders</h2>
+      <p>anime.js 製作的 loading 圖示矩陣。4×3 = 12 格，每格從 29 種 loader 隨機抽（不重複）：脈動、波形、旋轉、軌道、漣漪、進度條、星形、六邊形、鐘擺、花瓣、抖動、翻牌等。8 組配色，按鈕重新洗牌。</p>
+      <div class="card-tags">
+        <span class="tag">anime.js</span>
+        <span class="tag">loaders</span>
+        <span class="tag">grid</span>
+        <span class="tag">animation</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./anime-motion/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./anime-motion/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Anime Motion Path</h2>
+      <p>anime.js motion path 範例。14 個彩色粒子用 stagger 錯位沿 SVG 路徑流動，6 種程式生成路徑：Lissajous、Sine、Spiral、Infinity、Heart、Rose。5 組配色。</p>
+      <div class="card-tags">
+        <span class="tag">anime.js</span>
+        <span class="tag">motion-path</span>
+        <span class="tag">SVG</span>
+        <span class="tag">animation</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./anime-morph/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./anime-morph/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Anime Path Morph</h2>
+      <p>anime.js SVG path morph 範例。3 層 blob 各自循環形變 + 反向旋轉，path 用相同 1M+8C+Z 結構程式生成才能 morph。7 組配色。</p>
+      <div class="card-tags">
+        <span class="tag">anime.js</span>
+        <span class="tag">SVG</span>
+        <span class="tag">morph</span>
+        <span class="tag">animation</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./anime-timeline/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./anime-timeline/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Anime Timeline</h2>
+      <p>anime.js timeline 範例。5×5 方塊網格 6 階段編排動畫：登場 → 旋轉 → 脈動 → 波動 → 爆炸 → 收回。6 組配色，每階段切換顏色。</p>
+      <div class="card-tags">
+        <span class="tag">anime.js</span>
+        <span class="tag">timeline</span>
+        <span class="tag">choreography</span>
+        <span class="tag">animation</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./pixel-farm/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./pixel-farm/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Pixel Farm</h2>
+      <p>像素風格自動牧場模擬。農夫 AI 自動耕地、播種、澆水、收割；四季輪替（春麥、夏番茄、秋南瓜、冬休耕）改變作物與天氣；牛、羊、雞、豬在畜欄內漫遊；穀倉、房屋、水井、池塘、果樹完整場景。含金幣計算、收穫特效、晴雨雪天氣、晝夜光照循環。</p>
+      <div class="card-tags">
+        <span class="tag">pixel art</span>
+        <span class="tag">simulation</span>
+        <span class="tag">farm</span>
+        <span class="tag">canvas</span>
+        <span class="tag">AI</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./anime-grid/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./anime-grid/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Anime Grid</h2>
+      <p>anime.js stagger 動畫展示。16×16 圓點網格，7 種錯位模式：放射波、線性掃描、隨機散布、對角線、正弦流動、漣漪、角落爆裂。8 組配色，點按鈕切換場景。</p>
+      <div class="card-tags">
+        <span class="tag">anime.js</span>
+        <span class="tag">stagger</span>
+        <span class="tag">grid</span>
+        <span class="tag">animation</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./auto-spire/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./auto-spire/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Auto Spire 自動殺戮尖塔</h2>
+      <p>致敬《殺戮尖塔》的全自動爬塔演示。四位角色——鐵甲戰士、靜默獵手、故障機器人、觀者——各擁有約 55 張忠於原作數值的卡牌，加上 30 種遺物與 12 種藥水。AI 依斬殺優先、格擋需求、能力鋪場等啟發式自動出牌，爬完三幕共 45 層：小怪、精英、商店、營火，一路打到最終 Boss（覺醒者、時間吞噬者、雙子）。姿態、球體、真言、中毒、商店與戰績記錄完整實作。點擊切換速度，I 鍵看遺物藥水，空白鍵暫停，R 開新局，S 存圖。</p>
+      <div class="card-tags">
+        <span class="tag">canvas</span>
+        <span class="tag">roguelike</span>
+        <span class="tag">card-game</span>
+        <span class="tag">auto-battle</span>
+        <span class="tag">tribute</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./stereogram/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./stereogram/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Stereogram 立體視覺圖</h2>
+      <p>隱藏式 3D 立體視覺圖（Autostereogram / Magic Eye）產生器。每次隨機藏入不同立體圖案：球體、甜甜圈、波浪曲面、水面漣漪、金字塔、山丘地形、浮空方塊、愛心、星星、文字等；搭配彩色亂點、黑白亂點、雜訊織紋、斜紋條帶四種紋理。用平行眼觀看，讓上方兩個定位點融合成三點，隱藏圖案便會浮現。採用經典 Thimbleby–Inglis–Witten 像素連結演算法含隱藏面檢查。點擊重新生成，A 鍵顯示答案，S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">canvas</span>
+        <span class="tag">stereogram</span>
+        <span class="tag">3D</span>
+        <span class="tag">magic-eye</span>
+        <span class="tag">generative</span>
+      </div>
+    </div>
+  </a>
+
+
+  <a class="card" href="./rubik/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./rubik/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Auto Rubik 自動魔方</h2>
+      <p>Three.js 3D 魔方自動打亂解題視覺化。22 步隨機打亂（相鄰步不重複同面），解題序列為打亂的反向逆步；easeInOutCubic 流暢轉面動畫，pivot-group 技法確保顏色正確貼合；頂部序列 chip 即時高亮當前步、底部顯示解題進度，循環展示。支援滑鼠拖曳、縮放，S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">three.js</span>
+        <span class="tag">3d</span>
+        <span class="tag">puzzle</span>
+        <span class="tag">algorithm</span>
+        <span class="tag">animation</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./tiny-planet/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./tiny-planet/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Tiny Planet 小星球</h2>
+      <p>Three.js 程序生成的 3D 箱庭小星球。fxhash 決定地形噪波種子、海平面高度、五種星球主題（翠綠/火焰/沙漠/冰雪/紫晶）；FBM 噪波疊七層生成地形，高度決定生態帶（深海→淺海→沙灘→草地→森林→岩石→雪頂）；Instanced Mesh 植樹（最多 350 棵）、置放房屋與岩石；大氣光暈 rim shader、可探索雲朵、緩慢公轉日照。可滑鼠任意角度環繞探索。</p>
+      <div class="card-tags">
+        <span class="tag">three.js</span>
+        <span class="tag">3d</span>
+        <span class="tag">procedural</span>
+        <span class="tag">terrain</span>
+        <span class="tag">interactive</span>
+        <span class="tag">explorable</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./cosmos/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./cosmos/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Cosmos 星塵宇宙</h2>
+      <p>Three.js 粒子星河。fxhash 隨機決定螺旋臂數（2–4）、配色（藍白、暖橙、翡翠、紫霧）與粒子密度（50k–75k）；對數螺旋算法分布粒子群，中心核球自然隆起，星際雲氣層疊渲染；自訂 GLSL 著色器配 UnrealBloom 後處理光暈；OrbitControls 拖曳旋轉縮放，R 鍵重新生成，S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">three.js</span>
+        <span class="tag">particle</span>
+        <span class="tag">3d</span>
+        <span class="tag">shader</span>
+        <span class="tag">bloom</span>
+        <span class="tag">interactive</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./ink-flow/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./ink-flow/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Ink Flow 墨流</h2>
+      <p>GPU 流體模擬的墨水暈染。Navier-Stokes 求解器在 shader 中即時運算（渦度補強、Jacobi 壓力迭代、雙場平流），四色墨滴在紙上流動、捲旋、融合；Beer-Lambert 吸墨混色、邊緣沉澱水痕、三層紙紋。可拖曳攪動、點擊滴墨、四色墨盤切換，自動滴墨模式會自己作畫。</p>
+      <div class="card-tags">
+        <span class="tag">webgl</span>
+        <span class="tag">fluid simulation</span>
+        <span class="tag">shader</span>
+        <span class="tag">ink</span>
+        <span class="tag">interactive</span>
+      </div>
+    </div>
+  </a>
+
+
+  <a class="card" href="./shatter/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./shatter/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>破碎還原 · Ceramic Shatter</h2>
+      <p>three.js 程序生成的陶瓷器皿：一顆球體變形成罐／瓶造型，表面三角面以 Voronoi 聚類分成數十片、每片加壁厚做成有體積的瓷片，在「完整 ↔ 由中心向外炸裂」之間無縫循環還原。內部發光核與中心點光營造由內而外的能量，RoomEnvironment 釉面環境反射、ACES 色調。每次隨機生成造型(收頸／腹部／高度) × 釉色(青瓷／青花／天目／緋紅／象牙…) × 碎片數 × 炸裂距離。拖曳旋轉(自動繞行)、點畫面重生、S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">three.js</span>
+        <span class="tag">ceramic</span>
+        <span class="tag">animation</span>
+        <span class="tag">voronoi</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./dotwork/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./dotwork/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Dotwork 圓點畫</h2>
+      <p>以大小不一、色彩鮮明的圓點／水彩斑點堆出主體剪影的圓點畫。做法：先把主體剪影(貓／鳥／魚／蝴蝶／花／愛心／兔／貓頭鷹／海馬／鯨魚／蝸牛／孔雀)畫進離屏 buffer 並模糊(圓點彼此不重疊、留白紙縫)，當作「密度圖」——核心密、邊緣自然羽化飛散；再依密度做拒絕取樣灑點，用 Perlin noise 分出色塊區域並夾雜鮮豔雜點；主體四周再灑偏冷色的零星噴濺點，配上眼睛與白紙紋理。每次依 fxhash 選主體 × 色盤(彩虹／暖陽／糖果／寶石／春櫻) × 朝向，獨一無二。點畫面重生，S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">pointillism</span>
+        <span class="tag">dots</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./jp-street/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./jp-street/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Neon Street 夜の街</h2>
+      <p>three.js 程序生成的日本街道第一人稱穿梭。無限往前開過窄巷，兩側程序生成高低參差的窄樓，臨街面以 canvas 即時繪製窗格亮燈；正對來車的直式霓虹袖看板（居酒屋、ラーメン、カラオケ…）、橫式店招、成串紅提灯、發光的自動販賣機沿街閃爍，頭頂拉滿下垂糾纏的電線，濕路面映出霓虹倒影。街景以 segment 環形回收（純位移、零運行期配置）達成無限延伸，霧氣景深與 bloom 輝光，街尾遠景矗立日本地標塔（東京鐵塔／晴空塔／通天閣，隨機）。點擊隨機切換場景——白天快晴、夕暮れ、陰雨與夜雨（含落雨粒子、濕反光）、霓虹夜、紫煙；← → / A D 或拖曳可左右移動，S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">three.js</span>
+        <span class="tag">japan</span>
+        <span class="tag">neon</span>
+        <span class="tag">endless</span>
+        <span class="tag">bloom</span>
+      </div>
+    </div>
+  </a>
+
+
+
+
+  <a class="card" href="./wordcloud/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./wordcloud/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Google Trends Cloud</h2>
+      <p>Google 熱門搜尋趨勢文字雲，涵蓋台灣、美國、日本、英國四個地區。每小時自動更新，Hover 顯示來源地區，可按地區篩選。</p>
+      <div class="card-tags">
+        <span class="tag">data-viz</span>
+        <span class="tag">trends</span>
+        <span class="tag">live</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./wordle/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./wordle/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Wordle</h2>
+      <p>每日一字猜謎遊戲。每天早上 8 點更新一個 5-7 字母的英文單字，你有 8 次機會猜出正確答案。綠色=正確、黃色=位置錯、灰色=不存在。</p>
+      <div class="card-tags">
+        <span class="tag">game</span>
+        <span class="tag">daily</span>
+        <span class="tag">wordle</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./wordle-solver/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./wordle-solver/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Wordle Solver</h2>
+      <p>輸入你的 Wordle 線索，自動過濾並推薦最佳猜測。支援 5-7 字母、8 行輸入、字母頻率排序。點擊格子切換綠/黃/灰狀態。</p>
+      <div class="card-tags">
+        <span class="tag">tool</span>
+        <span class="tag">solver</span>
+        <span class="tag">wordle</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./slot-machine/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./slot-machine/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>拉霸機 Slot Machine</h2>
+      <p>經典水果機風格拉霸。傳統符號：🍒🍋🍊🍇🍉🔔💎7️⃣，帶權重隨機與賠率表。按 SPIN 或空白鍵拉霸，BET 調整下注。</p>
+      <div class="card-tags">
+        <span class="tag">game</span>
+        <span class="tag">slot</span>
+        <span class="tag">interactive</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./go/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./go/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>圍棋 Go</h2>
+      <p>人機對戰圍棋。支援 5×5 / 7×7 / 11×11 / 13×13 棋盤，自動計算貼目、提子與領地（日式計分）。AI 會評估吃子威脅、救援己方、開局佔角。兩方連續虛手後自動終局並顯示領地覆蓋。</p>
+      <div class="card-tags">
+        <span class="tag">game</span>
+        <span class="tag">board game</span>
+        <span class="tag">AI</span>
+        <span class="tag">Go</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./gungi/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./gungi/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>軍儀棋 Gungi</h2>
+      <p>改編自《獵人》動漫的策略棋盤遊戲。9×9 棋盤、14 種棋子、疊加堆塔機制，先吃掉對手帥者獲勝。支援人類 vs 電腦對戰，含部署階段與全棋子移動規則。</p>
+      <div class="card-tags">
+        <span class="tag">game</span>
+        <span class="tag">board game</span>
+        <span class="tag">AI</span>
+        <span class="tag">Hunter×Hunter</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./domino/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./domino/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Domino 多米諾骨牌</h2>
+      <p>多米諾骨牌連鎖倒塌生成藝術。6 種排列方式：螺旋、之字、同心圓、波浪、網格、瀑布。每張骨牌有隨機點數、3D 透視傾倒效果和地面陰影。自動循環、點擊重新生成。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">animation</span>
+        <span class="tag">physics</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./tsp/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./tsp/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>TSP 旅行推銷員問題</h2>
+      <p>經典 NP-hard 問題的演算法視覺化。三種解法逐步動畫：最近鄰居法（貪心）、2-Opt（局部優化）、模擬退火（全域搜尋）。觀察路徑如何從混亂逐步收斂到近似最優解。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">algorithm</span>
+        <span class="tag">interactive</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./tensegrity/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./tensegrity/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Tensegrity 張拉整體</h2>
+      <p>張拉整體結構生成藝術。剛性壓桿互不接觸，靠連續張力線維持平衡。3-5 桿結構在 3D 空間旋轉搖擺，三種佈局模式：單體、三聯、群落。10 組配色搭配光暈效果。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">3D</span>
+        <span class="tag">structure</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./fractal-mountain/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./fractal-mountain/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Fractal Mountain 碎形山水</h2>
+      <p>中點位移碎形演算法生成多層山脈。5-7 層山嶺由遠到近、由淺到深，搭配水墨紋理線條、氤氳霧氣、水面倒影和月光。7 組配色：水墨、暮色、晨曦、深冬、翠嶺、月夜、赤壁。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">fractal</span>
+        <span class="tag">landscape</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./maze/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./maze/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Maze</h2>
+      <p>完美迷宮生成藝術。DFS 遞迴回溯演算法產生 10×10 到 50×50 的隨機迷宮，點擊畫面觸發 BFS 解答動畫，路徑漸層從入口色過渡到出口色。16 組高對比配色。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">maze</span>
+        <span class="tag">interactive</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./maze-flood/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./maze-flood/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Maze Flood</h2>
+      <p>用流體模擬解迷宮。從上方入口持續注入液體，重力下落、同列等位、壓力上推三個 pass 的細胞自動機驅動液面：岔路被灌滿、U 形段累積上升，最終從下方出口湧出。16 組配色，每組液體色獨立調校。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">maze</span>
+        <span class="tag">fluid</span>
+        <span class="tag">simulation</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./morphdots/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./morphdots/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Morph Dots</h2>
+      <p>Superellipse 變形動畫。網格中的圓點在圓形、四角星、彩色圓點之間持續變形，搭配尺寸脈動與背景反轉，創造催眠般的視覺節奏。16 組配色，每個 hash 獨特。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">animation</span>
+        <span class="tag">superellipse</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./chestnut-truchet/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./chestnut-truchet/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Chestnut Truchet</h2>
+      <p>栗子形 Truchet 瓷磚生成藝術。飽滿的水滴弧形連接邊緣中點，中間膨脹、兩端收尖，相鄰 tile 對接形成栗子般的有機曲線。19 組配色搭配紙質紋理。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">Truchet</span>
+        <span class="tag">chestnut</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./round-truchet/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./round-truchet/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Round Truchet</h2>
+      <p>圓形填充式 Truchet 瓷磚。四分之一圓在角落配對，相鄰 tile 連接形成完整圓形與有機圓潤圖案。22 組配色搭配紙質紋理，呈現飽滿的幾何視覺。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">Truchet</span>
+        <span class="tag">circles</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./flora/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./flora/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Flora</h2>
+      <p>扁平風格花束生成藝術。密集的海芋、罌粟花與鬱金香以大膽色塊填滿圓形構圖，8 組配色方案搭配 4 種密度變化，每次刷新都是獨一無二的花園。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">flat design</span>
+        <span class="tag">花卉</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./botanical/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./botanical/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Botanical Line Art</h2>
+      <p>鋼筆繪圖機風格的植物線描生成藝術。遞迴分支演算法產生有機樹木與垂藤，搭配格紋背景與飄落花瓣。純線條、無填色的 plotter art 美學。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">plotter</span>
+        <span class="tag">線描</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./loading-gen/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./loading-gen/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Loading Gen</h2>
+      <p>生成藝術風格 Loader 矩陣。12 種類型：莫列波紋、Perlin 噪音流、李薩如曲線、洛倫茲吸引子、粒子軌跡、沃羅諾伊圖、雙擺混沌、遞迴方塊、變形蟲、網格擾動、費馬螺旋、多邊形變形。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">animation</span>
+        <span class="tag">math</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./loading/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./loading/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Loading Spinners</h2>
+      <p>n×m 網格的 Loading 動畫生成藝術。12 種 spinner 類型：旋轉弧、追逐圓點、脈衝環、雙環反轉、軌道球、時鐘掃描等，每個各有不同配色與速度。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">animation</span>
+        <span class="tag">loading</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./mini-city/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./mini-city/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Miniature City</h2>
+      <p>九龍城寨風格的微縮城市。等角透視視角，密集建築有機堆疊，搭配底部懸空支撐柱、屋頂天線水塔、外露管線。鋼筆淡彩風格。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">isometric</span>
+        <span class="tag">城市</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./four-color/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./four-color/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>四色定理</h2>
+      <p>離散數學四色定理的生成藝術。Voronoi 圖產生隨機平面地圖，透過 Welsh-Powell 貪婪演算法只用 4 種顏色著色，使相鄰區域永不同色。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">Voronoi</span>
+        <span class="tag">graph theory</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./set-theory/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./set-theory/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>集合論圖解</h2>
+      <p>離散數學集合論的互動式圖解。涵蓋聯集、交集、差集、補集、對稱差、冪集、笛卡兒積，搭配 Venn Diagram 與德摩根定律視覺化。</p>
+      <div class="card-tags">
+        <span class="tag">教學</span>
+        <span class="tag">set theory</span>
+        <span class="tag">數學</span>
+        <span class="tag">Venn</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./dp-path/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./dp-path/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>DP Minimum Path</h2>
+      <p>Dynamic Programming 視覺化教學。在隨機成本網格上，動畫展示 DP 表逐格填入過程，最後回溯出從左上到右下的最小成本路徑。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">教學</span>
+        <span class="tag">DP</span>
+        <span class="tag">interactive</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./isometric/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./isometric/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Isometric Cubes</h2>
+      <p>等角立體方塊堆疊，每個面隨機填入圓點、棋盤格、條紋、菱形等圖案。10 組配色風格，從霓虹到赤陶土都有。階梯式排列營造 3D 錯視效果。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">isometric</span>
+        <span class="tag">patterns</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
   <a class="card" href="./kamon/" target="_blank">
     <div class="card-preview">
-      <iframe src="./kamon/" loading="lazy" sandbox="allow-scripts" scrolling="no"></iframe>
+      <iframe src="./kamon/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
     </div>
     <div class="card-body">
       <h2>家紋 Kamon</h2>
@@ -160,7 +1353,7 @@
 
   <a class="card" href="./taiwan-tiles/" target="_blank">
     <div class="card-preview">
-      <iframe src="./taiwan-tiles/" loading="lazy" sandbox="allow-scripts" scrolling="no"></iframe>
+      <iframe src="./taiwan-tiles/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
     </div>
     <div class="card-body">
       <h2>台灣花磚</h2>
@@ -176,11 +1369,11 @@
 
   <a class="card" href="./truchet/" target="_blank">
     <div class="card-preview">
-      <iframe src="./truchet/" loading="lazy" sandbox="allow-scripts" scrolling="no"></iframe>
+      <iframe src="./truchet/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
     </div>
     <div class="card-body">
       <h2>Truchet Curves</h2>
-      <p>經典 Truchet 瓷磚的曲線變體，透過隨機旋轉的弧線組合出迷宮般的流動路徑。擁有 60+ 組調色盤，從 Bauhaus 到 Evangelion 風格皆有。</p>
+      <p>經典 Truchet 瓷磚的曲線變體，透過隨機旋轉的弧線組合出迷宮般的流動路徑。擁有 60+ 組調色盤，從 Bauhaus 到 Evangelion 風格皆有。Inspired by RoniBlock</p>
       <div class="card-tags">
         <span class="tag">p5.js</span>
         <span class="tag">Truchet</span>
@@ -190,9 +1383,57 @@
     </div>
   </a>
 
+  <a class="card" href="./truchet-v2/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./truchet-v2/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Truchet v2 圓管套色</h2>
+      <p>Truchet 曲線瓷磚的 v2，一個作品涵蓋三種風貌(依 fxhash 隨機)：A「Riso 套色」——亮底、單墨圓管加綠/青兩道偏移套色殘影(分色印刷錯位)＋散點；B「彩帶眼孔」——黑底、多彩扁平緞帶＋每節點鉚釘眼孔(環+黑心)；C「陶瓷甜甜圈」——多彩緞帶＋甜甜圈大孔環／實心圓盤節點。以圓角圓管取代 v1 的扁平色塊，可選左右／四象對稱而浮現圖騰般錯視。16 組色盤：從 riso 分色、普普螢光、蒸氣波，到鼠尾草、塵霧玫瑰、學院海軍、赤陶等嚴肅 muted 色。每次生成獨一無二，點畫面重生、S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">Truchet</span>
+        <span class="tag">risograph</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./truchet-v4/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./truchet-v4/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Truchet v4 格點變形</h2>
+      <p>Truchet 曲線瓷磚的 v4。方形晶格被漩渦、波浪、鼓脹或擠壓擰彎，四分弧改成二次貝茲，邊中點仍然對接成連續迴路。同一條迴路同一色；暗底「流光」讓光點沿路徑流動，亮底「紙上墨」則是描邊色帶。20 組色盤，可選左右／四象對稱。每次依 fxhash 生成獨一無二，點畫面重生、S 鍵存圖。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">Truchet</span>
+        <span class="tag">變形</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./truchet-weave/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./truchet-weave/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Truchet Weave</h2>
+      <p>Truchet 瓷磚的編織變體，兩條緞帶交叉產生 over/under 立體錯覺。陰影與高光營造布料編織質感，支援弧線與對角線兩種風格。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">Truchet</span>
+        <span class="tag">編織</span>
+        <span class="tag">fxhash</span>
+      </div>
+    </div>
+  </a>
+
   <a class="card" href="./chromatic-lattice/" target="_blank">
     <div class="card-preview">
-      <iframe src="./chromatic-lattice/" loading="lazy" sandbox="allow-scripts" scrolling="no"></iframe>
+      <iframe src="./chromatic-lattice/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
     </div>
     <div class="card-body">
       <h2>Chromatic Lattice</h2>
@@ -206,9 +1447,25 @@
     </div>
   </a>
 
+  <a class="card" href="./eight-queens/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./eight-queens/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>Eight Queens</h2>
+      <p>經典八皇后問題的互動式求解。點擊棋盤放置第一個皇后，演算法自動用 backtracking 找出合法的 8 皇后配置，逐一動畫展示。</p>
+      <div class="card-tags">
+        <span class="tag">p5.js</span>
+        <span class="tag">puzzle</span>
+        <span class="tag">backtracking</span>
+        <span class="tag">interactive</span>
+      </div>
+    </div>
+  </a>
+
   <a class="card" href="./metro/" target="_blank">
     <div class="card-preview">
-      <iframe src="./metro/" loading="lazy" sandbox="allow-scripts" scrolling="no"></iframe>
+      <iframe src="./metro/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
     </div>
     <div class="card-body">
       <h2>Generative Metro</h2>
@@ -225,8 +1482,696 @@
 </div>
 
 <footer>
-  Built with p5.js & fxhash
+  Built with p5.js & fxhash<br>
+  <span class="contact">Contact · kvzhuang＠gmail.com</span>
 </footer>
+
+<script>
+(function() {
+  // 優先讀 URL 參數 ?lang=en / ?lang=zh 強制覆寫（方便測試 & 手動切換）
+  var urlLang = (location.search.match(/[?&]lang=([^&]+)/) || [])[1];
+  var lang;
+  if (urlLang) {
+    lang = decodeURIComponent(urlLang).toLowerCase();
+  } else {
+    lang = (navigator.languages && navigator.languages[0]) || navigator.language || "en";
+    lang = lang.toLowerCase();
+  }
+  // 將原始 locale 歸類到我們有按鈕的語碼
+  var langCode =
+    /^zh\b/i.test(lang) ? "zh" :
+    /^ja\b/i.test(lang) ? "ja" :
+    /^ko\b/i.test(lang) ? "ko" : "en";
+
+  // 高亮目前語言按鈕
+  var switcher = document.getElementById("lang-switcher");
+  if (switcher) {
+    var btns = switcher.querySelectorAll("a");
+    for (var b = 0; b < btns.length; b++) {
+      if (btns[b].getAttribute("data-lang") === langCode) {
+        btns[b].classList.add("active");
+      }
+    }
+  }
+
+  // 中文：不需翻譯
+  if (langCode === "zh") return;
+
+  // 設定 html lang & meta description（依語言而異）
+  var htmlLang = { en: "en", ja: "ja", ko: "ko" }[langCode] || "en";
+  document.documentElement.lang = htmlLang;
+  var metaDescByLang = {
+    en: "Generative art collection by kvzhuang — interactive pieces crafted with p5.js, anime.js and fxhash.",
+    ja: "kvzhuang による生成アート作品集 — p5.js、anime.js、fxhash で作ったインタラクティブ作品。",
+    ko: "kvzhuang의 제너러티브 아트 컬렉션 — p5.js, anime.js, fxhash로 만든 인터랙티브 작품."
+  };
+  var metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) metaDesc.setAttribute("content", metaDescByLang[langCode] || metaDescByLang.en);
+
+  // 翻譯對照表：key 為中文 trim 後的文字
+  var T_EN = {
+    "領地爭奪 Pong Wars": "Pong Wars",
+    "兩顆彈跳球各據一方，撞到對方領地就反彈並把該格翻成自己的顏色——像素前線無限來回。薄荷 vs 深海，即時比分、可調速度／每邊球數／格數、拖尾與存檔。（參考自 Koen van Gilst 的 Pong Wars：pong-wars.koenvangilst.nl）":
+      "Two bouncing balls each hold half the board; hitting the other's territory ricochets and flips that cell to its own color — an endless pixel frontier. Mint vs deep-sea, live score, adjustable speed / balls-per-side / grid size, trails and autosave. Inspired by Koen van Gilst's Pong Wars (pong-wars.koenvangilst.nl).",
+    "體素村莊 Voxel Village": "Voxel Village",
+    "three.js 體素世界觀察模式：小人自動挖方塊、採集材料、逐格蓋房子並不斷擴建，含晝夜循環與夜晚窗戶燈光。可拖曳環顧、縮放、調速，狀態存於 localStorage。":
+      "A three.js voxel world in observe mode: little builders mine blocks, gather materials, and gradually build and expand their houses — with a day/night cycle and windows that glow at night. Drag to look around, zoom, adjust speed; state saved in localStorage.",
+    "踩地雷 Minesweeper": "Minesweeper",
+    "經典踩地雷：初級／中級／高級三種難度，左鍵翻開、右鍵或長按插旗，數字代表周圍八格的地雷數，翻開所有非雷格即獲勝。首擊一定安全、零格自動展開、已翻開的數字可「和牌開數字」一次展開周圍。含計時、剩餘雷數、笑臉重開與存檔，支援手機（插旗模式）。":
+      "Classic Minesweeper with three difficulties (Beginner / Intermediate / Expert). Left-click to reveal, right-click or long-press to flag; a number shows how many mines are in the eight surrounding cells, and revealing every non-mine cell wins. Your first click is always safe, empty cells flood-open automatically, and clicking a revealed number does a 'chord' — opening its neighbors at once when the flags match. Includes a timer, remaining-mine counter, a smiley reset and autosave; mobile-friendly (flag mode).",
+    "擲骰模擬人生 Dice of Life": "Dice of Life",
+    "擲骰子模擬人生的文字遊戲：從出生到晚年共六個階段，每階段先擲 d10／d12 觸發隨機事件，再做選擇——部分選擇需 d20 檢定（骰值＋屬性修正 ≥ 門檻才成功）。選擇會累積 健康／智力／體魄／魅力／幸福／財富，塑造你的職涯與命運。走完晚年給你一份人生總結：稱號、評分（S～D）與壽命。每局都不一樣，來看看這輩子能活成什麼樣子。":
+      "A text-based life-sim driven by dice. From birth to old age you pass through six stages; each stage first rolls a d10 / d12 for a random event, then offers a choice — some choices require a d20 check (roll + stat modifier ≥ the DC to succeed). Choices accumulate Health / Intellect / Strength / Charisma / Happiness / Wealth, shaping your career and fate. After old age you get a life summary: a title, a grade (S–D) and your lifespan. Every run is different — see what kind of life you end up living.",
+    "叉點漂移 Cross Drift": "Cross Drift",
+    "n×n 點陣生成動畫：由相鄰四點連成一個「叉叉」，多個叉叉在格點上平滑地上下左右漂移，配上各種配色（普普、霓虹、粉彩、大地、賽博、海洋…）。每次載入依 fxhash 種子決定格數（15–25）、叉叉數與色盤，獨一無二。點擊重生、S 鍵存圖。":
+      "A generative animation on an n×n dot lattice: four neighboring dots form an 'X' (cross), and many crosses drift smoothly up / down / left / right across the grid, in a range of palettes (pop, neon, pastel, earth, cyber, ocean…). Each load's fxhash seed sets the grid size (15–25), the number of crosses and the palette — unique every time. Click to regenerate, S to save.",
+    "描線揭圖 Unveil": "Unveil — Line Claim",
+    "Qix／天蠶變風的圈地揭圖小遊戲：用方向鍵把游標拉進黑幕拉線，回到已揭開的邊界圍出封閉區，沒有敵人的那一側就揭開底層圖片（原創立繪）。避開在黑幕中亂彈的紅色敵人——碰到你正在拉的線就扣一命。揭開達 75% 過關看完整圖，關卡越高敵人越多越快。方向鍵／WASD 或畫面方向鍵操作，支援手機。":
+      "A Qix / Volfied-style area-claiming game. Steer the cursor with the arrow keys, draw a line into the dark curtain, and return to the revealed border to enclose a region — the side without an enemy is claimed, revealing the hidden picture (original character art) beneath. Dodge the red enemies bouncing in the dark; touching the line you're drawing costs a life. Reveal 75% to clear a stage and see the full image; higher stages add faster, more numerous enemies. Arrow keys / WASD or an on-screen D-pad, mobile-friendly.",
+    "破碎還原 · Ceramic Shatter": "Ceramic Shatter",
+    "three.js 程序生成的陶瓷器皿：一顆球體變形成罐／瓶造型，表面三角面以 Voronoi 聚類分成數十片、每片加壁厚做成有體積的瓷片，在「完整 ↔ 由中心向外炸裂」之間無縫循環還原。內部發光核與中心點光營造由內而外的能量，RoomEnvironment 釉面環境反射、ACES 色調。每次隨機生成造型(收頸／腹部／高度) × 釉色(青瓷／青花／天目／緋紅／象牙…) × 碎片數 × 炸裂距離。拖曳旋轉(自動繞行)、點畫面重生、S 鍵存圖。":
+      "A procedurally generated ceramic vessel in three.js: a sphere is deformed into a jar/vase, its surface triangles are grouped by Voronoi clustering into dozens of shards — each given wall thickness to become a solid piece — that seamlessly loop between whole and bursting outward from the center, then reassemble. A glowing inner core and a central point light give an energy-from-within feel, with RoomEnvironment glaze reflections and ACES tone mapping. Each load randomizes the form (neck / belly / height) × glaze (celadon, blue-and-white, tenmoku, crimson, ivory…) × shard count × burst distance. Drag to orbit (auto-rotating), click to regenerate, S to save.",
+    "Dotwork 圓點畫": "Dotwork — Dot Painting",
+    "以大小不一、色彩鮮明的圓點／水彩斑點堆出主體剪影的圓點畫。做法：先把主體剪影(貓／鳥／魚／蝴蝶／花／愛心／兔／貓頭鷹／海馬／鯨魚／蝸牛／孔雀)畫進離屏 buffer 並模糊(圓點彼此不重疊、留白紙縫)，當作「密度圖」——核心密、邊緣自然羽化飛散；再依密度做拒絕取樣灑點，用 Perlin noise 分出色塊區域並夾雜鮮豔雜點；主體四周再灑偏冷色的零星噴濺點，配上眼睛與白紙紋理。每次依 fxhash 選主體 × 色盤(彩虹／暖陽／糖果／寶石／春櫻) × 朝向，獨一無二。點畫面重生，S 鍵存圖。":
+      "A dot painting that builds a subject silhouette out of bright, size-varied dots and watercolor blobs. How it works: the subject (cat / bird / fish / butterfly / flower / heart / rabbit / owl / seahorse / whale / snail / peacock) is drawn into an offscreen buffer and blurred to become a density map; dots never overlap (white paper shows between them) — dense at the core, feathering out at the edges; dots are then placed by rejection sampling in proportion to that density, with Perlin-noise color regions plus scattered bright specks; a spray of cooler stray dots surrounds the subject, finished with an eye and paper grain. Each fxhash picks subject × palette (rainbow / warm sun / candy / jewel / spring cherry) × facing. Unique every time; click to regenerate, S to save.",
+    "Truchet v2 圓管套色": "Truchet v2 — Riso Pipes",
+    "Truchet 曲線瓷磚的 v2，一個作品涵蓋三種風貌(依 fxhash 隨機)：A「Riso 套色」——亮底、單墨圓管加綠/青兩道偏移套色殘影(分色印刷錯位)＋散點；B「彩帶眼孔」——黑底、多彩扁平緞帶＋每節點鉚釘眼孔(環+黑心)；C「陶瓷甜甜圈」——多彩緞帶＋甜甜圈大孔環／實心圓盤節點。以圓角圓管取代 v1 的扁平色塊，可選左右／四象對稱而浮現圖騰般錯視。16 組色盤：從 riso 分色、普普螢光、蒸氣波，到鼠尾草、塵霧玫瑰、學院海軍、赤陶等嚴肅 muted 色。每次生成獨一無二，點畫面重生、S 鍵存圖。":
+      "A v2 of the Truchet curve tiling that spans three looks in one piece (chosen by fxhash): A 'Riso' — light ground, single-ink rounded pipes with green/cyan offset color echoes (misregistered overprint) plus scattered dots; B 'Ribbon eyelets' — black ground, flat multicolor ribbons with a riveted eyelet (ring + dark center) at every node; C 'Ceramic donuts' — multicolor ribbons studded with big-hole donut rings and solid discs. Rounded pipes replace v1's flat blocks, with optional bilateral / four-fold symmetry conjuring totem-like illusions. 16 palettes, from riso duotones, pop-fluoro and vaporwave to serious muted tones (sage, dusty rose, academic navy, terracotta). Unique every time; click to regenerate, S to save.",
+    "Truchet v4 格點變形": "Truchet v4 — Lattice Warp",
+    "Truchet 曲線瓷磚的 v4。方形晶格被漩渦、波浪、鼓脹或擠壓擰彎，四分弧改成二次貝茲，邊中點仍然對接成連續迴路。同一條迴路同一色；暗底「流光」讓光點沿路徑流動，亮底「紙上墨」則是描邊色帶。20 組色盤，可選左右／四象對稱。每次依 fxhash 生成獨一無二，點畫面重生、S 鍵存圖。":
+      "A v4 of the Truchet curve tiling. The square lattice is twisted by swirl, wave, bulge or pinch; quarter-arcs become quadratic Béziers, but edge midpoints still meet into continuous loops. Each loop shares one color. On a dark ground, 'flow' sends beads of light along the paths; on paper, 'ink' draws outlined color ribbons. 20 palettes, optional bilateral / four-fold symmetry. Unique every fxhash; click to regenerate, S to save.",
+    "Neon Street 夜の街": "Neon Street",
+    "three.js 程序生成的日本街道第一人稱穿梭。無限往前開過窄巷，兩側程序生成高低參差的窄樓，臨街面以 canvas 即時繪製窗格亮燈；正對來車的直式霓虹袖看板（居酒屋、ラーメン、カラオケ…）、橫式店招、成串紅提灯、發光的自動販賣機沿街閃爍，頭頂拉滿下垂糾纏的電線，濕路面映出霓虹倒影。街景以 segment 環形回收（純位移、零運行期配置）達成無限延伸，霧氣景深與 bloom 輝光，街尾遠景矗立日本地標塔（東京鐵塔／晴空塔／通天閣，隨機）。點擊隨機切換場景——白天快晴、夕暮れ、陰雨與夜雨（含落雨粒子、濕反光）、霓虹夜、紫煙；← → / A D 或拖曳可左右移動，S 鍵存圖。":
+      "A first-person, endless cruise down a Japanese street, procedurally generated with three.js. Narrow buildings of uneven height line both sides, their street facades drawn live on a canvas (window grids, lit rooms); vertical neon blade signs facing the oncoming view (izakaya, ramen, karaoke…), horizontal shop signs, strings of red lanterns and glowing vending machines flicker past, with sagging tangles of overhead cable and neon reflections on the wet road. The street extends forever via ring-buffered segments (pure translation, zero runtime allocation), with atmospheric fog and bloom glow, and a distant Japanese landmark tower (Tokyo Tower / Skytree / Tsutenkaku, random) standing at the far end of the street. Click to shuffle the scene — clear day, sunset, overcast rain and rainy night (with falling-rain particles and wet reflections), neon night, violet haze; steer left/right with ← → / A D or drag, S to save.",
+    "Starry Night 星夜": "The Starry Night",
+    "以演算法重現梵谷《星夜》(1889) 的漩渦夜空與厚塗油畫。八層 impasto 筆觸引擎疊出鬃毛紋、高光稜線；noise 亂流加多個漩渦驅動旋轉的星雲，招牌雙渦落在畫面中偏左；橘暈弦月與約 11 顆放光的星以同心亮環鋪成；遠山起伏、山村與刺入夜空的教堂尖塔、前景如火焰般竄升的絲柏。每次依 fxhash 種子生成獨一無二的夜，開頁逐筆作畫約 4 秒。":
+      "An algorithmic reimagining of Van Gogh's The Starry Night (1889): a swirling night sky in impasto oil paint. An eight-layer brush engine builds bristle striations and highlight ridges; noise turbulence plus several vortices drive the rotating nebula, with the signature double swirl set left of center. A crescent moon in an orange halo and about eleven glowing stars are laid in with concentric bright rings; rolling hills, a village and a church spire piercing the sky, and a flame-like cypress rising in the foreground. Each fxhash seed paints a unique night, brushed stroke by stroke over about four seconds.",
+    "Tilework 磁磚排版": "Tilework",
+    "裝飾磁磚牆生成藝術：每次載入依 fxhash 種子挑「鋪貼版型 × 花樣傳統 × 配色」。分兩類——彩繪磁磚牆（直排、錯縫、旋轉拼接）搭配幾何花樣（伊斯蘭八角星、四葉飾、azulejo 花草、水泥花磚圓弧、交織帶、zellige 星芒），旋轉拼接會讓相鄰磁磚的圓弧接成連續流動花樣；以及幾何編織版型（籃編 basketweave、風車 pinwheel）的純色磚。配色參考各地磁磚傳統：葡萄牙 Azulejo、荷蘭 Delft、墨西哥 Talavera、摩洛哥 Zellige、水泥花磚 Encaustic、Art Deco、維多利亞；磚間留灰縫、外加邊框，左下角附標籤。點擊或空白鍵換一面牆，S 鍵存圖。":
+      "A generative decorative tile wall. Each load picks a layout × motif tradition × palette by fxhash seed, in two families. Painted tile walls (straight set, running bond, rotated set) carry geometric motifs — Islamic eight-point star, quatrefoil, azulejo florals, encaustic quarter-arcs, interlaced bands, zellige star bursts — and the rotated set lets neighboring tiles' arcs join into continuous flowing patterns. Geometric weave layouts (basketweave, pinwheel) use solid glazed tiles. Palettes draw on real tile traditions — Portuguese Azulejo, Dutch Delft, Mexican Talavera, Moroccan Zellige, encaustic cement, Art Deco and Victorian — with grout lines between tiles and an outer frame, plus a small label at the lower left. Click or press Space for another wall, S to save.",
+    "Pointillism 點描印象": "Pointillism",
+    "以數萬顆圓點、光學混色（相鄰互補色點並置）的點描手法，概念式重現 33 幅印象派／後印象派名作。每次載入依 fxhash 種子挑一幅並套用該畫代表色盤——涵蓋莫內（日出印象、睡蓮、罌粟花田、乾草堆、盧昂大教堂、日本橋、威尼斯黃昏、霧中國會、喜鵲雪景、懸崖步道、吉維尼花徑…）、梵谷（星夜、隆河星夜、麥田絲柏、夜間咖啡館、鳶尾花、橄欖樹、杏花）、秀拉（大碗島、阿尼埃爾浴場）、席涅克（聖特羅佩港、亞維儂教皇宮）、雷諾瓦、畢沙羅、希斯里、竇加、塞尚、卡玉伯特。底畫由垂直漸層、漩渦流光、水面流紋與柔邊色塊程序化組成，再鋪兩層圓點（柔底＋清晰點），部分點改用口音色並置產生閃爍。左下角附美術館式標籤。點擊或空白鍵換一幅，S 鍵存圖。":
+      "A pointillist study that conceptually reimagines 33 Impressionist / Post-Impressionist masterpieces with tens of thousands of dots and optical color mixing (juxtaposed complementary specks). Each load picks one by fxhash seed and applies that painting's signature palette — spanning Monet (Impression Sunrise, Water Lilies, Poppy Field, Grainstacks, Rouen Cathedral, the Japanese Bridge, Venice at dusk, Houses of Parliament in fog, The Magpie, the Cliff Walk, the Giverny path…), Van Gogh (Starry Night, over the Rhône, Wheatfield with Cypresses, Café Terrace at Night, Irises, Olive Trees, Almond Blossom), Seurat (La Grande Jatte, Bathers at Asnières), Signac (Saint-Tropez, Papal Palace at Avignon), plus Renoir, Pissarro, Sisley, Degas, Cézanne and Caillebotte. The underlying image is built procedurally from vertical gradients, swirling light, water ripples and soft-edged color fields, then covered by two dot layers (a soft base and crisp points), with a fraction of dots swapped for accent colors to create shimmer. A museum-style label sits at the lower left. Click or press Space for another painting, S to save.",
+    "Dorm Life 宿舍人生": "Dorm Life",
+    "Gather Town 風格的像素宿舍自動人生。六位角色（三男三女）住在大學宿舍，各有寢室與衛浴，共用客廳、廚房餐廳與書房；依作息上課、用餐、讀書、社交、睡覺，靠近彼此便交談，對話全程記錄。整個世界是「伺服器時間＋當日種子」的純函數（PHP 提供標準時鐘），所以每位訪客看到完全相同的角色位置、行程與對話——不需資料庫即同步。暖色磚牆木地板、立體家具與 Gather 風角色，窗外可見太陽月亮軌跡與晴／陰／雨天氣、日夜光照。一天約六分鐘循環，換日重新展開。": "A Gather Town-style pixel dorm that lives on its own. Six characters (three men, three women) share a university dorm — each with a private bedroom and bathroom, plus a shared living room, kitchen-diner and study. They attend class, eat, study, socialize and sleep on a daily rhythm, chatting when they come close, with every line logged. The whole world is a pure function of server time plus a daily seed (PHP supplies the clock), so every visitor sees exactly the same positions, schedules and conversations — synced with no database. Warm brick-and-wood interiors, 3D-ish furniture and Gather-style characters; windows reveal the sun/moon arc and sunny/cloudy/rainy weather with day-night lighting. A day loops in about six minutes and starts fresh the next.",
+    // Header
+    "kvzhuang — 以程式碼創作的視覺實驗": "kvzhuang — visual experiments crafted with code",
+
+    "Kowloon 九龍城寨": "Kowloon Walled City",
+    "three.js 程序生成的九龍城寨風格巨構。密集網格上堆疊高低參差的違建高樓，每棟以 canvas 即時繪製立面貼圖（窗格、亮燈、冷氣機、鏽水痕、底層霓虹招牌），頂樓散布水塔、冷氣、天線與加蓋鐵皮屋，屋頂之間拉起下垂的糾纏電纜。中央高、邊緣留光井，懸挑違建向外凸出。三種時段色調（霓虹夜、黃昏霾、雨霧綠），霧氣景深與 bloom 霓虹光暈。概念參考 BuildingGeneratorThreeJS 的參數化組裝，改為純程式幾何。點擊重新生成，拖曳旋轉，S 鍵存圖。":
+      "A Kowloon Walled City megastructure procedurally generated with three.js. Ramshackle towers of wildly varying heights stack across a dense grid, each facade drawn live on a canvas (window grids, lit rooms, AC units, rust streaks, ground-floor neon signs). Rooftops sprout water tanks, AC chillers, antennas and tin shacks, with sagging tangles of cable strung between them. Tall in the center with light wells at the edges, and illegal cantilevers jutting outward. Three tones — neon night, hazy dusk, rainy green — with atmospheric fog and bloom neon glow. Concept inspired by BuildingGeneratorThreeJS's parametric assembly, rebuilt with pure procedural geometry. Click to regenerate, drag to orbit, S to save.",
+    "Slime Mold 黏菌培養皿": "Slime Mold",
+    "真實 Physarum polycephalum 多頭絨泡菌的 agent-based 覓食模擬。數萬顆粒子各自感測前方費洛蒙、轉向、移動、沉積，自組織出黏菌招牌的「網狀脈管」——大量迴路與 degree-3 節點交織，成功脈管變粗成輸送主幹、失敗者縮退，外圍是細密毛茸的扇形覓食前緣。菌落自接種點向外擴張，agent 持續汰換讓網路在探索相與輸送相之間呼吸。四種配色（經典黃、橙紅、白化、螢光青）。點擊重新培養，空白鍵暫停，S 鍵存圖。":
+      "An agent-based foraging simulation of the real slime mold Physarum polycephalum. Tens of thousands of particles each sense pheromone ahead, turn, move and deposit — self-organizing into the mold's signature reticulate vein network of loops and degree-3 junctions. Successful veins thicken into transport trunks while failures retract, ringed by a fine fuzzy fan-shaped foraging front. The colony expands from its inoculation point, and continuous agent turnover lets the network breathe between exploration and transport. Four palettes (classic yellow, orange-red, albino, cyan). Click to reculture, Space to pause, S to save.",
+
+    // Card titles（混 / 純中文標題才需要換）
+    "等軸測不可能階梯生成藝術。雙灰階、單一線寬與紙面顆粒構成密集模組拼貼；階梯、塔、露台、拱門與圓孔在畫面中錯接，4-5 條深灰 Penrose 式帶狀路徑穿過建築群，形成視覺焦點。每個 fxhash 種子會決定密度、色調、階梯方向偏好與孔洞風格。":
+      "Isometric impossible-staircase generative art. Dual greyscale, a single line weight, and paper grain form a dense modular collage; stairs, towers, terraces, arches, and round voids misconnect across the image while 4-5 dark Penrose-like ribbon paths cut through the architecture as visual anchors. Each fxhash seed determines density, tone, stair-direction bias, and void style.",
+    "圍棋 Go": "Go (Weiqi)",
+    "人機對戰圍棋。支援 5×5 / 7×7 / 11×11 / 13×13 棋盤，自動計算貼目、提子與領地（日式計分）。AI 會評估吃子威脅、救援己方、開局佔角。兩方連續虛手後自動終局並顯示領地覆蓋。":
+      "Human vs AI Go. Supports 5×5 / 7×7 / 11×11 / 13×13 boards with automatic komi, capture, and territory scoring (Japanese rules). AI evaluates capture threats, saves its own groups, and occupies corners in the opening. Two consecutive passes end the game and reveal territory coverage.",
+    "軍儀棋 Gungi": "Gungi",
+    "改編自《獵人》動漫的策略棋盤遊戲。9×9 棋盤、14 種棋子、疊加堆塔機制，先吃掉對手帥者獲勝。支援人類 vs 電腦對戰，含部署階段與全棋子移動規則。":
+      "Strategy board game from Hunter×Hunter. 9×9 board, 14 piece types, stacking-tier mechanics — capture the opponent's Commander to win. Human vs AI with a deployment phase and full piece movement rules.",
+    "拉霸機 Slot Machine": "Slot Machine",
+    "Domino 多米諾骨牌": "Domino",
+    "TSP 旅行推銷員問題": "TSP — Traveling Salesman",
+    "Tensegrity 張拉整體": "Tensegrity",
+    "Fractal Mountain 碎形山水": "Fractal Mountain",
+    "四色定理": "Four Color Theorem",
+    "集合論圖解": "Set Theory Diagrams",
+    "家紋 Kamon": "Kamon",
+    "台灣花磚": "Taiwan Tiles",
+    "Sunflowers 向日葵": "Sunflowers",
+    "Impression Sunrise 印象・日出": "Impression, Sunrise",
+    "Ink Flow 墨流": "Ink Flow",
+    "Endless Stairs 無盡階梯": "Endless Stairs",
+    "Escher 式等軸測不可能建築生成藝術。立方體、重複階梯、疊層金字塔、拱門、圓孔、高塔六種模組鎖在同一套等軸測網格上鋪滿直式畫面；緞帶路徑以隨機遊走穿梭建築之間，在頂面與側面之間轉折時利用深度歧義製造不可能幾何。三種色調隨機切換：均勻線稿的素描版、深藍底青色發光路徑加零星窗燈的霓虹夜版、米底炭黑陰影面塊的復古印刷版。點擊重新生成，T 鍵切換色調，S 鍵存圖。":
+      "Escher-inspired isometric impossible-architecture generative art. Six modules — cubes, repeating staircases, stacked ziggurats, arches, round holes, and towers — lock onto one isometric grid to fill a portrait canvas. Ribbon paths random-walk through the city, exploiting depth ambiguity at top-to-side transitions to create impossible geometry. Three tones rotate: a uniform-line sketch, a neon night with glowing cyan paths and scattered lit windows, and a vintage print with cream paper and solid black shadow faces. Click to regenerate, T to switch tone, S to save.",
+    "Auto Spire 自動殺戮尖塔": "Auto Spire",
+    "致敬《殺戮尖塔》的全自動爬塔演示。四位角色——鐵甲戰士、靜默獵手、故障機器人、觀者——各擁有約 55 張忠於原作數值的卡牌，加上 30 種遺物與 12 種藥水。AI 依斬殺優先、格擋需求、能力鋪場等啟發式自動出牌，爬完三幕共 45 層：小怪、精英、商店、營火，一路打到最終 Boss（覺醒者、時間吞噬者、雙子）。姿態、球體、真言、中毒、商店與戰績記錄完整實作。點擊切換速度，I 鍵看遺物藥水，空白鍵暫停，R 開新局，S 存圖。":
+      "A fully automated Slay the Spire tribute. Four characters — Ironclad, Silent, Defect, and Watcher — each with ~55 cards faithful to the original stats, plus 30 relics and 12 potions. The AI plays by heuristics (lethal first, block on demand, powers early) and climbs all three acts — 45 floors of monsters, elites, shops, and campfires up to the final bosses (Awakened One, Time Eater, the twins). Stances, orbs, mantra, poison, shops and persistent records all implemented. Click to change speed, I for relic/potion info, Space to pause, R for a new run, S to save.",
+    "Stereogram 立體視覺圖": "Stereogram",
+    "隱藏式 3D 立體視覺圖（Autostereogram / Magic Eye）產生器。每次隨機藏入不同立體圖案：球體、甜甜圈、波浪曲面、水面漣漪、金字塔、山丘地形、浮空方塊、愛心、星星、文字等；搭配彩色亂點、黑白亂點、雜訊織紋、斜紋條帶四種紋理。用平行眼觀看，讓上方兩個定位點融合成三點，隱藏圖案便會浮現。採用經典 Thimbleby–Inglis–Witten 像素連結演算法含隱藏面檢查。點擊重新生成，A 鍵顯示答案，S 鍵存圖。":
+      "Hidden-3D autostereogram (Magic Eye) generator. Each run hides a random 3D figure — spheres, torus, wave surface, ripples, pyramid, rolling terrain, floating boxes, heart, star, or text — rendered in one of four textures: colored dots, black-and-white dots, noise weave, or diagonal stripes. View with parallel eyes until the two guide dots at the top fuse into three, and the hidden shape pops out. Built on the classic Thimbleby–Inglis–Witten pixel-linking algorithm with hidden-surface removal. Click to regenerate, A to reveal the answer, S to save.",
+    "Tulips 鬱金香花海": "Tulips",
+    "油畫風格室外鬱金香花海。晴天、陰天、下雨、夜晚月光四種場景；水平色帶、對角斜紋、放射透視三種田野佈局；八種花色分帶種植，Perlin noise 疏密叢聚與偶發異色株模擬真實花田，遠景大氣霧化褪色、近景完整莖葉與杯形花瓣，花行間田壟土溝帶出農田質感。厚塗筆觸引擎：bezier 板狀筆觸＋鬃毛紋＋高光稜線。點擊重新生成，S 鍵存圖。":
+      "Oil-paint outdoor tulip field. Four scenes — sunny, overcast, rainy, and moonlit night. Three field layouts: horizontal color bands, diagonal stripes, and radial perspective rows. Eight tulip hues planted in bands; Perlin-noise clumping and occasional off-color stray blooms mimic a real flower farm. Distant rows fade into atmospheric haze while foreground tulips show full stems, leaves, and cup-shaped petals; soil furrows between rows add a farmland feel. Impasto stroke engine: Bezier slab strokes, bristle texture, highlight rims. Click to regenerate, S to save.",
+    "Auto Rubik 自動魔方": "Auto Rubik",
+    "Tiny Planet 小星球": "Tiny Planet",
+    "Cosmos 星塵宇宙": "Cosmos",
+
+    // Card descriptions
+    "自動玩的俄羅斯方塊。AI 用 Dellacherie 啟發式（最大化消行、最小化高度/洞/凹凸）為每個方塊算最佳落點，無限連續玩。8 組配色，可切換速度（×0.5 ~ ×4）。":
+      "Self-playing Tetris. The AI uses Dellacherie heuristics (maximize line clears, minimize height/holes/bumpiness) to pick the best placement per piece, running forever. 8 palettes, adjustable speed (×0.5 to ×4).",
+    "Auto Battle — Puyo vs Tetris": "Auto Battle — Puyo vs Tetris",
+    "Puyo Puyo 對戰 Tetris 自動對戰。兩個 AI 同時跑，Tetris 消行送對手垃圾 puyo、Puyo 連鎖送對手垃圾行。任一方爆頂判勝，自動 reset 下一場。5 組配色。":
+      "Auto-battle of Puyo Puyo vs Tetris. Two AIs play simultaneously: Tetris line-clears send garbage puyos to the opponent, while Puyo chains send garbage rows back. First side to top out loses; auto-resets to the next match. 5 palettes.",
+    "Backtracking Visualizer": "Backtracking Visualizer",
+    "視覺化說明回溯法：決策樹邊探索邊長出來，當前 cursor 發光、找到解的分支轉金色、失敗的分支變灰。循環展示 Permutations、Combinations、N-Queens 三類問題。可切換速度（慢/正常/快/極速）。":
+      "A visual explanation of backtracking. The decision tree grows as the algorithm explores: the current cursor glows, solution branches turn gold, failed branches fade gray. Cycles through Permutations, Combinations, and N-Queens. Speed toggle (Slow / Normal / Fast / Turbo).",
+    "Anime Fireworks": "Anime Fireworks",
+    "連續自動煙火秀。anime.js 控制火箭升空 ease curve 與爆炸 flash 環擴張，p5.js 渲染粒子物理。8 種爆炸樣式（牡丹、菊花、垂柳、環、棕櫚、心形、螺旋、Crossette 分裂）、多段子爆、火箭軌跡、Crackle 火花、星空 + 城市剪影。9 組配色，按 Finale 觸發 5 秒終曲狂炸。":
+      "Continuous automatic fireworks show. anime.js drives the rocket ascent ease curves and the burst-flash ring expansion; p5.js renders particle physics. 8 burst types (Peony, Chrysanthemum, Willow, Ring, Palm, Heart, Spiral, Crossette split), multi-stage secondary bursts, rocket sparkle trails, crackle sparks, starfield + city skyline. 9 palettes. Hit Finale for a 5-second grand finale.",
+    "Anime Constellation": "Anime Constellation",
+    "參考 anime.js demo 常見的 stagger grid、timeline 編排與 SVG motion path，生成一張會呼吸的星圖。每次隨機種子產生不同軌道、星點、連線與色盤；3 種模式（radial / rings / lattice），可重新生成、切換模式與暫停。":
+      "A breathing star map inspired by common anime.js demo patterns: stagger grids, timeline choreography, and SVG motion paths. Every random seed creates different orbits, nodes, chords, and palettes. 3 modes (radial / rings / lattice), with regenerate, mode switch, and pause controls.",
+    "Arrows Chain": "Arrows Chain",
+    "受 Arrows GO! 啟發的箭頭連鎖反應 gen-art。每關 AI 在不同造型（圓、心、星、螺旋、葡萄串、菱形、外框、對角、散布、字母）的箭頭排列中找出最長連鎖起點，射線一格格清空。6 組配色、可切換速度、可手動點箭頭觸發。":
+      "Arrow-chain reaction gen-art inspired by Arrows GO!. Each round the AI searches arrow arrangements in varied shapes (circle, heart, star, spiral, grape cluster, diamond, frame, diagonal, scatter, letter) for the longest chain start; the beam clears cells one by one. 6 palettes, adjustable speed, manual click to fire any arrow.",
+    "Liquid Glass": "Liquid Glass",
+    "受 iOS 26 液態玻璃啟發。多彩流動色塊背景上飄浮多個透明玻璃形狀，real-time backdrop blur + 內側 highlight gradient + 雙層 rim 邊框 + 鏡面反光弧。3 種形狀模式（Bubbles 圓 / Lozenges 藥丸 / Cards 卡片）、6 組配色、可點擊推開或新增玻璃。":
+      "Inspired by iOS 26's Liquid Glass. Translucent glass shapes drift over a flowing color field with real-time backdrop blur, inner highlight gradient, twin-layer rim border, and specular highlight arc. 3 shape modes (Bubbles / Lozenges / Cards), 6 palettes; click to push glass aside or to spawn new ones.",
+    "Auto Snake": "Auto Snake",
+    "AI 自動玩貪吃蛇。用 BFS 找食物 + tail-reachability safety check（模擬吃完後能否 BFS 到尾巴）決定走法，不安全時 fallback 追尾巴繞圈拖時間。死亡會自動重生並換配色。6 組配色、可切換速度。":
+      "Self-playing Snake. AI uses BFS shortest path to food plus a tail-reachability safety check (simulates eating, verifies head can still BFS to tail); falls back to chasing its own tail to stall when unsafe. Dies → auto-respawn with new palette. 6 palettes, adjustable speed.",
+    "台北公車即時動態 gen-art。以 Data.Taipei 公車資料在地圖上繪出車輛位置、速度色彩與發光軌跡，可切換路線並顯示路線形狀、車輛數、平均速度與資料更新時間。":
+      "Realtime Taipei bus gen-art. It draws vehicle positions, speed-based colors, and glowing trails on a map using Data.Taipei bus data. Switch routes to view route shapes, vehicle counts, average speed, and the latest update time.",
+    "Neko": "Neko",
+    "自動養貓 gen-art。2~4 隻像素貓在一間寬廣的房間裡自由活動：吃飯、睡覺、玩耍、跳上沙發/書桌/牆架/貓樹/貓床，偶爾互動。8 種隨機毛色（虎斑、三花、黑、白、灰、橘子、暹羅、賓士），每次隨機抽取且家具位置每場不同。日夜循環影響環境光、太陽月亮位置與星空，閒置一陣子會自動餵食、清貓砂、開關窗簾與檯燈。可點貓撫摸冒愛心、點窗簾/碗/砂/燈互動。移植自我自己寫的 ESP32-2432S028 (CYD) 電子養貓。":
+      "Self-cat-keeping gen-art. 2–4 pixel cats roam a wide room: eat, sleep, play, leap onto sofa / desk / wall shelves / cat tree / bed, and occasionally interact with each other. 8 randomized coat types (tabby, calico, black, white, grey, orange, siamese, tuxedo) — every reload shuffles both the cats and the furniture layout. A day/night cycle drives ambient lighting, sun/moon paths, and starfields. After a while of idle time the room auto-feeds, cleans the litter, and toggles curtains and lamp. Click a cat to pet (hearts!) or click curtains / bowls / litter / lamp to interact. Ported from my own ESP32-2432S028 (CYD) virtual-cat sketch.",
+    "Auto City": "Auto City",
+    "SimCity 風格自動建城 gen-art（45 度等距投影）。AI 規劃井字主路 + 隨機支路 / 死巷；flood-fill 偵測街廓，整個街廓統一分區（R/C/I 不混雜）。大型街廓會出現 2×2 / 2×3 大型建案。道路有車流動畫；天氣循環（晴 / 陰 / 雨 / 夜，含閃電、雨幕、星空、霓虹窗），建築會老舊拆遷重蓋。HUD 顯示居住人口、稅收、政府支出與預算盈虧。":
+      "Self-building SimCity-style gen-art in isometric (45°) view. AI lays a grid of main roads plus randomized branches and dead-ends; flood-fill detects blocks and assigns one zone per block (no R/C/I mixing). Large blocks spawn 2×2 / 2×3 mega-projects. Cars flow on roads; a weather cycle drifts through sunny / cloudy / rain / night with lightning, rain veil, starfield, and warm-lit windows. Buildings age and get demolished + rebuilt. The HUD shows live population, tax income, government spending, and net budget.",
+    "Auto Tower": "Auto Tower",
+    "Yoot Tower / SimTower 風格自動經營高樓 gen-art（側視剖面）。B10 ~ 20F 共 31 層 17 種設施：辦公室、商城、地下街、餐廳、健身房、電影院、旅店客房 + 接待、SPA、泳池、洗衣店、停車場、地鐵站、垃圾清運、監控室與機房。四座電梯井共 16 部電梯，兩座一般全層停靠、兩座高速採 skip-stop 只服務 B10 ~ B3 + GF + 10F ~ 20F，SCAN 排程沿途同方向接客；雙向電扶梯貫穿 B10 ~ 10F。行人按時段從地鐵或大廳進入、上樓進駐目的設施、停留結束反向離開，並對每間房給出評分與留言。HUD 即時統計在樓人數、各類人流、最熱樓層、營收支出與滿意度，時鐘與天空同步晝夜及天氣（晴 / 雨 / 閃電 / 夜空），進度自動存到 LocalStorage。":
+      "Self-running high-rise gen-art in the Yoot Tower / SimTower style (side cross-section). 31 floors from B10 to 20F across 17 tenant types: offices, mall shops, underground arcade, restaurants, gym, cinemas, hotel rooms + reception, spa, pool, laundry, parking, subway station, garbage center, security room, and mechanical floor. Four elevator shafts host 16 cars total — two local shafts stop at every floor while two express shafts are skip-stop, only serving B10–B3 + GF + 10F–20F. SCAN dispatch with same-direction boarding picks up passengers along the way, and a two-way escalator spans B10 parking up to 10F. Pedestrians enter from the subway or lobby by time of day, ride to a destination tenant, stay for a while, reverse out, and leave a rating with a comment for the room they visited. The HUD tracks live population, foot-traffic categories, the busiest floor, revenue vs spending, and satisfaction; the clock and sky follow a day/night cycle with weather (clear, rain, lightning, starfield), and progress auto-saves to LocalStorage.",
+    "anime.js 製作的 loading 圖示矩陣。4×3 = 12 格，每格從 29 種 loader 隨機抽（不重複）：脈動、波形、旋轉、軌道、漣漪、進度條、星形、六邊形、鐘擺、花瓣、抖動、翻牌等。8 組配色，按鈕重新洗牌。":
+      "A loader matrix built with anime.js. 4×3 = 12 cells, each randomly drawn from 29 loader types (no repeats): pulse, waves, spinners, orbits, ripples, progress bars, stars, hexagons, pendulums, petals, vibrations, flips, and more. 8 palettes, click to reshuffle.",
+    "anime.js motion path 範例。14 個彩色粒子用 stagger 錯位沿 SVG 路徑流動，6 種程式生成路徑：Lissajous、Sine、Spiral、Infinity、Heart、Rose。5 組配色。":
+      "An anime.js motion-path demo. 14 colored particles flow along SVG paths with stagger offsets. 6 procedurally generated path shapes: Lissajous, Sine, Spiral, Infinity, Heart, Rose. 5 palettes.",
+    "anime.js SVG path morph 範例。3 層 blob 各自循環形變 + 反向旋轉，path 用相同 1M+8C+Z 結構程式生成才能 morph。7 組配色。":
+      "An anime.js SVG path-morph demo. 3 layered blobs morph and counter-rotate continuously. Paths are procedurally generated with the same 1M+8C+Z structure so morphing stays smooth. 7 palettes.",
+    "anime.js timeline 範例。5×5 方塊網格 6 階段編排動畫：登場 → 旋轉 → 脈動 → 波動 → 爆炸 → 收回。6 組配色，每階段切換顏色。":
+      "An anime.js timeline demo. A 5×5 grid of boxes runs through 6 choreographed phases: appear → rotate → pulse → wave → explode → collapse. 6 palettes, color shifts per phase.",
+    "anime.js stagger 動畫展示。16×16 圓點網格，7 種錯位模式：放射波、線性掃描、隨機散布、對角線、正弦流動、漣漪、角落爆裂。8 組配色，點按鈕切換場景。":
+      "An anime.js stagger showcase. A 16×16 grid of dots runs through 7 stagger patterns: radial wave, linear sweep, random scatter, diagonal cascade, sine flow, ripple, corner burst. 8 palettes, click to switch scenes.",
+    "像素風格自動牧場模擬。農夫 AI 自動耕地、播種、澆水、收割；四季輪替（春麥、夏番茄、秋南瓜、冬休耕）改變作物與天氣；牛、羊、雞、豬在畜欄內漫遊；穀倉、房屋、水井、池塘、果樹完整場景。含金幣計算、收穫特效、晴雨雪天氣、晝夜光照循環。":
+      "Pixel-art auto farm simulation. A farmer AI tills, seeds, waters, and harvests automatically. Four seasons (spring wheat, summer tomatoes, autumn pumpkins, winter fallow) change crops and weather. Cows, sheep, chickens, and pigs roam the pen. Full scene with barn, house, well, pond, and fruit trees. Features gold accounting, harvest particle effects, rain/snow weather, and a full day/night lighting cycle.",
+    "GPU 流體模擬的墨水暈染。Navier-Stokes 求解器在 shader 中即時運算（渦度補強、Jacobi 壓力迭代、雙場平流），四色墨滴在紙上流動、捲旋、融合；Beer-Lambert 吸墨混色、邊緣沉澱水痕、三層紙紋。可拖曳攪動、點擊滴墨、四色墨盤切換，自動滴墨模式會自己作畫。":
+      "GPU fluid-simulated ink wash. A Navier-Stokes solver runs in real time in shaders (vorticity confinement, Jacobi pressure iterations, dual-field advection) as four ink colors flow, swirl, and blend on paper. Beer-Lambert ink absorption for true subtractive mixing, edge-deposit water stains, and three-layer paper grain. Drag to stir, click to drop ink, switch between the four-color palette; auto-drip mode paints by itself.",
+    "Three.js 程序生成的 3D 箱庭小星球。fxhash 決定地形噪波種子、海平面高度、五種星球主題（翠綠/火焰/沙漠/冰雪/紫晶）；FBM 噪波疊七層生成地形，高度決定生態帶（深海→淺海→沙灘→草地→森林→岩石→雪頂）；Instanced Mesh 植樹（最多 350 棵）、置放房屋與岩石；大氣光暈 rim shader、可探索雲朵、緩慢公轉日照。可滑鼠任意角度環繞探索。":
+      "A Three.js procedurally generated 3D terrarium planet. fxhash determines the terrain noise seed, sea level, and one of five planet themes (emerald, volcanic, desert, arctic, crystal). Seven-octave FBM noise builds the terrain; altitude sets the biome (deep sea → shallows → beach → grass → forest → rock → snow). Up to 350 instanced trees, houses, and rocks are placed on the surface, plus an atmospheric rim-light shader, sprite clouds, and a slowly orbiting sun. Drag to orbit, scroll to zoom, R to regenerate.",
+    "Three.js 粒子星河。fxhash 隨機決定螺旋臂數（2–4）、配色（藍白、暖橙、翡翠、紫霧）與粒子密度（50k–75k）；對數螺旋算法分布粒子群，中心核球自然隆起，星際雲氣層疊渲染；自訂 GLSL 著色器配 UnrealBloom 後處理光暈；OrbitControls 拖曳旋轉縮放，R 鍵重新生成，S 鍵存圖。":
+      "A Three.js particle galaxy. fxhash determines spiral arm count (2–4), colour palette (blue-white, warm orange, emerald, violet mist), and particle density (50k–75k). Particles follow logarithmic-spiral arms with a central bulge and nebula cloud layers; a custom GLSL shader and UnrealBloom post-processing create the glow. Drag to orbit, scroll to zoom, R to regenerate, S to save.",
+    "以演算法重現莫內《印象・日出》。沿用向日葵的厚塗筆觸引擎：霧藍灰的勒阿弗爾港、不透明橘紅日盤與水面搖曳的橘色碎筆倒影；霧中桅杆群、煙囪飄煙與 1–3 艘剪影小船。三種色調變體（經典藍灰、紫霧、玫瑰晨光），每次生成獨一無二，開頁逐筆作畫約 4 秒。":
+      "An algorithmic recreation of Monet's Impression, Sunrise, using the same impasto stroke engine as Sunflowers: the misty blue-grey port of Le Havre, an opaque orange sun disc, and shimmering broken orange reflections on the water; hazy mast clusters, drifting chimney smoke, and 1–3 silhouetted rowboats. Three tonal variants (classic blue-grey, violet mist, rose dawn). Every render is unique, painted stroke by stroke over ~4 seconds.",
+    "以演算法重現梵谷《向日葵》的厚塗油畫。八層 impasto 筆觸引擎疊出鬃毛紋、高光稜線與中央反光帶；noise 流場加漩渦驅動的星夜式流動背景；phyllotaxis 黃金角花心籽粒；四種瓶形 × 四種釉色隨機組合，三種色調變體（鉻黃、土耳其藍、淡青綠）。每次生成獨一無二，開頁逐筆作畫約 4 秒。":
+      "An algorithmic recreation of Van Gogh's Sunflowers in impasto oil paint. An eight-layer brush-stroke engine builds bristle striations, highlight ridges, and central reflective bands; a noise flow field with vortices drives a Starry Night-style swirling background; phyllotaxis golden-angle seed heads; 4 vase shapes × 4 glazes randomly combined, in three tonal variants (chrome yellow, turquoise, pale green). Every render is unique, painted stroke by stroke over ~4 seconds.",
+    "厚塗油畫生成藝術。弧形 bezier 筆觸由中心放射展開，疊加鬃毛紋、假 3D 光影與顏料噴濺，搭配紙底紋理模擬油畫顏料的隆起質感。10 組色盤可隨機抽取。":
+      "Impasto oil-painting gen-art. Curved bezier brush strokes radiate from a center, layered with bristle striations, fake 3D lighting, and paint splatters. A canvas-grain background simulates the raised texture of oil paint. 10 random palettes.",
+    "Google 熱門搜尋趨勢文字雲，涵蓋台灣、美國、日本、英國四個地區。每小時自動更新，Hover 顯示來源地區，可按地區篩選。":
+      "A Google Trends word cloud covering Taiwan, the US, Japan, and the UK. Updates hourly; hover to see the source region; filter by region.",
+    "每日一字猜謎遊戲。每天早上 8 點更新一個 5-7 字母的英文單字，你有 8 次機會猜出正確答案。綠色=正確、黃色=位置錯、灰色=不存在。":
+      "Daily word-guessing game. A new 5–7 letter English word every morning at 8 AM; 8 guesses allowed. Green = correct, yellow = wrong position, gray = not in word.",
+    "輸入你的 Wordle 線索，自動過濾並推薦最佳猜測。支援 5-7 字母、8 行輸入、字母頻率排序。點擊格子切換綠/黃/灰狀態。":
+      "Enter your Wordle clues and get auto-filtered best-guess recommendations. Supports 5–7 letters, 8 input rows, letter-frequency sorting. Click cells to toggle green/yellow/gray.",
+    "經典水果機風格拉霸。傳統符號：🍒🍋🍊🍇🍉🔔💎7️⃣，帶權重隨機與賠率表。按 SPIN 或空白鍵拉霸，BET 調整下注。":
+      "Classic fruit-machine-style slots. Traditional symbols 🍒🍋🍊🍇🍉🔔💎7️⃣ with weighted random and a payout table. Press SPIN or Space to pull; adjust BET to change wager.",
+    "多米諾骨牌連鎖倒塌生成藝術。6 種排列方式：螺旋、之字、同心圓、波浪、網格、瀑布。每張骨牌有隨機點數、3D 透視傾倒效果和地面陰影。自動循環、點擊重新生成。":
+      "Chain-falling domino gen-art. 6 arrangement patterns: spiral, zigzag, concentric, wave, grid, waterfall. Each tile has random pips, 3D perspective falling animation, and ground shadows. Auto-loops; click to regenerate.",
+    "經典 NP-hard 問題的演算法視覺化。三種解法逐步動畫：最近鄰居法（貪心）、2-Opt（局部優化）、模擬退火（全域搜尋）。觀察路徑如何從混亂逐步收斂到近似最優解。":
+      "Algorithm visualization of the classic NP-hard problem. Three solvers animate step-by-step: Nearest Neighbor (greedy), 2-Opt (local optimization), Simulated Annealing (global search). Watch the route converge from chaos toward a near-optimal tour.",
+    "張拉整體結構生成藝術。剛性壓桿互不接觸，靠連續張力線維持平衡。3-5 桿結構在 3D 空間旋轉搖擺，三種佈局模式：單體、三聯、群落。10 組配色搭配光暈效果。":
+      "Tensegrity structure gen-art. Rigid compression rods never touch, held in balance by continuous tension cables. 3–5 rod structures rotate and sway in 3D, with three layout modes: solo, trio, cluster. 10 palettes with glow effects.",
+    "中點位移碎形演算法生成多層山脈。5-7 層山嶺由遠到近、由淺到深，搭配水墨紋理線條、氤氳霧氣、水面倒影和月光。7 組配色：水墨、暮色、晨曦、深冬、翠嶺、月夜、赤壁。":
+      "Multi-layered mountain ranges from a midpoint-displacement fractal. 5–7 ridges layered far-to-near and light-to-dark, accented with ink-wash texture, mist, water reflections, and moonlight. 7 palettes: Ink, Dusk, Dawn, Deep Winter, Verdant Ridge, Moonlit Night, Red Cliff.",
+    "完美迷宮生成藝術。DFS 遞迴回溯演算法產生 10×10 到 50×50 的隨機迷宮，點擊畫面觸發 BFS 解答動畫，路徑漸層從入口色過渡到出口色。16 組高對比配色。":
+      "Perfect-maze gen-art. DFS backtracking generates random 10×10 to 50×50 mazes; click the canvas to trigger a BFS solving animation, with the path gradient transitioning from entry color to exit color. 16 high-contrast palettes.",
+    "用流體模擬解迷宮。從上方入口持續注入液體，重力下落、同列等位、壓力上推三個 pass 的細胞自動機驅動液面：岔路被灌滿、U 形段累積上升，最終從下方出口湧出。16 組配色，每組液體色獨立調校。":
+      "Solving a maze with fluid simulation. Liquid is poured in continuously from the top entry. A 3-pass cellular automaton (gravity drop, same-row equalization, pressure push) drives the surface: dead-ends fill, U-bends rise, and liquid finally spills out the bottom exit. 16 palettes, each with a tuned liquid color.",
+    "Superellipse 變形動畫。網格中的圓點在圓形、四角星、彩色圓點之間持續變形，搭配尺寸脈動與背景反轉，創造催眠般的視覺節奏。16 組配色，每個 hash 獨特。":
+      "Superellipse morphing animation. Dots in a grid continuously shift between circles, four-pointed stars, and colored disks, paired with size pulsing and background inversion for a hypnotic rhythm. 16 palettes, unique per hash.",
+    "栗子形 Truchet 瓷磚生成藝術。飽滿的水滴弧形連接邊緣中點，中間膨脹、兩端收尖，相鄰 tile 對接形成栗子般的有機曲線。19 組配色搭配紙質紋理。":
+      "Chestnut-shaped Truchet tile gen-art. Plump teardrop arcs connect midpoints of tile edges—bulging in the middle, tapering at the ends; adjacent tiles align into organic chestnut-like curves. 19 palettes with paper texture.",
+    "圓形填充式 Truchet 瓷磚。四分之一圓在角落配對，相鄰 tile 連接形成完整圓形與有機圓潤圖案。22 組配色搭配紙質紋理，呈現飽滿的幾何視覺。":
+      "Circle-fill Truchet tiles. Quarter circles pair at corners; adjacent tiles connect into full circles and organic rounded patterns. 22 palettes with paper texture for a rich geometric look.",
+    "扁平風格花束生成藝術。密集的海芋、罌粟花與鬱金香以大膽色塊填滿圓形構圖，8 組配色方案搭配 4 種密度變化，每次刷新都是獨一無二的花園。":
+      "Flat-design bouquet gen-art. Dense calla lilies, poppies, and tulips fill a circular composition with bold color blocks. 8 palettes × 4 densities — every reload is a unique garden.",
+    "鋼筆繪圖機風格的植物線描生成藝術。遞迴分支演算法產生有機樹木與垂藤，搭配格紋背景與飄落花瓣。純線條、無填色的 plotter art 美學。":
+      "Pen-plotter-style botanical line-art. Recursive branching algorithms grow organic trees and trailing vines, paired with a grid background and falling petals. A pure-line, no-fill plotter aesthetic.",
+    "生成藝術風格 Loader 矩陣。12 種類型：莫列波紋、Perlin 噪音流、李薩如曲線、洛倫茲吸引子、粒子軌跡、沃羅諾伊圖、雙擺混沌、遞迴方塊、變形蟲、網格擾動、費馬螺旋、多邊形變形。":
+      "Generative-art-style loader matrix. 12 types: Moiré, Perlin noise flow, Lissajous curves, Lorenz attractor, particle trails, Voronoi diagrams, double-pendulum chaos, recursive squares, amoeba blobs, grid jitter, Fermat spiral, polygon morph.",
+    "n×m 網格的 Loading 動畫生成藝術。12 種 spinner 類型：旋轉弧、追逐圓點、脈衝環、雙環反轉、軌道球、時鐘掃描等，每個各有不同配色與速度。":
+      "Loading-animation gen-art in an n×m grid. 12 spinner types: rotating arcs, chasing dots, pulsing rings, counter-rotating dual rings, orbiting balls, clock sweeps, and more — each with its own colors and speed.",
+    "九龍城寨風格的微縮城市。等角透視視角，密集建築有機堆疊，搭配底部懸空支撐柱、屋頂天線水塔、外露管線。鋼筆淡彩風格。":
+      "Kowloon-Walled-City-style miniature city. Isometric perspective, dense organically stacked buildings with cantilevered support columns at the base, rooftop antennas and water tanks, and exposed pipes. A pen-and-light-wash aesthetic.",
+    "離散數學四色定理的生成藝術。Voronoi 圖產生隨機平面地圖，透過 Welsh-Powell 貪婪演算法只用 4 種顏色著色，使相鄰區域永不同色。":
+      "Gen-art of the Four Color Theorem from discrete math. A Voronoi diagram produces a random planar map; Welsh-Powell greedy coloring uses only 4 colors so no adjacent regions share a color.",
+    "離散數學集合論的互動式圖解。涵蓋聯集、交集、差集、補集、對稱差、冪集、笛卡兒積，搭配 Venn Diagram 與德摩根定律視覺化。":
+      "Interactive diagrams of set theory from discrete math. Covers union, intersection, difference, complement, symmetric difference, power set, and Cartesian product, with Venn diagrams and De Morgan's laws visualized.",
+    "Dynamic Programming 視覺化教學。在隨機成本網格上，動畫展示 DP 表逐格填入過程，最後回溯出從左上到右下的最小成本路徑。":
+      "A Dynamic Programming visualization tutorial. On a random cost grid, the animation fills the DP table cell-by-cell, then traces back the minimum-cost path from top-left to bottom-right.",
+    "等角立體方塊堆疊，每個面隨機填入圓點、棋盤格、條紋、菱形等圖案。10 組配色風格，從霓虹到赤陶土都有。階梯式排列營造 3D 錯視效果。":
+      "Isometric stacked cubes, each face randomly patterned with dots, checkers, stripes, or diamonds. 10 palette styles ranging from neon to terracotta. Stepped arrangement creates a 3D illusion.",
+    "以日本傳統家紋為靈感，隨機生成菊、桐、蝶、鶴丸、青海波等 30 種經典紋樣。黑白米色的極簡配色，每次僅呈現一枚家紋。":
+      "Inspired by Japanese family crests (kamon), randomly generating 30 classic motifs: chrysanthemum, paulownia, butterfly, encircled crane, seigaiha waves, and more. A minimal black-white-cream palette, one crest per render.",
+    "以台灣傳統花磚為靈感，隨機生成對稱花卉與幾何圖樣。17 組取自老花磚的配色，搭配八瓣花、蓮花、牡丹、水渦紋等 11 種圖案交織排列。":
+      "Inspired by traditional Taiwanese majolica tiles, randomly generating symmetric floral and geometric patterns. 17 palettes drawn from antique tiles, with 11 motifs—eight-petal flowers, lotuses, peonies, water swirls, and more—woven together.",
+    "經典 Truchet 瓷磚的曲線變體，透過隨機旋轉的弧線組合出迷宮般的流動路徑。擁有 60+ 組調色盤，從 Bauhaus 到 Evangelion 風格皆有。Inspired by RoniBlock":
+      "A curved variant of classic Truchet tiles. Randomly rotated arcs compose maze-like flowing paths. 60+ palettes spanning Bauhaus to Evangelion styles. Inspired by RoniBlock.",
+    "Truchet 瓷磚的編織變體，兩條緞帶交叉產生 over/under 立體錯覺。陰影與高光營造布料編織質感，支援弧線與對角線兩種風格。":
+      "A Truchet tile weaving variant. Two ribbons cross to create an over/under 3D illusion. Shadows and highlights evoke woven fabric, supporting both curve and diagonal styles.",
+    "在三角形網格上探索色彩與幾何的交織。透過色彩漸變與格狀結構，生成萬花筒般的視覺韻律。":
+      "Exploring the interplay of color and geometry on a triangular lattice. Color gradients and grid structure generate a kaleidoscopic visual rhythm.",
+    "經典八皇后問題的互動式求解。點擊棋盤放置第一個皇后，演算法自動用 backtracking 找出合法的 8 皇后配置，逐一動畫展示。":
+      "Interactive solver for the classic Eight Queens problem. Click the board to place the first queen; the algorithm uses backtracking to find valid 8-queen configurations, animated one solution at a time.",
+    "以台北捷運配色為基底，模擬地鐵路線圖的生成動畫。隨機生成站點與多條路線，呈現城市交通網路的有機生長過程。":
+      "Generative metro-map animation styled after the Taipei MRT palette. Random stations and multiple lines emerge, showing the organic growth of an urban transit network.",
+    "自然粒子場景生成藝術。1500+ 粒子在 3D 空間中飄動、層疊，組成山脊、雲霧、洋流、潮汐、極光幕等有機景觀。每個 fxhash 種子生成獨特場景：漸層背景、配色、粒子密度、漂移速度、湍流強度、地平線高度、曲率皆不同。支援滑鼠/觸控互動推開粒子。使用 Perlin noise 模擬自然飄動，細微呼吸脈動營造生命感。響應式設計。":
+      "Nature particle scene gen-art. 1500+ particles drift and layer in 3D space, forming organic landscapes like ridges, mist, currents, tides, and aurora veils. Each fxhash seed spawns a unique scene: gradient background, color palette, particle density, drift speed, turbulence intensity, horizon height, and curvature all vary. Supports mouse/touch interaction to push particles aside. Uses Perlin noise for natural drift, with subtle breathing pulses that evoke a sense of life. Responsive design.",
+    "Three.js 3D 魔方自動打亂解題視覺化。22 步隨機打亂（相鄰步不重複同面），解題序列為打亂的反向逆步；easeInOutCubic 流暢轉面動畫，pivot-group 技法確保顏色正確貼合；頂部序列 chip 即時高亮當前步、底部顯示解題進度，循環展示。支援滑鼠拖曳、縮放，S 鍵存圖。":
+      "3×3 Rubik's Cube auto-scramble and auto-solve visualizer. 22-move random scramble (no repeated face), solution is the reversed inverse sequence; easeInOutCubic smooth turn animations with pivot-group technique for correct color tracking; top chips highlight the current move, bottom shows solve progress. Loops endlessly. Drag to rotate, scroll to zoom, S to save.",
+  };
+
+  var T_JA = {
+    "領地爭奪 Pong Wars": "ポンウォーズ",
+    "兩顆彈跳球各據一方，撞到對方領地就反彈並把該格翻成自己的顏色——像素前線無限來回。薄荷 vs 深海，即時比分、可調速度／每邊球數／格數、拖尾與存檔。（參考自 Koen van Gilst 的 Pong Wars：pong-wars.koenvangilst.nl）":
+      "2つの弾むボールが盤面を二分し、相手の陣地に当たると跳ね返してそのマスを自分の色に塗り替える——終わりのないピクセルの攻防。ミント対ディープシー、リアルタイムのスコア、速度／片側のボール数／マス数の調整、軌跡と自動保存。（Koen van Gilst の Pong Wars を参考：pong-wars.koenvangilst.nl）",
+    "體素村莊 Voxel Village": "ボクセル・ビレッジ",
+    "three.js 體素世界觀察模式：小人自動挖方塊、採集材料、逐格蓋房子並不斷擴建，含晝夜循環與夜晚窗戶燈光。可拖曳環顧、縮放、調速，狀態存於 localStorage。":
+      "three.js のボクセル世界を眺める観察モード：小さな住人がブロックを掘り、資材を集め、家を少しずつ建てて拡張していきます——昼夜サイクルと夜に灯る窓つき。ドラッグで見回し、ズーム、速度調整が可能。状態は localStorage に保存。",
+    "踩地雷 Minesweeper": "マインスイーパー",
+    "經典踩地雷：初級／中級／高級三種難度，左鍵翻開、右鍵或長按插旗，數字代表周圍八格的地雷數，翻開所有非雷格即獲勝。首擊一定安全、零格自動展開、已翻開的數字可「和牌開數字」一次展開周圍。含計時、剩餘雷數、笑臉重開與存檔，支援手機（插旗模式）。":
+      "3つの難易度（初級／中級／上級）のクラシックなマインスイーパー。左クリックで開く、右クリックまたは長押しで旗🚩。数字は周囲8マスの地雷数を示し、地雷以外のマスをすべて開けば勝ち。最初のクリックは必ず安全、空白マスは自動で連鎖して開き、開いた数字をもう一度押すと（旗が合っていれば）周囲を一度に開く「コード」ができます。タイマー・残り地雷数・スマイリーでリセット・自動セーブ付き、スマホ対応（旗モード）。",
+    "擲骰模擬人生 Dice of Life": "ダイス人生シミュレーション",
+    "擲骰子模擬人生的文字遊戲：從出生到晚年共六個階段，每階段先擲 d10／d12 觸發隨機事件，再做選擇——部分選擇需 d20 檢定（骰值＋屬性修正 ≥ 門檻才成功）。選擇會累積 健康／智力／體魄／魅力／幸福／財富，塑造你的職涯與命運。走完晚年給你一份人生總結：稱號、評分（S～D）與壽命。每局都不一樣，來看看這輩子能活成什麼樣子。":
+      "サイコロで人生をシミュレートするテキストゲーム。誕生から晩年までの6ステージで、各ステージはまず d10／d12 を振ってランダムイベントを起こし、次に選択——一部の選択は d20 判定（出目＋能力補正 ≥ 難易度で成功）が必要です。選択によって 健康／知力／体力／魅力／幸福／財産 が積み上がり、キャリアと運命が形づくられます。晩年を終えると、称号・評価（S〜D）・寿命をまとめた人生総括が表示されます。プレイのたびに展開が変わる——どんな一生になるか試してみて。",
+    "叉點漂移 Cross Drift": "クロス・ドリフト",
+    "n×n 點陣生成動畫：由相鄰四點連成一個「叉叉」，多個叉叉在格點上平滑地上下左右漂移，配上各種配色（普普、霓虹、粉彩、大地、賽博、海洋…）。每次載入依 fxhash 種子決定格數（15–25）、叉叉數與色盤，獨一無二。點擊重生、S 鍵存圖。":
+      "n×n のドット格子上のジェネラティブ・アニメーション：隣り合う4つの点が「×（クロス）」を形づくり、複数のクロスが格子の上を上下左右になめらかにドリフトします。多彩なパレット（ポップ、ネオン、パステル、アース、サイバー、オーシャン…）。読み込みごとに fxhash シードが格子数（15〜25）・クロスの数・配色を決め、毎回唯一無二。クリックで再生成、S で保存。",
+    "描線揭圖 Unveil": "アンヴェール（線取り）",
+    "Qix／天蠶變風的圈地揭圖小遊戲：用方向鍵把游標拉進黑幕拉線，回到已揭開的邊界圍出封閉區，沒有敵人的那一側就揭開底層圖片（原創立繪）。避開在黑幕中亂彈的紅色敵人——碰到你正在拉的線就扣一命。揭開達 75% 過關看完整圖，關卡越高敵人越多越快。方向鍵／WASD 或畫面方向鍵操作，支援手機。":
+      "Qix／ヴォルフィード風の陣取りゲーム。方向キーでカーソルを暗幕に引き込んで線を描き、開いた縁に戻って領域を囲むと、敵のいない側が開いて下の絵（オリジナルの立ち絵）が現れます。暗幕内を跳ね回る赤い敵に注意——描いている線に触れると1ミス。75% 開けばステージクリアで完成絵を表示、上のステージほど敵は速く多くなります。方向キー／WASD または画面の方向ボタン、スマホ対応。",
+    "破碎還原 · Ceramic Shatter": "陶片の破砕と再生 · Ceramic Shatter",
+    "three.js 程序生成的陶瓷器皿：一顆球體變形成罐／瓶造型，表面三角面以 Voronoi 聚類分成數十片、每片加壁厚做成有體積的瓷片，在「完整 ↔ 由中心向外炸裂」之間無縫循環還原。內部發光核與中心點光營造由內而外的能量，RoomEnvironment 釉面環境反射、ACES 色調。每次隨機生成造型(收頸／腹部／高度) × 釉色(青瓷／青花／天目／緋紅／象牙…) × 碎片數 × 炸裂距離。拖曳旋轉(自動繞行)、點畫面重生、S 鍵存圖。":
+      "three.js で生成した陶器：球体を壺／花瓶の形に変形し、表面の三角面を Voronoi クラスタリングで数十片の破片に分け、各片に壁厚を与えて立体的な陶片にします。破片は「完全な形 ↔ 中心から外へ破裂」の間をシームレスにループし、また再生します。内部の発光コアと中心のポイントライトが内側からのエネルギーを演出し、RoomEnvironment の釉薬反射と ACES トーンマッピングを使用。読み込みごとに形（首／胴／高さ）×釉薬（青磁・染付・天目・緋色・象牙…）×破片数×破裂距離がランダム。ドラッグで回転（自動回転）、クリックで再生成、S キーで保存。",
+    "Dotwork 圓點畫": "Dotwork — 点描画",
+    "以大小不一、色彩鮮明的圓點／水彩斑點堆出主體剪影的圓點畫。做法：先把主體剪影(貓／鳥／魚／蝴蝶／花／愛心／兔／貓頭鷹／海馬／鯨魚／蝸牛／孔雀)畫進離屏 buffer 並模糊(圓點彼此不重疊、留白紙縫)，當作「密度圖」——核心密、邊緣自然羽化飛散；再依密度做拒絕取樣灑點，用 Perlin noise 分出色塊區域並夾雜鮮豔雜點；主體四周再灑偏冷色的零星噴濺點，配上眼睛與白紙紋理。每次依 fxhash 選主體 × 色盤(彩虹／暖陽／糖果／寶石／春櫻) × 朝向，獨一無二。點畫面重生，S 鍵存圖。":
+      "大小さまざまで色鮮やかな丸ドット／水彩の斑点でモチーフのシルエットを形づくる点描画。仕組み：モチーフ(猫／鳥／魚／蝶／花／ハート／兎／フクロウ／タツノオトシゴ／クジラ／カタツムリ／孔雀)をオフスクリーンに描いてぼかし「密度マップ」に（丸ドットは互いに重ならず、紙の余白が見えます）——中心は密、縁は自然にフェードして飛び散ります。その密度に比例してリジェクションサンプリングで点を配置し、Perlin ノイズで色のかたまりを作りつつ鮮やかな粒を混ぜ、周囲には寒色系の飛沫ドットを散らし、瞳と紙の質感を添えます。fxhash ごとにモチーフ×パレット(レインボー／暖陽／キャンディ／宝石／春桜)×向きが決定。毎回唯一無二。クリックで再生成、S キーで保存。",
+    "Truchet v2 圓管套色": "Truchet v2 — リソ管",
+    "Truchet 曲線瓷磚的 v2，一個作品涵蓋三種風貌(依 fxhash 隨機)：A「Riso 套色」——亮底、單墨圓管加綠/青兩道偏移套色殘影(分色印刷錯位)＋散點；B「彩帶眼孔」——黑底、多彩扁平緞帶＋每節點鉚釘眼孔(環+黑心)；C「陶瓷甜甜圈」——多彩緞帶＋甜甜圈大孔環／實心圓盤節點。以圓角圓管取代 v1 的扁平色塊，可選左右／四象對稱而浮現圖騰般錯視。16 組色盤：從 riso 分色、普普螢光、蒸氣波，到鼠尾草、塵霧玫瑰、學院海軍、赤陶等嚴肅 muted 色。每次生成獨一無二，點畫面重生、S 鍵存圖。":
+      "Truchet 曲線タイルの v2。1 作品で 3 つの表情を内包（fxhash で選択）：A「リソ」＝明るい地に単色インクの丸パイプ＋緑/シアンのオフセット版ズレ＋散りドット。B「リボン・アイレット」＝黒地に多色フラットのリボン＋各ノードにリベット状アイレット（環＋暗い芯）。C「セラミック・ドーナツ」＝多色リボン＋大穴ドーナツ環／ソリッド円盤のノード。丸パイプが v1 のフラット色面に代わり、左右／四方対称でトーテムのような錯視も。16 のパレット——リソ二色・ポップ蛍光・ヴェイパーウェイヴから、セージ・ダスティローズ・アカデミックネイビー・テラコッタ等のシリアスなミュート色まで。毎回唯一無二。クリックで再生成、S キーで保存。",
+    "Truchet v4 格點變形": "Truchet v4 — 格子の変形",
+    "Truchet 曲線瓷磚的 v4。方形晶格被漩渦、波浪、鼓脹或擠壓擰彎，四分弧改成二次貝茲，邊中點仍然對接成連續迴路。同一條迴路同一色；暗底「流光」讓光點沿路徑流動，亮底「紙上墨」則是描邊色帶。20 組色盤，可選左右／四象對稱。每次依 fxhash 生成獨一無二，點畫面重生、S 鍵存圖。":
+      "Truchet 曲線タイルの v4。正方格子を渦・波・膨張・収縮でねじ曲げ、四分円弧を二次ベジェに置き換えても辺の中点はつながり連続したループになる。同じループは同じ色。暗い地の「流光」は光点が経路を流れ、紙地の「紙上墨」は輪郭つきの色リボン。20 のパレット、左右／四方対称も。fxhash ごとに唯一無二。クリックで再生成、S キーで保存。",
+    "Neon Street 夜の街": "夜の街",
+    "three.js 程序生成的日本街道第一人稱穿梭。無限往前開過窄巷，兩側程序生成高低參差的窄樓，臨街面以 canvas 即時繪製窗格亮燈；正對來車的直式霓虹袖看板（居酒屋、ラーメン、カラオケ…）、橫式店招、成串紅提灯、發光的自動販賣機沿街閃爍，頭頂拉滿下垂糾纏的電線，濕路面映出霓虹倒影。街景以 segment 環形回收（純位移、零運行期配置）達成無限延伸，霧氣景深與 bloom 輝光，街尾遠景矗立日本地標塔（東京鐵塔／晴空塔／通天閣，隨機）。點擊隨機切換場景——白天快晴、夕暮れ、陰雨與夜雨（含落雨粒子、濕反光）、霓虹夜、紫煙；← → / A D 或拖曳可左右移動，S 鍵存圖。":
+      "three.js で生成した日本の街並みを一人称で無限に進んでいく作品。狭い路地を前へ前へと走り抜け、両側には高さの不揃いな細いビルが並び、通りに面した壁は canvas でリアルタイムに描画（窓格子・灯り）。こちらを向いた縦型のネオン袖看板（居酒屋・ラーメン・カラオケ…）、横型の店看板、連なる赤提灯、光る自動販売機が流れ、頭上には垂れ下がる絡んだ電線、濡れた路面にはネオンの反射。街はセグメントのリングバッファ（純粋な平行移動・実行時割り当てゼロ）で無限に続き、霧の奥行きと bloom の輝き、通りの果てにはランドマークタワー（東京タワー／スカイツリー／通天閣、ランダム）が遠望できます。クリックでシーンを切り替え——快晴・夕暮れ・雨天と夜雨（落雨パーティクル・濡れ反射つき）・ネオンの夜・紫煙。← → / A D またはドラッグで左右移動、S キーで保存。",
+    "Starry Night 星夜": "星月夜",
+    "以演算法重現梵谷《星夜》(1889) 的漩渦夜空與厚塗油畫。八層 impasto 筆觸引擎疊出鬃毛紋、高光稜線；noise 亂流加多個漩渦驅動旋轉的星雲，招牌雙渦落在畫面中偏左；橘暈弦月與約 11 顆放光的星以同心亮環鋪成；遠山起伏、山村與刺入夜空的教堂尖塔、前景如火焰般竄升的絲柏。每次依 fxhash 種子生成獨一無二的夜，開頁逐筆作畫約 4 秒。":
+      "ゴッホ《星月夜》(1889) の渦巻く夜空を厚塗り油彩でアルゴリズム再現。八層のブラシエンジンが刷毛の筋やハイライトの稜線を重ね、ノイズの乱流と複数の渦が回転する星雲を生み、象徴的な二重渦は画面中央のやや左に。オレンジの暈をまとう三日月と約11の輝く星を同心の光輪で置き、うねる丘、村と夜空を突く教会の尖塔、前景には炎のように立ち上る糸杉。fxhash シードごとに唯一無二の夜を、約4秒かけて一筆ずつ描く。",
+    "Tilework 磁磚排版": "タイルワーク",
+    "裝飾磁磚牆生成藝術：每次載入依 fxhash 種子挑「鋪貼版型 × 花樣傳統 × 配色」。分兩類——彩繪磁磚牆（直排、錯縫、旋轉拼接）搭配幾何花樣（伊斯蘭八角星、四葉飾、azulejo 花草、水泥花磚圓弧、交織帶、zellige 星芒），旋轉拼接會讓相鄰磁磚的圓弧接成連續流動花樣；以及幾何編織版型（籃編 basketweave、風車 pinwheel）的純色磚。配色參考各地磁磚傳統：葡萄牙 Azulejo、荷蘭 Delft、墨西哥 Talavera、摩洛哥 Zellige、水泥花磚 Encaustic、Art Deco、維多利亞；磚間留灰縫、外加邊框，左下角附標籤。點擊或空白鍵換一面牆，S 鍵存圖。":
+      "装飾タイル壁のジェネラティブアート。読み込むたびに fxhash シードが「貼りパターン × モチーフの伝統 × 配色」を選び、二系統に分かれます。絵付けタイル壁（通し目地・馬目地・回転貼り）は幾何モチーフ——イスラムの八芒星、四つ葉、アズレージョの花、セメントタイルの四分円、組紐帯、ゼリージュの星——をまとい、回転貼りでは隣り合うタイルの円弧がつながって連続した流れ模様に。幾何の織りパターン（バスケットweave、風車）は無地の釉薬タイル。配色はポルトガルのアズレージョ、オランダのデルフト、メキシコのタラベラ、モロッコのゼリージュ、セメントタイル、アールデコ、ヴィクトリアンなど実在の伝統に基づき、目地と外枠、左下にラベルを添えます。クリックまたはスペースで別の壁、S で保存。",
+    "Pointillism 點描印象": "点描の印象",
+    "以數萬顆圓點、光學混色（相鄰互補色點並置）的點描手法，概念式重現 33 幅印象派／後印象派名作。每次載入依 fxhash 種子挑一幅並套用該畫代表色盤——涵蓋莫內（日出印象、睡蓮、罌粟花田、乾草堆、盧昂大教堂、日本橋、威尼斯黃昏、霧中國會、喜鵲雪景、懸崖步道、吉維尼花徑…）、梵谷（星夜、隆河星夜、麥田絲柏、夜間咖啡館、鳶尾花、橄欖樹、杏花）、秀拉（大碗島、阿尼埃爾浴場）、席涅克（聖特羅佩港、亞維儂教皇宮）、雷諾瓦、畢沙羅、希斯里、竇加、塞尚、卡玉伯特。底畫由垂直漸層、漩渦流光、水面流紋與柔邊色塊程序化組成，再鋪兩層圓點（柔底＋清晰點），部分點改用口音色並置產生閃爍。左下角附美術館式標籤。點擊或空白鍵換一幅，S 鍵存圖。":
+      "数万個の点と視覚混合（隣り合う補色の点の並置）による点描で、印象派・ポスト印象派の名画 33 点を概念的に再構成。読み込むたびに fxhash シードが一枚を選び、その絵の代表的なパレットを適用します——モネ（印象・日の出、睡蓮、ひなげし、積みわら、ルーアン大聖堂、日本橋、黄昏のヴェネツィア、霧の国会議事堂、かささぎ、断崖の散歩、ジヴェルニーの小道…）、ゴッホ（星月夜、ローヌ川の星月夜、糸杉と麦畑、夜のカフェテラス、アイリス、オリーブの木、花咲くアーモンド）、スーラ（グランド・ジャット島、アニエールの水浴）、シニャック（サン＝トロペ、アヴィニョンの教皇庁）、さらにルノワール・ピサロ・シスレー・ドガ・セザンヌ・カイユボット。下地は垂直グラデーション・渦巻く光・水面のさざなみ・柔らかい色面で手続き的に構成し、二層の点（柔らかな下地＋くっきりした点）で覆い、一部の点をアクセント色に差し替えて煌めきを生みます。左下に美術館風のラベル。クリックまたはスペースで別の絵、S で保存。",
+    "Dorm Life 宿舍人生": "寮生活",
+    "Gather Town 風格的像素宿舍自動人生。六位角色（三男三女）住在大學宿舍，各有寢室與衛浴，共用客廳、廚房餐廳與書房；依作息上課、用餐、讀書、社交、睡覺，靠近彼此便交談，對話全程記錄。整個世界是「伺服器時間＋當日種子」的純函數（PHP 提供標準時鐘），所以每位訪客看到完全相同的角色位置、行程與對話——不需資料庫即同步。暖色磚牆木地板、立體家具與 Gather 風角色，窗外可見太陽月亮軌跡與晴／陰／雨天氣、日夜光照。一天約六分鐘循環，換日重新展開。": "Gather Town 風のピクセル寮が自律的に暮らす作品。6人（男女各3人）が大学寮に住み、各自の寝室と浴室、共用のリビング・キッチンダイニング・書斎を持つ。日課に沿って授業・食事・勉強・交流・就寝し、近づくと会話、その全ログが残る。世界全体はサーバー時刻＋その日のシード（PHPが時計を提供）の純関数なので、どの訪問者も全く同じ位置・スケジュール・会話を見る——データベース不要で同期。暖色のレンガと木の内装、立体的な家具と Gather 風キャラ。窓の外に太陽・月の軌道と晴／曇／雨の天気、昼夜の光。1日は約6分で一巡し、翌日また展開する。",
+    // Header
+    "kvzhuang — 以程式碼創作的視覺實驗": "kvzhuang — コードで紡ぐビジュアル実験",
+
+    "Kowloon 九龍城寨": "九龍城砦",
+    "three.js 程序生成的九龍城寨風格巨構。密集網格上堆疊高低參差的違建高樓，每棟以 canvas 即時繪製立面貼圖（窗格、亮燈、冷氣機、鏽水痕、底層霓虹招牌），頂樓散布水塔、冷氣、天線與加蓋鐵皮屋，屋頂之間拉起下垂的糾纏電纜。中央高、邊緣留光井，懸挑違建向外凸出。三種時段色調（霓虹夜、黃昏霾、雨霧綠），霧氣景深與 bloom 霓虹光暈。概念參考 BuildingGeneratorThreeJS 的參數化組裝，改為純程式幾何。點擊重新生成，拖曳旋轉，S 鍵存圖。":
+      "three.js で手続き生成した九龍城砦風のメガストラクチャ。密なグリッドに高さバラバラの違法増築ビルが積み重なり、各ファサードは canvas でリアルタイム描画（窓割り・点灯・エアコン室外機・錆の流れ・地上階のネオン看板）。屋上には貯水タンク・室外機・アンテナ・トタン小屋が散らばり、屋根の間には垂れ下がったケーブルが絡み合う。中央は高く縁には光井、片持ちの増築が外へ張り出す。3つの時間帯トーン（ネオンナイト・夕靄・雨霧の緑）、霧の奥行きと bloom のネオン発光。コンセプトは BuildingGeneratorThreeJS のパラメトリック組み立てを参考に、純手続き幾何で再構築。クリックで再生成、ドラッグで回転、Sキーで保存。",
+    "Slime Mold 黏菌培養皿": "変形菌",
+    "真實 Physarum polycephalum 多頭絨泡菌的 agent-based 覓食模擬。數萬顆粒子各自感測前方費洛蒙、轉向、移動、沉積，自組織出黏菌招牌的「網狀脈管」——大量迴路與 degree-3 節點交織，成功脈管變粗成輸送主幹、失敗者縮退，外圍是細密毛茸的扇形覓食前緣。菌落自接種點向外擴張，agent 持續汰換讓網路在探索相與輸送相之間呼吸。四種配色（經典黃、橙紅、白化、螢光青）。點擊重新培養，空白鍵暫停，S 鍵存圖。":
+      "本物の変形菌モジホコリ（Physarum polycephalum）のエージェントベース採餌シミュレーション。数万の粒子が前方のフェロモンを感知し旋回・移動・沈着して、変形菌ならではの網目状の管ネットワーク（多数のループと3叉節点）へ自己組織化。成功した管は太い輸送幹に育ち、失敗した管は退縮、周囲は繊細で毛羽立った扇状の採餌フロント。接種点から外へ広がり、エージェントの入れ替わりで探索相と輸送相の間を呼吸する。4配色（クラシック黄・橙赤・白化・シアン）。クリックで再培養、スペースで一時停止、Sキーで保存。",
+
+    // Card titles
+    "等軸測不可能階梯生成藝術。雙灰階、單一線寬與紙面顆粒構成密集模組拼貼；階梯、塔、露台、拱門與圓孔在畫面中錯接，4-5 條深灰 Penrose 式帶狀路徑穿過建築群，形成視覺焦點。每個 fxhash 種子會決定密度、色調、階梯方向偏好與孔洞風格。":
+      "アイソメトリックな不可能階段の生成アート。2階調のグレー、単一の線幅、紙の粒状感で密なモジュールコラージュを構成し、階段、塔、テラス、アーチ、円形の穴が画面内で矛盾して接続されます。4-5 本の濃いグレーの Penrose 風リボン経路が建築群を貫き、視線の焦点になります。fxhash の seed ごとに密度、色調、階段方向の偏り、穴のスタイルが決まります。",
+    "圍棋 Go": "囲碁 Go",
+    "人機對戰圍棋。支援 5×5 / 7×7 / 11×11 / 13×13 棋盤，自動計算貼目、提子與領地（日式計分）。AI 會評估吃子威脅、救援己方、開局佔角。兩方連續虛手後自動終局並顯示領地覆蓋。":
+      "人間 vs AI の囲碁。5×5 / 7×7 / 11×11 / 13×13 の盤面に対応し、コミ・アゲ・地（日本ルール）を自動計算。AI は取り脅威の評価、自陣グループの救済、序盤の隅取りを行う。2 回連続パスで終局し、地の覆いを表示。",
+    "軍儀棋 Gungi": "軍儀 Gungi",
+    "改編自《獵人》動漫的策略棋盤遊戲。9×9 棋盤、14 種棋子、疊加堆塔機制，先吃掉對手帥者獲勝。支援人類 vs 電腦對戰，含部署階段與全棋子移動規則。":
+      "HUNTER×HUNTER の戦略ボードゲーム。9×9 盤・14 種の駒・積み重ねタワー制で相手の帥を取れば勝利。デプロイフェーズ付き人間 vs AI 対戦、全駒の移動ルールを完全実装。",
+    "拉霸機 Slot Machine": "スロットマシン",
+    "Domino 多米諾骨牌": "ドミノ",
+    "TSP 旅行推銷員問題": "TSP — 巡回セールスマン問題",
+    "Tensegrity 張拉整體": "テンセグリティ",
+    "Fractal Mountain 碎形山水": "フラクタル山水",
+    "四色定理": "四色定理",
+    "集合論圖解": "集合論ダイアグラム",
+    "家紋 Kamon": "家紋",
+    "台灣花磚": "台湾マジョリカタイル",
+    "Sunflowers 向日葵": "ひまわり",
+    "Impression Sunrise 印象・日出": "印象・日の出",
+    "Ink Flow 墨流": "墨流し",
+    "Endless Stairs 無盡階梯": "終わらない階段",
+    "Escher 式等軸測不可能建築生成藝術。立方體、重複階梯、疊層金字塔、拱門、圓孔、高塔六種模組鎖在同一套等軸測網格上鋪滿直式畫面；緞帶路徑以隨機遊走穿梭建築之間，在頂面與側面之間轉折時利用深度歧義製造不可能幾何。三種色調隨機切換：均勻線稿的素描版、深藍底青色發光路徑加零星窗燈的霓虹夜版、米底炭黑陰影面塊的復古印刷版。點擊重新生成，T 鍵切換色調，S 鍵存圖。":
+      "エッシャー風アイソメトリック不可能建築のジェネラティブアート。立方体・連続階段・ジッグラト・アーチ・丸穴・塔の6種のモジュールが同一のアイソメ格子上に縦長画面を埋め尽くす。リボン状の経路がランダムウォークで建築群を縫い、上面と側面の切り替わりで奥行きの曖昧さを突いて不可能図形を生む。3種のトーン：均一線画のスケッチ、シアンに光る経路と窓明かりのネオンナイト、クリーム地に黒い陰影面のヴィンテージ印刷。クリックで再生成、Tキーでトーン切替、Sキーで保存。",
+    "Auto Spire 自動殺戮尖塔": "オート・スパイア",
+    "致敬《殺戮尖塔》的全自動爬塔演示。四位角色——鐵甲戰士、靜默獵手、故障機器人、觀者——各擁有約 55 張忠於原作數值的卡牌，加上 30 種遺物與 12 種藥水。AI 依斬殺優先、格擋需求、能力鋪場等啟發式自動出牌，爬完三幕共 45 層：小怪、精英、商店、營火，一路打到最終 Boss（覺醒者、時間吞噬者、雙子）。姿態、球體、真言、中毒、商店與戰績記錄完整實作。點擊切換速度，I 鍵看遺物藥水，空白鍵暫停，R 開新局，S 存圖。":
+      "『Slay the Spire』へのオマージュ、全自動タワークライム。4キャラクターがそれぞれ原作準拠の約55枚のカード、30種のレリック、12種のポーションを持つ。AIがヒューリスティックで自動プレイし、全3幕45階（雑魚・エリート・ショップ・焚き火）を登り、最終ボスに挑む。スタンス・オーブ・マントラ・毒・ショップ・戦績記録も実装。クリックで速度切替、Iキーでレリック情報、スペースで一時停止、Rで新規ラン、Sで保存。",
+    "Stereogram 立體視覺圖": "ステレオグラム",
+    "隱藏式 3D 立體視覺圖（Autostereogram / Magic Eye）產生器。每次隨機藏入不同立體圖案：球體、甜甜圈、波浪曲面、水面漣漪、金字塔、山丘地形、浮空方塊、愛心、星星、文字等；搭配彩色亂點、黑白亂點、雜訊織紋、斜紋條帶四種紋理。用平行眼觀看，讓上方兩個定位點融合成三點，隱藏圖案便會浮現。採用經典 Thimbleby–Inglis–Witten 像素連結演算法含隱藏面檢查。點擊重新生成，A 鍵顯示答案，S 鍵存圖。":
+      "隠し3Dステレオグラム（マジック・アイ）ジェネレーター。球体・トーラス・波面・波紋・ピラミッド・丘陵地形・浮遊ボックス・ハート・星・文字などの立体図形をランダムに隠し、カラードット・白黒ドット・ノイズ織り・斜めストライプの4種のテクスチャで描画。平行法で上部の2つのガイドドットが3つに融合すると、隠された図形が浮かび上がります。古典的な Thimbleby–Inglis–Witten ピクセル連結アルゴリズム（隠面消去付き）を採用。クリックで再生成、Aキーで答え表示、Sキーで保存。",
+    "Tulips 鬱金香花海": "チューリップ畑",
+    "油畫風格室外鬱金香花海。晴天、陰天、下雨、夜晚月光四種場景；水平色帶、對角斜紋、放射透視三種田野佈局；八種花色分帶種植，Perlin noise 疏密叢聚與偶發異色株模擬真實花田，遠景大氣霧化褪色、近景完整莖葉與杯形花瓣，花行間田壟土溝帶出農田質感。厚塗筆觸引擎：bezier 板狀筆觸＋鬃毛紋＋高光稜線。點擊重新生成，S 鍵存圖。":
+      "油絵風の屋外チューリップ畑。晴天・曇天・雨・月夜の4シーン。水平カラーバンド・斜めストライプ・放射遠近の3種のレイアウト。8色のチューリップを帯状に配置し、Perlinノイズによる疎密のむらと時折混じる異色株がリアルな花畑を再現。遠景は大気遠近法で霞み、手前の花は茎・葉・カップ型花弁まで描写。畝の土溝が農場らしさを添える。インパスト筆触エンジン：ベジェ板状ストローク＋毛筆テクスチャ＋ハイライト稜線。クリックで再生成、Sキーで保存。",
+    "Auto Rubik 自動魔方": "オート・ルービック",
+    "Tiny Planet 小星球": "タイニー・プラネット",
+    "Cosmos 星塵宇宙": "コスモス",
+
+    // Card descriptions
+    "自動玩的俄羅斯方塊。AI 用 Dellacherie 啟發式（最大化消行、最小化高度/洞/凹凸）為每個方塊算最佳落點，無限連續玩。8 組配色，可切換速度（×0.5 ~ ×4）。":
+      "自動プレイのテトリス。AI は Dellacherie ヒューリスティクス（消去ライン最大化、高さ／穴／凹凸最小化）で各ピースの最適配置を計算し、無限にプレイし続ける。8 種類のカラーパレット、速度切替（×0.5 ～ ×4）対応。",
+    "Puyo Puyo 對戰 Tetris 自動對戰。兩個 AI 同時跑，Tetris 消行送對手垃圾 puyo、Puyo 連鎖送對手垃圾行。任一方爆頂判勝，自動 reset 下一場。5 組配色。":
+      "ぷよぷよ vs テトリスの自動対戦。2 つの AI が同時にプレイし、テトリスはライン消去で相手にお邪魔ぷよを、ぷよは連鎖で相手にお邪魔行を送る。先に天井を越えたほうが敗北し、次の試合へ自動リセット。5 種類のカラーパレット。",
+    "視覺化說明回溯法：決策樹邊探索邊長出來，當前 cursor 發光、找到解的分支轉金色、失敗的分支變灰。循環展示 Permutations、Combinations、N-Queens 三類問題。可切換速度（慢/正常/快/極速）。":
+      "バックトラッキングのビジュアル解説。決定木が探索しながら成長し、現在のカーソルは光り、解に到達した枝は金色に、失敗した枝は灰色にフェードする。順列、組合せ、N クイーンの 3 種類を順番に展示。速度切替(遅い／普通／速い／超高速)。",
+    "連續自動煙火秀。anime.js 控制火箭升空 ease curve 與爆炸 flash 環擴張，p5.js 渲染粒子物理。8 種爆炸樣式（牡丹、菊花、垂柳、環、棕櫚、心形、螺旋、Crossette 分裂）、多段子爆、火箭軌跡、Crackle 火花、星空 + 城市剪影。9 組配色，按 Finale 觸發 5 秒終曲狂炸。":
+      "連続自動の花火ショー。anime.js がロケット上昇のイーズカーブと爆発リングの広がりを駆動し、p5.js がパーティクル物理を描画。8 種類の爆発スタイル(牡丹、菊、しだれ、リング、ヤシ、ハート、スパイラル、クロセット分裂)、多段二次爆発、ロケットの軌跡、クラックル火花、星空＋街並みのシルエット。9 種類のカラーパレット、Finale ボタンで 5 秒間のフィナーレ大連爆。",
+    "參考 anime.js demo 常見的 stagger grid、timeline 編排與 SVG motion path，生成一張會呼吸的星圖。每次隨機種子產生不同軌道、星點、連線與色盤；3 種模式（radial / rings / lattice），可重新生成、切換模式與暫停。":
+      "anime.js のデモでよく見られる stagger grid、timeline の振付、SVG motion path を参考にした、呼吸する星図。ランダムシードごとに軌道、星点、連線、カラーパレットが変わる。3 モード(radial / rings / lattice)、再生成・モード切替・一時停止に対応。",
+    "受 Arrows GO! 啟發的箭頭連鎖反應 gen-art。每關 AI 在不同造型（圓、心、星、螺旋、葡萄串、菱形、外框、對角、散布、字母）的箭頭排列中找出最長連鎖起點，射線一格格清空。6 組配色、可切換速度、可手動點箭頭觸發。":
+      "Arrows GO! にインスパイアされた矢印連鎖反応の生成アート。各ラウンドで AI が様々な配置(円、ハート、星、螺旋、ブドウ房、ダイヤ、フレーム、対角、散布、文字)の中から最長連鎖の始点を探し、ビームが 1 マスずつ消していく。6 種類のカラーパレット、速度切替、矢印を手動クリックで発射可能。",
+    "受 iOS 26 液態玻璃啟發。多彩流動色塊背景上飄浮多個透明玻璃形狀，real-time backdrop blur + 內側 highlight gradient + 雙層 rim 邊框 + 鏡面反光弧。3 種形狀模式（Bubbles 圓 / Lozenges 藥丸 / Cards 卡片）、6 組配色、可點擊推開或新增玻璃。":
+      "iOS 26 のリキッドガラスにインスパイア。流れる多彩なカラーフィールドの上に透明なガラス形状が漂い、リアルタイムの backdrop blur、内側ハイライトグラデーション、二重リム枠、鏡面ハイライトアークを重ねる。3 種類の形状モード(Bubbles 円／Lozenges カプセル／Cards カード)、6 種類のカラーパレット、クリックでガラスを押しのけたり追加したり可能。",
+    "AI 自動玩貪吃蛇。用 BFS 找食物 + tail-reachability safety check（模擬吃完後能否 BFS 到尾巴）決定走法，不安全時 fallback 追尾巴繞圈拖時間。死亡會自動重生並換配色。6 組配色、可切換速度。":
+      "AI が自動プレイするスネーク。BFS で餌までの最短経路を求め、さらに tail-reachability safety check(餌を食べた後も尾までたどれるか模擬)で安全性を確認。危険な場合は尾を追う回避モードに切り替え。死亡で自動リスポーン＆配色チェンジ。6 種類のカラーパレット、速度切替対応。",
+    "台北公車即時動態 gen-art。以 Data.Taipei 公車資料在地圖上繪出車輛位置、速度色彩與發光軌跡，可切換路線並顯示路線形狀、車輛數、平均速度與資料更新時間。":
+      "台北バスのリアルタイム生成アート。Data.Taipei のバスデータを使い、地図上に車両位置、速度に応じた色、発光する軌跡を描画します。路線を切り替えて、路線形状、車両数、平均速度、データ更新時刻を確認できます。",
+    "自動養貓 gen-art。2~4 隻像素貓在一間寬廣的房間裡自由活動：吃飯、睡覺、玩耍、跳上沙發/書桌/牆架/貓樹/貓床，偶爾互動。8 種隨機毛色（虎斑、三花、黑、白、灰、橘子、暹羅、賓士），每次隨機抽取且家具位置每場不同。日夜循環影響環境光、太陽月亮位置與星空，閒置一陣子會自動餵食、清貓砂、開關窗簾與檯燈。可點貓撫摸冒愛心、點窗簾/碗/砂/燈互動。移植自我自己寫的 ESP32-2432S028 (CYD) 電子養貓。":
+      "自動電子猫の生成アート。2 ～ 4 匹のピクセル猫が広い部屋を自由に動き回り、食事・睡眠・遊び・ソファ／机／壁棚／キャットタワー／ベッドへのジャンプ、そして時折じゃれ合います。8 種類のランダムな毛色(虎斑、三毛、黒、白、灰、オレンジ、シャム、タキシード)が無作為に抽出され、家具配置もリロードのたびに異なります。昼夜サイクルが環境光、太陽と月の軌道、星空を変化させ、しばらく放置すると自動で給餌・トイレ清掃・カーテンとランプの切替を行います。猫をクリックで撫でてハートを呼び出し、カーテン／餌皿／トイレ／ランプもクリックで操作可能。ESP32-2432S028 (CYD) 上に自作した電子猫からの移植版。",
+    "SimCity 風格自動建城 gen-art（45 度等距投影）。AI 規劃井字主路 + 隨機支路 / 死巷；flood-fill 偵測街廓，整個街廓統一分區（R/C/I 不混雜）。大型街廓會出現 2×2 / 2×3 大型建案。道路有車流動畫；天氣循環（晴 / 陰 / 雨 / 夜，含閃電、雨幕、星空、霓虹窗），建築會老舊拆遷重蓋。HUD 顯示居住人口、稅收、政府支出與預算盈虧。":
+      "SimCity 風の自動建設都市の生成アート(45 度アイソメトリック視点)。AI が井字型のメイン道路＋ランダムな支線・行き止まりを引き、flood-fill で街区を検出し、街区ごとに用途を統一(住居／商業／工業の混在なし)。大きな街区には 2×2 / 2×3 の大型開発が出現。道路には車流アニメーション、天候は晴れ／曇り／雨／夜のサイクル(雷、雨幕、星空、ネオン窓)、建築物は経年劣化で解体・再建。HUD には居住人口、税収、行政支出、収支差が表示。",
+    "Yoot Tower / SimTower 風格自動經營高樓 gen-art（側視剖面）。B10 ~ 20F 共 31 層 17 種設施：辦公室、商城、地下街、餐廳、健身房、電影院、旅店客房 + 接待、SPA、泳池、洗衣店、停車場、地鐵站、垃圾清運、監控室與機房。四座電梯井共 16 部電梯，兩座一般全層停靠、兩座高速採 skip-stop 只服務 B10 ~ B3 + GF + 10F ~ 20F，SCAN 排程沿途同方向接客；雙向電扶梯貫穿 B10 ~ 10F。行人按時段從地鐵或大廳進入、上樓進駐目的設施、停留結束反向離開，並對每間房給出評分與留言。HUD 即時統計在樓人數、各類人流、最熱樓層、營收支出與滿意度，時鐘與天空同步晝夜及天氣（晴 / 雨 / 閃電 / 夜空），進度自動存到 LocalStorage。":
+      "ザ・タワー / SimTower 風の自動経営高層ビル生成アート(横断面ビュー)。B10 ～ 20F の全 31 階に 17 種類のテナント:オフィス、商業フロア、地下街、レストラン、ジム、映画館、ホテル客室＋フロント、SPA、プール、ランドリー、駐車場、地下鉄駅、ごみ処理センター、警備室、機械室。エレベーター 4 シャフト計 16 台 — 普通シャフト 2 本は全階停車、高速シャフト 2 本はスキップストップ方式で B10 ～ B3 ＋ GF ＋ 10F ～ 20F のみに停まる。SCAN 方式で同方向の乗客を途中で拾い上げ、双方向エスカレーターは B10 駐車場から 10F まで貫通。来館者は時間帯ごとに地下鉄やロビーから入場し、目的のテナントへ向かい、滞在後に逆ルートで退館し、訪れた部屋にレビューを残します。HUD は在館人数、属性別来館者、最も賑わうフロア、収支、満足度をリアルタイム表示し、時計と空は昼夜＋天候(晴れ／雨／雷／星空)と連動、進行状況は LocalStorage に自動保存。",
+    "anime.js 製作的 loading 圖示矩陣。4×3 = 12 格，每格從 29 種 loader 隨機抽（不重複）：脈動、波形、旋轉、軌道、漣漪、進度條、星形、六邊形、鐘擺、花瓣、抖動、翻牌等。8 組配色，按鈕重新洗牌。":
+      "anime.js で作ったローダーアイコンのマトリクス。4×3 = 12 マスに 29 種類のローダーからランダムに重複なしで配置:パルス、ウェーブ、スピナー、オービット、リップル、プログレスバー、星形、六角形、振り子、花弁、振動、フリップなど。8 種類のカラーパレット、ボタンでシャッフル。",
+    "anime.js motion path 範例。14 個彩色粒子用 stagger 錯位沿 SVG 路徑流動，6 種程式生成路徑：Lissajous、Sine、Spiral、Infinity、Heart、Rose。5 組配色。":
+      "anime.js の motion path デモ。14 個のカラフルなパーティクルが stagger でずらしながら SVG パスを流れる。プログラム生成の 6 種パス:リサジュー、サイン、スパイラル、無限、ハート、ローズ。5 種類のカラーパレット。",
+    "anime.js SVG path morph 範例。3 層 blob 各自循環形變 + 反向旋轉，path 用相同 1M+8C+Z 結構程式生成才能 morph。7 組配色。":
+      "anime.js の SVG path morph デモ。3 層のブロブがそれぞれ循環的に形を変えながら逆方向回転し続ける。スムーズな morph のためパスは同じ 1M+8C+Z 構造でプログラム生成。7 種類のカラーパレット。",
+    "anime.js timeline 範例。5×5 方塊網格 6 階段編排動畫：登場 → 旋轉 → 脈動 → 波動 → 爆炸 → 收回。6 組配色，每階段切換顏色。":
+      "anime.js の timeline デモ。5×5 のボックスグリッドが 6 つのフェーズで振付:登場 → 回転 → パルス → ウェーブ → 爆発 → 収束。6 種類のカラーパレット、フェーズごとに色が変化。",
+    "anime.js stagger 動畫展示。16×16 圓點網格，7 種錯位模式：放射波、線性掃描、隨機散布、對角線、正弦流動、漣漪、角落爆裂。8 組配色，點按鈕切換場景。":
+      "anime.js の stagger ショーケース。16×16 のドットグリッドで 7 種類の stagger パターン:放射波、リニアスイープ、ランダム散布、対角カスケード、サインフロー、リップル、コーナーバースト。8 種類のカラーパレット、ボタンでシーン切替。",
+    "像素風格自動牧場模擬。農夫 AI 自動耕地、播種、澆水、收割；四季輪替（春麥、夏番茄、秋南瓜、冬休耕）改變作物與天氣；牛、羊、雞、豬在畜欄內漫遊；穀倉、房屋、水井、池塘、果樹完整場景。含金幣計算、收穫特效、晴雨雪天氣、晝夜光照循環。":
+      "ピクセルアート自動農場シミュレーション。農夫AIが自動で耕作・播種・水やり・収穫。四季の移り変わり（春：小麦、夏：トマト、秋：かぼちゃ、冬：休耕）が作物と天気を変える。牛・羊・鶏・豚が囲いの中を散歩。納屋・家・井戸・池・果樹の完全なシーン。金貨計算、収穫エフェクト、晴れ/雨/雪の天気、昼夜の光のサイクルを含む。",
+    "GPU 流體模擬的墨水暈染。Navier-Stokes 求解器在 shader 中即時運算（渦度補強、Jacobi 壓力迭代、雙場平流），四色墨滴在紙上流動、捲旋、融合；Beer-Lambert 吸墨混色、邊緣沉澱水痕、三層紙紋。可拖曳攪動、點擊滴墨、四色墨盤切換，自動滴墨模式會自己作畫。":
+      "GPU 流体シミュレーションによる墨流し。ナビエ・ストークスソルバーがシェーダーでリアルタイム演算（渦度補強、ヤコビ圧力反復、二場移流）し、4 色の墨が紙の上で流れ、渦巻き、混ざり合う。ベール・ランベルト吸収による減法混色、エッジの沈殿水痕、3 層の紙テクスチャ。ドラッグでかき混ぜ、クリックで墨を落とし、4 色パレットを切替。自動滴下モードでは勝手に描き続ける。",
+    "Three.js 程序生成的 3D 箱庭小星球。fxhash 決定地形噪波種子、海平面高度、五種星球主題（翠綠/火焰/沙漠/冰雪/紫晶）；FBM 噪波疊七層生成地形，高度決定生態帶（深海→淺海→沙灘→草地→森林→岩石→雪頂）；Instanced Mesh 植樹（最多 350 棵）、置放房屋與岩石；大氣光暈 rim shader、可探索雲朵、緩慢公轉日照。可滑鼠任意角度環繞探索。":
+      "Three.js による 3D ハコニワ小惑星。fxhash が地形ノイズシード・海面高度・5 種の惑星テーマ（翠緑・火炎・砂漠・氷雪・紫晶）を決定。7 オクターブ FBM ノイズで地形を生成、高度がバイオーム（深海→浅海→砂浜→草地→森林→岩石→雪頂）を決める。最大 350 本のインスタンスツリー・家・岩石を表面に配置。大気リムシェーダー、雲スプライト、ゆっくり公転する太陽。ドラッグで周回探索。",
+    "Three.js 粒子星河。fxhash 隨機決定螺旋臂數（2–4）、配色（藍白、暖橙、翡翠、紫霧）與粒子密度（50k–75k）；對數螺旋算法分布粒子群，中心核球自然隆起，星際雲氣層疊渲染；自訂 GLSL 著色器配 UnrealBloom 後處理光暈；OrbitControls 拖曳旋轉縮放，R 鍵重新生成，S 鍵存圖。":
+      "Three.js パーティクル銀河。fxhash がスパイラルアーム数（2〜4）・カラーパレット（青白・暖橙・翡翠・紫霞）・粒子密度（50k〜75k）をランダム決定。対数螺旋で粒子を配置、中心核の膨らみと星間ガス雲を重ね、カスタム GLSL シェーダーと UnrealBloom 後処理でグローを表現。ドラッグで回転・ズーム、R キーで再生成、S キーで保存。",
+    "以演算法重現莫內《印象・日出》。沿用向日葵的厚塗筆觸引擎：霧藍灰的勒阿弗爾港、不透明橘紅日盤與水面搖曳的橘色碎筆倒影；霧中桅杆群、煙囪飄煙與 1–3 艘剪影小船。三種色調變體（經典藍灰、紫霧、玫瑰晨光），每次生成獨一無二，開頁逐筆作畫約 4 秒。":
+      "モネ《印象・日の出》をアルゴリズムで再現。ひまわりと同じ厚塗り筆触エンジンを使用：霧がかった青灰色のル・アーヴル港、不透明なオレンジの日輪、水面に揺らめくオレンジの破片状の反射。霧の中のマスト群、たなびく煙突の煙、1〜3 艘のシルエットの小舟。3 つの色調バリエーション（クラシック青灰、紫霧、バラ色の夜明け）。生成のたびに唯一無二、約 4 秒かけて一筆ずつ描かれる。",
+    "以演算法重現梵谷《向日葵》的厚塗油畫。八層 impasto 筆觸引擎疊出鬃毛紋、高光稜線與中央反光帶；noise 流場加漩渦驅動的星夜式流動背景；phyllotaxis 黃金角花心籽粒；四種瓶形 × 四種釉色隨機組合，三種色調變體（鉻黃、土耳其藍、淡青綠）。每次生成獨一無二，開頁逐筆作畫約 4 秒。":
+      "ゴッホ《ひまわり》を厚塗り油絵で再現する生成アート。8 層の筆触エンジンが毛筋・ハイライトの稜線・中央の反射帯を積み上げ、ノイズフローフィールドと渦が《星月夜》風のうねる背景を駆動。黄金角フィロタキシスの花芯、4 種の瓶形 × 4 種の釉薬のランダム組合せ、3 つの色調バリエーション（クロムイエロー、ターコイズ、淡い青緑）。生成のたびに唯一無二、約 4 秒かけて一筆ずつ描かれる。",
+    "厚塗油畫生成藝術。弧形 bezier 筆觸由中心放射展開，疊加鬃毛紋、假 3D 光影與顏料噴濺，搭配紙底紋理模擬油畫顏料的隆起質感。10 組色盤可隨機抽取。":
+      "厚塗り油絵の生成アート。中心から放射状に広がる曲線のベジエ筆触に毛筋、擬似 3D の陰影、絵具の飛沫を重ね、紙地のテクスチャで油絵具の盛り上がりを再現。10 種類のカラーパレットからランダム抽選。",
+    "Google 熱門搜尋趨勢文字雲，涵蓋台灣、美國、日本、英國四個地區。每小時自動更新，Hover 顯示來源地區，可按地區篩選。":
+      "Google トレンドのワードクラウド。台湾、アメリカ、日本、イギリスの 4 地域をカバーし毎時自動更新。ホバーで地域を表示、地域別フィルタも可能。",
+    "每日一字猜謎遊戲。每天早上 8 點更新一個 5-7 字母的英文單字，你有 8 次機會猜出正確答案。綠色=正確、黃色=位置錯、灰色=不存在。":
+      "毎日 1 単語の推理ゲーム。毎朝 8 時に 5 ～ 7 文字の英単語が更新され、8 回までで正解を当てる。緑＝正解、黄色＝位置違い、グレー＝含まれない。",
+    "輸入你的 Wordle 線索，自動過濾並推薦最佳猜測。支援 5-7 字母、8 行輸入、字母頻率排序。點擊格子切換綠/黃/灰狀態。":
+      "Wordle の手がかりを入力すると自動でフィルタリングし、最適な次の推測を提案。5 ～ 7 文字、8 行入力、文字頻度ソート対応。マスをクリックで緑／黄／グレー切替。",
+    "經典水果機風格拉霸。傳統符號：🍒🍋🍊🍇🍉🔔💎7️⃣，帶權重隨機與賠率表。按 SPIN 或空白鍵拉霸，BET 調整下注。":
+      "クラシックなフルーツマシン風スロット。伝統的シンボル🍒🍋🍊🍇🍉🔔💎7️⃣、重み付きランダムと配当表付き。SPIN ボタンまたはスペースキーで回転、BET でベット額調整。",
+    "多米諾骨牌連鎖倒塌生成藝術。6 種排列方式：螺旋、之字、同心圓、波浪、網格、瀑布。每張骨牌有隨機點數、3D 透視傾倒效果和地面陰影。自動循環、點擊重新生成。":
+      "ドミノ倒しの連鎖生成アート。6 種類の配置:スパイラル、ジグザグ、同心円、波形、グリッド、滝。各タイルにランダムなピップ、3D 透視の倒れ込み、地面の影。自動ループ、クリックで再生成。",
+    "經典 NP-hard 問題的演算法視覺化。三種解法逐步動畫：最近鄰居法（貪心）、2-Opt（局部優化）、模擬退火（全域搜尋）。觀察路徑如何從混亂逐步收斂到近似最優解。":
+      "古典的 NP-hard 問題のアルゴリズム可視化。3 種類の解法をステップごとにアニメーション:最近傍法(貪欲)、2-Opt(局所最適化)、シミュレーテッドアニーリング(大域探索)。経路が混沌から近似最適解へ収束していく様子を観察。",
+    "張拉整體結構生成藝術。剛性壓桿互不接觸，靠連續張力線維持平衡。3-5 桿結構在 3D 空間旋轉搖擺，三種佈局模式：單體、三聯、群落。10 組配色搭配光暈效果。":
+      "テンセグリティ構造の生成アート。剛体の圧縮ロッドは互いに接触せず、連続するテンションケーブルで均衡を保つ。3 ～ 5 本のロッド構造が 3D 空間で回転・揺動し、配置モードは単体、トリオ、クラスターの 3 種。10 種類のカラーパレットにグロー効果。",
+    "中點位移碎形演算法生成多層山脈。5-7 層山嶺由遠到近、由淺到深，搭配水墨紋理線條、氤氳霧氣、水面倒影和月光。7 組配色：水墨、暮色、晨曦、深冬、翠嶺、月夜、赤壁。":
+      "中点変位フラクタルで生成する多層山脈。5 ～ 7 層の稜線が遠近・濃淡で重なり、水墨テクスチャ、靄、水面の映り込み、月明かりが彩る。7 種類のカラーパレット:水墨、夕暮れ、暁、厳冬、翠嶺、月夜、赤壁。",
+    "完美迷宮生成藝術。DFS 遞迴回溯演算法產生 10×10 到 50×50 的隨機迷宮，點擊畫面觸發 BFS 解答動畫，路徑漸層從入口色過渡到出口色。16 組高對比配色。":
+      "完全迷路の生成アート。DFS の再帰バックトラッキングで 10×10 ～ 50×50 のランダム迷路を生成、クリックすると BFS による解答アニメーションが走り、経路は入口色から出口色へグラデーション。16 種類のハイコントラストカラーパレット。",
+    "用流體模擬解迷宮。從上方入口持續注入液體，重力下落、同列等位、壓力上推三個 pass 的細胞自動機驅動液面：岔路被灌滿、U 形段累積上升，最終從下方出口湧出。16 組配色，每組液體色獨立調校。":
+      "流体シミュレーションで迷路を解く。上の入口から液体を注ぎ続け、重力落下／同列均一化／圧力押上の 3 パスのセルオートマトンが液面を駆動。行き止まりが満ち、U 字部分が押し上がり、最終的に下の出口から噴出。16 種類のカラーパレット、液体色も個別調整。",
+    "Superellipse 變形動畫。網格中的圓點在圓形、四角星、彩色圓點之間持續變形，搭配尺寸脈動與背景反轉，創造催眠般的視覺節奏。16 組配色，每個 hash 獨特。":
+      "Superellipse モーフィングアニメーション。グリッド上のドットが円、四角星、色付きディスクの間で連続的に変形し、サイズパルスと背景反転が催眠的なリズムを生む。16 種類のカラーパレット、hash ごとに固有。",
+    "栗子形 Truchet 瓷磚生成藝術。飽滿的水滴弧形連接邊緣中點，中間膨脹、兩端收尖，相鄰 tile 對接形成栗子般的有機曲線。19 組配色搭配紙質紋理。":
+      "栗形 Truchet タイルの生成アート。ふっくらした涙形のアークが各辺の中点を結び、中央が膨らみ両端が尖る形で隣接タイルがつながり栗のような有機曲線を描く。19 種類のカラーパレットに紙テクスチャ。",
+    "圓形填充式 Truchet 瓷磚。四分之一圓在角落配對，相鄰 tile 連接形成完整圓形與有機圓潤圖案。22 組配色搭配紙質紋理，呈現飽滿的幾何視覺。":
+      "円充填式 Truchet タイル。四分円が角でペアになり、隣接タイルが繋がって完全な円や有機的な丸み模様を形成。22 種類のカラーパレットに紙テクスチャを重ねた、ふくよかな幾何ビジュアル。",
+    "扁平風格花束生成藝術。密集的海芋、罌粟花與鬱金香以大膽色塊填滿圓形構圖，8 組配色方案搭配 4 種密度變化，每次刷新都是獨一無二的花園。":
+      "フラットデザインのブーケ生成アート。カラー、ポピー、チューリップが大胆な色面で円形構図を埋め尽くす。8 種類のカラーパレット × 4 段階の密度、リロードごとに唯一無二の庭。",
+    "鋼筆繪圖機風格的植物線描生成藝術。遞迴分支演算法產生有機樹木與垂藤，搭配格紋背景與飄落花瓣。純線條、無填色的 plotter art 美學。":
+      "ペンプロッター風の植物線画生成アート。再帰分岐アルゴリズムが有機的な樹木と垂れ蔓を育て、グリッド背景と舞い散る花弁を添える。線のみで塗りなしのプロッターアート美学。",
+    "生成藝術風格 Loader 矩陣。12 種類型：莫列波紋、Perlin 噪音流、李薩如曲線、洛倫茲吸引子、粒子軌跡、沃羅諾伊圖、雙擺混沌、遞迴方塊、變形蟲、網格擾動、費馬螺旋、多邊形變形。":
+      "生成アート風のローダーマトリクス。12 種類:モアレ、Perlin ノイズフロー、リサジュー曲線、ローレンツアトラクター、パーティクル軌跡、ボロノイ図、二重振り子カオス、再帰スクエア、アメーバ、グリッドジッター、フェルマー螺旋、ポリゴンモーフ。",
+    "n×m 網格的 Loading 動畫生成藝術。12 種 spinner 類型：旋轉弧、追逐圓點、脈衝環、雙環反轉、軌道球、時鐘掃描等，每個各有不同配色與速度。":
+      "n×m グリッドのローディングアニメ生成アート。12 種類のスピナー:回転アーク、追いかけドット、パルスリング、二重逆回転リング、オービットボール、時計スイープなど。それぞれ独自の配色と速度。",
+    "九龍城寨風格的微縮城市。等角透視視角，密集建築有機堆疊，搭配底部懸空支撐柱、屋頂天線水塔、外露管線。鋼筆淡彩風格。":
+      "九龍城砦風のミニチュアシティ。アイソメトリック視点で密集した建物が有機的に積み上がり、下部のキャンチレバー支柱、屋上のアンテナと貯水タンク、剥き出しの配管を持つ。ペン＆ライトウォッシュの美学。",
+    "離散數學四色定理的生成藝術。Voronoi 圖產生隨機平面地圖，透過 Welsh-Powell 貪婪演算法只用 4 種顏色著色，使相鄰區域永不同色。":
+      "離散数学の四色定理の生成アート。Voronoi 図で生成したランダム平面地図を、Welsh-Powell 貪欲アルゴリズムでわずか 4 色だけに塗り分け、隣接領域が同色にならないことを示す。",
+    "離散數學集合論的互動式圖解。涵蓋聯集、交集、差集、補集、對稱差、冪集、笛卡兒積，搭配 Venn Diagram 與德摩根定律視覺化。":
+      "離散数学の集合論をインタラクティブに図解。和集合、共通部分、差集合、補集合、対称差、冪集合、デカルト積を扱い、ベン図とド・モルガンの法則を可視化。",
+    "Dynamic Programming 視覺化教學。在隨機成本網格上，動畫展示 DP 表逐格填入過程，最後回溯出從左上到右下的最小成本路徑。":
+      "動的計画法の可視化チュートリアル。ランダムなコストグリッド上で、DP テーブルが 1 マスずつ埋まる過程をアニメーション化し、左上から右下への最小コスト経路をバックトレース。",
+    "等角立體方塊堆疊，每個面隨機填入圓點、棋盤格、條紋、菱形等圖案。10 組配色風格，從霓虹到赤陶土都有。階梯式排列營造 3D 錯視效果。":
+      "アイソメトリックに積み上げたキューブ。各面にドット、市松、ストライプ、ダイヤなどがランダム配置。ネオンからテラコッタまで 10 種類のカラースタイル。階段状の配置で 3D 錯視を演出。",
+    "以日本傳統家紋為靈感，隨機生成菊、桐、蝶、鶴丸、青海波等 30 種經典紋樣。黑白米色的極簡配色，每次僅呈現一枚家紋。":
+      "日本の伝統的な家紋を題材に、菊、桐、蝶、鶴丸、青海波など 30 種類の古典紋様をランダム生成。黒・白・生成りのミニマルカラーで、毎回 1 つの家紋だけを表示。",
+    "以台灣傳統花磚為靈感，隨機生成對稱花卉與幾何圖樣。17 組取自老花磚的配色，搭配八瓣花、蓮花、牡丹、水渦紋等 11 種圖案交織排列。":
+      "台湾伝統のマジョリカタイルを題材に、対称的な花卉と幾何模様をランダム生成。古いタイルから採った 17 種のカラーパレットに、八弁花、蓮、牡丹、水渦など 11 種の意匠を織り込む。",
+    "經典 Truchet 瓷磚的曲線變體，透過隨機旋轉的弧線組合出迷宮般的流動路徑。擁有 60+ 組調色盤，從 Bauhaus 到 Evangelion 風格皆有。Inspired by RoniBlock":
+      "古典 Truchet タイルの曲線バリエーション。ランダムに回転するアークが組み合わさり、迷路のような流れる経路を作り出す。バウハウスからエヴァンゲリオン風まで 60 種類以上のパレット。Inspired by RoniBlock。",
+    "Truchet 瓷磚的編織變體，兩條緞帶交叉產生 over/under 立體錯覺。陰影與高光營造布料編織質感，支援弧線與對角線兩種風格。":
+      "Truchet タイルの織り変奏。2 本のリボンが交差して over/under の立体錯視を生み出し、影とハイライトが布の織り目を演出。曲線と対角線の 2 スタイルに対応。",
+    "在三角形網格上探索色彩與幾何的交織。透過色彩漸變與格狀結構，生成萬花筒般的視覺韻律。":
+      "三角格子の上で色彩と幾何の交差を探る。色のグラデーションと格子構造が万華鏡のような視覚リズムを生む。",
+    "經典八皇后問題的互動式求解。點擊棋盤放置第一個皇后，演算法自動用 backtracking 找出合法的 8 皇后配置，逐一動畫展示。":
+      "古典的な 8 クイーン問題のインタラクティブソルバー。盤面をクリックして 1 つ目のクイーンを置くと、バックトラッキングで合法な 8 クイーン配置を探し、1 つずつアニメーション表示。",
+    "以台北捷運配色為基底，模擬地鐵路線圖的生成動畫。隨機生成站點與多條路線，呈現城市交通網路的有機生長過程。":
+      "台北 MRT の配色をベースにした、地下鉄路線図の生成アニメーション。駅と複数の路線をランダム生成し、都市交通網が有機的に成長する過程を描く。",
+    "自然粒子場景生成藝術。1500+ 粒子在 3D 空間中飄動、層疊，組成山脊、雲霧、洋流、潮汐、極光幕等有機景觀。每個 fxhash 種子生成獨特場景：漸層背景、配色、粒子密度、漂移速度、湍流強度、地平線高度、曲率皆不同。支援滑鼠/觸控互動推開粒子。使用 Perlin noise 模擬自然飄動，細微呼吸脈動營造生命感。響應式設計。":
+      "自然パーティクルシーンのジェネラティブアート。1500 個以上のパーティクルが 3D 空間を漂い重なり、稜線、霧、海流、潮、オーロラの幕など有機的な風景を形成。各 fxhash シードが独自のシーンを生成：グラデーション背景、配色、パーティクル密度、ドリフト速度、乱流強度、地平線の高さ、曲率がすべて異なる。マウス／タッチでパーティクルを押しのける。Perlin ノイズで自然な漂いを再現し、微細な呼吸パルスが生命感を醸す。レスポンシブデザイン。",
+    "Three.js 3D 魔方自動打亂解題視覺化。22 步隨機打亂（相鄰步不重複同面），解題序列為打亂的反向逆步；easeInOutCubic 流暢轉面動畫，pivot-group 技法確保顏色正確貼合；頂部序列 chip 即時高亮當前步、底部顯示解題進度，循環展示。支援滑鼠拖曳、縮放，S 鍵存圖。":
+      "Three.js による 3D ルービックキューブの自動スクランブル＆自動解法ビジュアライザー。22 手のランダムスクランブル（同じ面が連続しない）、解法はスクランブルの逆順逆手順。easeInOutCubic の滑らかな回転アニメーション、pivot-group 方式で面の色を正確に追跡。上部にシーケンスチップをリアルタイム表示、下部に進捗を示し、エンドレスにループ。ドラッグ回転、スクロールズーム、S キーで保存。",
+  };
+
+  var T_KO = {
+    "領地爭奪 Pong Wars": "퐁 워즈",
+    "兩顆彈跳球各據一方，撞到對方領地就反彈並把該格翻成自己的顏色——像素前線無限來回。薄荷 vs 深海，即時比分、可調速度／每邊球數／格數、拖尾與存檔。（參考自 Koen van Gilst 的 Pong Wars：pong-wars.koenvangilst.nl）":
+      "두 개의 튕기는 공이 각자 절반의 영역을 차지하고, 상대 영역에 부딪히면 튕겨 나가며 그 칸을 자기 색으로 바꿉니다 — 끝없는 픽셀 전선. 민트 vs 딥시, 실시간 점수, 속도·한쪽 공 개수·칸 수 조절, 잔상과 자동 저장. Koen van Gilst의 Pong Wars 참고 (pong-wars.koenvangilst.nl).",
+    "體素村莊 Voxel Village": "복셀 빌리지",
+    "three.js 體素世界觀察模式：小人自動挖方塊、採集材料、逐格蓋房子並不斷擴建，含晝夜循環與夜晚窗戶燈光。可拖曳環顧、縮放、調速，狀態存於 localStorage。":
+      "three.js 복셀 월드 관찰 모드: 작은 주민들이 블록을 캐고 자재를 모아 집을 조금씩 짓고 확장합니다 — 낮과 밤 순환, 밤에 불이 켜지는 창문 포함. 드래그로 둘러보기, 줌, 속도 조절 가능. 상태는 localStorage에 저장.",
+    "踩地雷 Minesweeper": "지뢰찾기",
+    "經典踩地雷：初級／中級／高級三種難度，左鍵翻開、右鍵或長按插旗，數字代表周圍八格的地雷數，翻開所有非雷格即獲勝。首擊一定安全、零格自動展開、已翻開的數字可「和牌開數字」一次展開周圍。含計時、剩餘雷數、笑臉重開與存檔，支援手機（插旗模式）。":
+      "세 가지 난이도(초급／중급／고급)의 클래식 지뢰찾기. 좌클릭으로 열고, 우클릭 또는 길게 눌러 깃발🚩. 숫자는 주변 8칸의 지뢰 수를 나타내며, 지뢰가 아닌 칸을 모두 열면 승리. 첫 클릭은 항상 안전하고, 빈 칸은 자동으로 연쇄로 열리며, 열린 숫자를 다시 누르면(깃발이 맞으면) 주변을 한 번에 여는 '코드'가 됩니다. 타이머·남은 지뢰 수·스마일 리셋·자동 저장 지원, 모바일 대응(깃발 모드).",
+    "擲骰模擬人生 Dice of Life": "주사위 인생 시뮬레이션",
+    "擲骰子模擬人生的文字遊戲：從出生到晚年共六個階段，每階段先擲 d10／d12 觸發隨機事件，再做選擇——部分選擇需 d20 檢定（骰值＋屬性修正 ≥ 門檻才成功）。選擇會累積 健康／智力／體魄／魅力／幸福／財富，塑造你的職涯與命運。走完晚年給你一份人生總結：稱號、評分（S～D）與壽命。每局都不一樣，來看看這輩子能活成什麼樣子。":
+      "주사위로 인생을 시뮬레이션하는 텍스트 게임. 탄생부터 노년까지 여섯 단계를 거치며, 각 단계는 먼저 d10／d12를 굴려 랜덤 이벤트를 발생시키고 이어서 선택을 합니다——일부 선택은 d20 판정(주사위 값＋능력치 보정 ≥ 난이도여야 성공)이 필요합니다. 선택에 따라 건강／지력／체력／매력／행복／재산이 쌓이며 커리어와 운명이 만들어집니다. 노년을 마치면 칭호·등급(S~D)·수명을 정리한 인생 총평이 나옵니다. 매 판마다 전개가 달라지니, 이번 생은 어떤 삶이 될지 확인해 보세요.",
+    "叉點漂移 Cross Drift": "크로스 드리프트",
+    "n×n 點陣生成動畫：由相鄰四點連成一個「叉叉」，多個叉叉在格點上平滑地上下左右漂移，配上各種配色（普普、霓虹、粉彩、大地、賽博、海洋…）。每次載入依 fxhash 種子決定格數（15–25）、叉叉數與色盤，獨一無二。點擊重生、S 鍵存圖。":
+      "n×n 점 격자 위의 제너러티브 애니메이션: 이웃한 네 점이 'X(크로스)'를 이루고, 여러 크로스가 격자 위를 상하좌우로 부드럽게 드리프트합니다. 다양한 팔레트(팝, 네온, 파스텔, 어스, 사이버, 오션…). 로드할 때마다 fxhash 시드가 격자 수(15–25), 크로스 개수, 색상을 정해 매번 유일무이. 클릭하면 재생성, S로 저장.",
+    "描線揭圖 Unveil": "언베일 — 선 따기",
+    "Qix／天蠶變風的圈地揭圖小遊戲：用方向鍵把游標拉進黑幕拉線，回到已揭開的邊界圍出封閉區，沒有敵人的那一側就揭開底層圖片（原創立繪）。避開在黑幕中亂彈的紅色敵人——碰到你正在拉的線就扣一命。揭開達 75% 過關看完整圖，關卡越高敵人越多越快。方向鍵／WASD 或畫面方向鍵操作，支援手機。":
+      "Qix／볼피드 스타일의 영역 차지 게임. 방향키로 커서를 어둠 속으로 끌어 선을 긋고, 열린 경계로 돌아와 영역을 감싸면 적이 없는 쪽이 열리며 아래 그림(오리지널 캐릭터 일러스트)이 드러납니다. 어둠 속을 튕겨 다니는 빨간 적을 피하세요——그리는 선에 닿으면 목숨이 하나 줄어듭니다. 75%를 열면 스테이지 클리어로 완성 그림을 보여주며, 높은 스테이지일수록 적은 더 빠르고 많아집니다. 방향키/WASD 또는 화면 방향 버튼, 모바일 지원.",
+    "破碎還原 · Ceramic Shatter": "도자기 파쇄와 복원 · Ceramic Shatter",
+    "three.js 程序生成的陶瓷器皿：一顆球體變形成罐／瓶造型，表面三角面以 Voronoi 聚類分成數十片、每片加壁厚做成有體積的瓷片，在「完整 ↔ 由中心向外炸裂」之間無縫循環還原。內部發光核與中心點光營造由內而外的能量，RoomEnvironment 釉面環境反射、ACES 色調。每次隨機生成造型(收頸／腹部／高度) × 釉色(青瓷／青花／天目／緋紅／象牙…) × 碎片數 × 炸裂距離。拖曳旋轉(自動繞行)、點畫面重生、S 鍵存圖。":
+      "three.js로 생성한 도자기: 구를 항아리/화병 형태로 변형하고, 표면 삼각형을 Voronoi 클러스터링으로 수십 개의 파편으로 나눈 뒤 각 파편에 두께를 주어 입체 도편으로 만듭니다. 파편은 '온전한 형태 ↔ 중심에서 바깥으로 폭발' 사이를 매끄럽게 반복하며 다시 복원됩니다. 내부의 빛나는 코어와 중심 포인트 라이트가 안에서 뻗어 나오는 에너지를 연출하고, RoomEnvironment 유약 반사와 ACES 톤 매핑을 사용합니다. 불러올 때마다 형태(목/몸통/높이) × 유약(청자·청화·천목·진홍·상아…) × 파편 수 × 폭발 거리가 무작위. 드래그로 회전(자동 회전), 클릭하면 재생성, S 키로 저장.",
+    "Dotwork 圓點畫": "Dotwork — 점묘화",
+    "以大小不一、色彩鮮明的圓點／水彩斑點堆出主體剪影的圓點畫。做法：先把主體剪影(貓／鳥／魚／蝴蝶／花／愛心／兔／貓頭鷹／海馬／鯨魚／蝸牛／孔雀)畫進離屏 buffer 並模糊(圓點彼此不重疊、留白紙縫)，當作「密度圖」——核心密、邊緣自然羽化飛散；再依密度做拒絕取樣灑點，用 Perlin noise 分出色塊區域並夾雜鮮豔雜點；主體四周再灑偏冷色的零星噴濺點，配上眼睛與白紙紋理。每次依 fxhash 選主體 × 色盤(彩虹／暖陽／糖果／寶石／春櫻) × 朝向，獨一無二。點畫面重生，S 鍵存圖。":
+      "크기가 제각각인 선명한 색의 원형 점／수채 얼룩으로 대상의 실루엣을 쌓아 올리는 점묘화. 방식: 대상(고양이／새／물고기／나비／꽃／하트／토끼／올빼미／해마／고래／달팽이／공작)을 오프스크린 버퍼에 그린 뒤 흐리게 처리해 '밀도 맵'으로 삼습니다(원형 점들은 서로 겹치지 않아 종이 여백이 보입니다) — 중심은 촘촘하고 가장자리는 자연스럽게 페더링되어 흩어집니다. 그 밀도에 비례해 리젝션 샘플링으로 점을 찍고, Perlin 노이즈로 색 덩어리 구역을 만들며 선명한 알갱이를 섞고, 주위에는 차가운 색의 흩뿌린 점을 더한 뒤 눈과 종이 질감으로 마무리합니다. fxhash마다 대상 × 팔레트(무지개／따뜻한 햇살／캔디／보석／봄 벚꽃) × 방향이 정해집니다. 매번 유일무이. 클릭하면 재생성, S 키로 저장.",
+    "Truchet v2 圓管套色": "Truchet v2 — 리소 파이프",
+    "Truchet 曲線瓷磚的 v2，一個作品涵蓋三種風貌(依 fxhash 隨機)：A「Riso 套色」——亮底、單墨圓管加綠/青兩道偏移套色殘影(分色印刷錯位)＋散點；B「彩帶眼孔」——黑底、多彩扁平緞帶＋每節點鉚釘眼孔(環+黑心)；C「陶瓷甜甜圈」——多彩緞帶＋甜甜圈大孔環／實心圓盤節點。以圓角圓管取代 v1 的扁平色塊，可選左右／四象對稱而浮現圖騰般錯視。16 組色盤：從 riso 分色、普普螢光、蒸氣波，到鼠尾草、塵霧玫瑰、學院海軍、赤陶等嚴肅 muted 色。每次生成獨一無二，點畫面重生、S 鍵存圖。":
+      "Truchet 곡선 타일링의 v2. 한 작품에 세 가지 표정을 담습니다(fxhash로 선택): A '리소' — 밝은 바탕에 단색 잉크 둥근 파이프 + 초록/청록 오프셋 잔상(인쇄 판 어긋남) + 흩뿌린 점. B '리본 아일렛' — 검은 바탕에 다색 평면 리본 + 각 노드마다 리벳형 아일렛(링+어두운 중심). C '세라믹 도넛' — 다색 리본 + 큰 구멍 도넛 링/솔리드 원반 노드. 둥근 파이프가 v1의 평면 색면을 대체하고, 좌우/사방 대칭으로 토템 같은 착시가 나타납니다. 16종 팔레트 — 리소 듀오톤·팝 형광·베이퍼웨이브부터 세이지·더스티 로즈·아카데믹 네이비·테라코타 등 진중한 뮤트 톤까지. 매번 유일무이. 클릭하면 재생성, S 키로 저장.",
+    "Truchet v4 格點變形": "Truchet v4 — 격자 변형",
+    "Truchet 曲線瓷磚的 v4。方形晶格被漩渦、波浪、鼓脹或擠壓擰彎，四分弧改成二次貝茲，邊中點仍然對接成連續迴路。同一條迴路同一色；暗底「流光」讓光點沿路徑流動，亮底「紙上墨」則是描邊色帶。20 組色盤，可選左右／四象對稱。每次依 fxhash 生成獨一無二，點畫面重生、S 鍵存圖。":
+      "Truchet 곡선 타일링의 v4. 정사각 격자를 소용돌이·물결·팽창·수축으로 비틀고, 사분원 호를 이차 베지에로 바꿔도 변의 중점은 이어져 연속 루프가 됩니다. 같은 루프는 같은 색. 어두운 바탕의 '유광'은 빛알이 경로를 흐르고, 종이 바탕의 '종이 위 먹'은 외곽선 색 리본입니다. 20종 팔레트, 좌우/사방 대칭 가능. fxhash마다 유일무이. 클릭하면 재생성, S 키로 저장.",
+    "Neon Street 夜の街": "네온 스트리트",
+    "three.js 程序生成的日本街道第一人稱穿梭。無限往前開過窄巷，兩側程序生成高低參差的窄樓，臨街面以 canvas 即時繪製窗格亮燈；正對來車的直式霓虹袖看板（居酒屋、ラーメン、カラオケ…）、橫式店招、成串紅提灯、發光的自動販賣機沿街閃爍，頭頂拉滿下垂糾纏的電線，濕路面映出霓虹倒影。街景以 segment 環形回收（純位移、零運行期配置）達成無限延伸，霧氣景深與 bloom 輝光，街尾遠景矗立日本地標塔（東京鐵塔／晴空塔／通天閣，隨機）。點擊隨機切換場景——白天快晴、夕暮れ、陰雨與夜雨（含落雨粒子、濕反光）、霓虹夜、紫煙；← → / A D 或拖曳可左右移動，S 鍵存圖。":
+      "three.js로 생성한 일본 거리를 1인칭으로 끝없이 질주하는 작품. 좁은 골목을 계속 앞으로 달려가며, 양옆으로는 높낮이가 제각각인 좁은 건물들이 늘어서고 거리를 향한 벽면은 canvas로 실시간 렌더링(창살·불빛)됩니다. 다가오는 시점을 향한 세로형 네온 간판(이자카야·라멘·노래방…), 가로형 상점 간판, 줄지어 걸린 붉은 초롱, 빛나는 자판기가 스쳐 지나가고, 머리 위로는 늘어져 엉킨 전선, 젖은 노면에는 네온 반사가 비칩니다. 거리는 세그먼트 링 버퍼(순수 이동·런타임 할당 없음)로 무한히 이어지며, 안개 원근감과 bloom 광휘를 담았고, 거리 끝에는 일본 랜드마크 타워(도쿄 타워／스카이트리／쓰텐카쿠, 랜덤)가 멀리 보입니다. 클릭하면 장면이 바뀝니다——맑은 낮·노을·흐린 비와 밤비(빗줄기 파티클·젖은 반사 포함)·네온의 밤·보랏빛 안개. ← → / A D 또는 드래그로 좌우 이동, S 키로 저장.",
+    "Starry Night 星夜": "별이 빛나는 밤",
+    "以演算法重現梵谷《星夜》(1889) 的漩渦夜空與厚塗油畫。八層 impasto 筆觸引擎疊出鬃毛紋、高光稜線；noise 亂流加多個漩渦驅動旋轉的星雲，招牌雙渦落在畫面中偏左；橘暈弦月與約 11 顆放光的星以同心亮環鋪成；遠山起伏、山村與刺入夜空的教堂尖塔、前景如火焰般竄升的絲柏。每次依 fxhash 種子生成獨一無二的夜，開頁逐筆作畫約 4 秒。":
+      "고흐의 《별이 빛나는 밤》(1889)의 소용돌이치는 밤하늘을 임파스토 유화로 알고리즘 재현. 8겹 브러시 엔진이 붓털 결과 하이라이트 능선을 쌓고, 노이즈 난류와 여러 소용돌이가 회전하는 성운을 만들며, 상징적인 이중 소용돌이는 화면 중앙 왼쪽에. 주황빛 달무리의 초승달과 약 11개의 빛나는 별을 동심 밝은 고리로 배치하고, 굽이치는 언덕과 마을, 밤하늘을 찌르는 교회 첨탑, 전경엔 불꽃처럼 솟는 사이프러스. fxhash 시드마다 유일무이한 밤을 약 4초에 걸쳐 한 붓씩 그린다.",
+    "Tilework 磁磚排版": "타일워크",
+    "裝飾磁磚牆生成藝術：每次載入依 fxhash 種子挑「鋪貼版型 × 花樣傳統 × 配色」。分兩類——彩繪磁磚牆（直排、錯縫、旋轉拼接）搭配幾何花樣（伊斯蘭八角星、四葉飾、azulejo 花草、水泥花磚圓弧、交織帶、zellige 星芒），旋轉拼接會讓相鄰磁磚的圓弧接成連續流動花樣；以及幾何編織版型（籃編 basketweave、風車 pinwheel）的純色磚。配色參考各地磁磚傳統：葡萄牙 Azulejo、荷蘭 Delft、墨西哥 Talavera、摩洛哥 Zellige、水泥花磚 Encaustic、Art Deco、維多利亞；磚間留灰縫、外加邊框，左下角附標籤。點擊或空白鍵換一面牆，S 鍵存圖。":
+      "장식 타일 벽 제너러티브 아트. 로드할 때마다 fxhash 시드가 '깔기 패턴 × 모티프 전통 × 배색'을 골라 두 계열로 나뉩니다. 그림 타일 벽(일자 줄눈·엇줄눈·회전 배치)은 기하 모티프——이슬람 팔각별, 네잎 장식, 아줄레주 꽃, 시멘트 타일 사분원, 짜임 띠, 젤리주 별——를 두르고, 회전 배치에서는 이웃한 타일의 원호가 이어져 연속된 흐름 무늬가 됩니다. 기하 짜임 패턴(바스켓위브, 바람개비)은 단색 유약 타일. 배색은 포르투갈 아줄레주, 네덜란드 델프트, 멕시코 탈라베라, 모로코 젤리주, 시멘트 타일, 아르데코, 빅토리안 등 실제 전통에 기반하며, 줄눈과 외곽 프레임, 좌하단 라벨을 더합니다. 클릭 또는 스페이스바로 다른 벽, S 키로 저장.",
+    "Pointillism 點描印象": "점묘 인상",
+    "以數萬顆圓點、光學混色（相鄰互補色點並置）的點描手法，概念式重現 33 幅印象派／後印象派名作。每次載入依 fxhash 種子挑一幅並套用該畫代表色盤——涵蓋莫內（日出印象、睡蓮、罌粟花田、乾草堆、盧昂大教堂、日本橋、威尼斯黃昏、霧中國會、喜鵲雪景、懸崖步道、吉維尼花徑…）、梵谷（星夜、隆河星夜、麥田絲柏、夜間咖啡館、鳶尾花、橄欖樹、杏花）、秀拉（大碗島、阿尼埃爾浴場）、席涅克（聖特羅佩港、亞維儂教皇宮）、雷諾瓦、畢沙羅、希斯里、竇加、塞尚、卡玉伯特。底畫由垂直漸層、漩渦流光、水面流紋與柔邊色塊程序化組成，再鋪兩層圓點（柔底＋清晰點），部分點改用口音色並置產生閃爍。左下角附美術館式標籤。點擊或空白鍵換一幅，S 鍵存圖。":
+      "수만 개의 점과 시각 혼합(인접한 보색 점의 병치)을 이용한 점묘로 인상파·후기 인상파 명화 33점을 개념적으로 재구성. 로드할 때마다 fxhash 시드가 한 점을 골라 그 그림의 대표 팔레트를 적용합니다——모네(인상 해돋이, 수련, 양귀비 들판, 건초더미, 루앙 대성당, 일본식 다리, 황혼의 베네치아, 안개 속 국회의사당, 까치, 절벽 산책, 지베르니 오솔길…), 반 고흐(별이 빛나는 밤, 론강의 별밤, 사이프러스와 밀밭, 밤의 카페 테라스, 아이리스, 올리브 나무, 꽃 핀 아몬드), 쇠라(그랑드자트섬, 아니에르의 물놀이), 시냐크(생트로페, 아비뇽 교황청), 그리고 르누아르·피사로·시슬레·드가·세잔·카유보트. 바탕 그림은 수직 그라데이션·소용돌이 빛·수면 잔물결·부드러운 색면으로 절차적으로 구성하고, 두 겹의 점(부드러운 바탕＋또렷한 점)으로 덮은 뒤 일부 점을 강조색으로 바꿔 반짝임을 만듭니다. 좌하단에 미술관식 라벨. 클릭 또는 스페이스바로 다른 그림, S 키로 저장.",
+    "Dorm Life 宿舍人生": "기숙사 생활",
+    "Gather Town 風格的像素宿舍自動人生。六位角色（三男三女）住在大學宿舍，各有寢室與衛浴，共用客廳、廚房餐廳與書房；依作息上課、用餐、讀書、社交、睡覺，靠近彼此便交談，對話全程記錄。整個世界是「伺服器時間＋當日種子」的純函數（PHP 提供標準時鐘），所以每位訪客看到完全相同的角色位置、行程與對話——不需資料庫即同步。暖色磚牆木地板、立體家具與 Gather 風角色，窗外可見太陽月亮軌跡與晴／陰／雨天氣、日夜光照。一天約六分鐘循環，換日重新展開。": "Gather Town 스타일의 픽셀 기숙사 자율 생활. 6명(남녀 각 3명)이 대학 기숙사에 살며 각자 침실과 욕실, 공용 거실·주방식당·서재를 씁니다. 일과에 따라 수업·식사·공부·교류·취침하고 가까워지면 대화하며 모든 대사가 기록됩니다. 세계 전체가 서버 시각＋당일 시드의 순수 함수(PHP가 시계 제공)라, 모든 방문자가 완전히 같은 위치·일정·대화를 봅니다——DB 없이 동기화. 따뜻한 벽돌·나무 인테리어, 입체적 가구와 Gather 스타일 캐릭터. 창밖으로 해·달의 궤적과 맑음／흐림／비 날씨, 낮밤 조명. 하루는 약 6분에 한 바퀴 돌고 다음 날 새로 펼쳐집니다.",
+    // Header
+    "kvzhuang — 以程式碼創作的視覺實驗": "kvzhuang — 코드로 짓는 시각 실험",
+
+    "Kowloon 九龍城寨": "구룡성채",
+    "three.js 程序生成的九龍城寨風格巨構。密集網格上堆疊高低參差的違建高樓，每棟以 canvas 即時繪製立面貼圖（窗格、亮燈、冷氣機、鏽水痕、底層霓虹招牌），頂樓散布水塔、冷氣、天線與加蓋鐵皮屋，屋頂之間拉起下垂的糾纏電纜。中央高、邊緣留光井，懸挑違建向外凸出。三種時段色調（霓虹夜、黃昏霾、雨霧綠），霧氣景深與 bloom 霓虹光暈。概念參考 BuildingGeneratorThreeJS 的參數化組裝，改為純程式幾何。點擊重新生成，拖曳旋轉，S 鍵存圖。":
+      "three.js로 절차적으로 생성한 구룡성채 스타일 메가스트럭처. 촘촘한 격자 위에 높낮이가 제각각인 불법 증축 빌딩이 쌓이고, 각 파사드는 canvas로 실시간 렌더링(창 격자·점등·에어컨 실외기·녹물 자국·1층 네온 간판). 옥상에는 물탱크·실외기·안테나·함석 가건물이 흩어지고, 지붕 사이엔 축 늘어진 케이블이 뒤엉킵니다. 가운데는 높고 가장자리엔 채광정, 캔틸레버 증축이 바깥으로 돌출. 세 가지 시간대 톤(네온 밤·노을 안개·비안개 초록), 안개 원근과 bloom 네온 광채. BuildingGeneratorThreeJS의 파라메트릭 조립을 참고해 순수 절차적 지오메트리로 재구축. 클릭하면 재생성, 드래그로 회전, S 키로 저장.",
+    "Slime Mold 黏菌培養皿": "점균",
+    "真實 Physarum polycephalum 多頭絨泡菌的 agent-based 覓食模擬。數萬顆粒子各自感測前方費洛蒙、轉向、移動、沉積，自組織出黏菌招牌的「網狀脈管」——大量迴路與 degree-3 節點交織，成功脈管變粗成輸送主幹、失敗者縮退，外圍是細密毛茸的扇形覓食前緣。菌落自接種點向外擴張，agent 持續汰換讓網路在探索相與輸送相之間呼吸。四種配色（經典黃、橙紅、白化、螢光青）。點擊重新培養，空白鍵暫停，S 鍵存圖。":
+      "실제 점균 Physarum polycephalum의 에이전트 기반 먹이탐색 시뮬레이션. 수만 개의 입자가 앞쪽 페로몬을 감지해 방향을 틀고 이동·침착하며, 점균 특유의 그물망 관 네트워크(다수의 고리와 3분기 노드)로 자기조직화합니다. 성공한 관은 굵은 수송 줄기로 자라고 실패한 관은 물러나며, 둘레는 섬세하고 보송한 부채꼴 먹이탐색 전선. 접종점에서 바깥으로 확장하고, 에이전트 교체로 탐색상과 수송상 사이를 호흡합니다. 4가지 배색(클래식 옐로·주황빨강·백화·시안). 클릭하면 재배양, 스페이스로 일시정지, S 키로 저장.",
+
+    // Card titles
+    "等軸測不可能階梯生成藝術。雙灰階、單一線寬與紙面顆粒構成密集模組拼貼；階梯、塔、露台、拱門與圓孔在畫面中錯接，4-5 條深灰 Penrose 式帶狀路徑穿過建築群，形成視覺焦點。每個 fxhash 種子會決定密度、色調、階梯方向偏好與孔洞風格。":
+      "아이소메트릭 불가능 계단 제너러티브 아트. 두 단계의 회색, 단일 선 두께, 종이 입자 질감으로 밀도 높은 모듈 콜라주를 만들고, 계단, 탑, 테라스, 아치, 원형 구멍이 화면 안에서 모순적으로 연결됩니다. 4-5개의 짙은 회색 Penrose풍 리본 경로가 건축군을 가로지르며 시각적 초점이 됩니다. 각 fxhash seed가 밀도, 색조, 계단 방향 편향, 구멍 스타일을 결정합니다.",
+    "圍棋 Go": "바둑 Go",
+    "人機對戰圍棋。支援 5×5 / 7×7 / 11×11 / 13×13 棋盤，自動計算貼目、提子與領地（日式計分）。AI 會評估吃子威脅、救援己方、開局佔角。兩方連續虛手後自動終局並顯示領地覆蓋。":
+      "인간 vs AI 바둑. 5×5 / 7×7 / 11×11 / 13×13 판을 지원하며 덤·따낸 돌·집(일본 규칙)을 자동 계산. AI는 따냄 위협 평가, 자신의 그룹 구조, 초반 귀 차지를 수행. 두 번 연속 패스 시 종국 처리 후 집 표시.",
+    "軍儀棋 Gungi": "군기 Gungi",
+    "改編自《獵人》動漫的策略棋盤遊戲。9×9 棋盤、14 種棋子、疊加堆塔機制，先吃掉對手帥者獲勝。支援人類 vs 電腦對戰，含部署階段與全棋子移動規則。":
+      "헌터×헌터의 전략 보드 게임. 9×9 판·14종 기물·스태킹 타워 시스템으로 상대 帅를 잡으면 승리. 배치 단계 포함 인간 vs AI 대전, 전 기물 이동 규칙 완전 구현.",
+    "拉霸機 Slot Machine": "슬롯머신",
+    "Domino 多米諾骨牌": "도미노",
+    "TSP 旅行推銷員問題": "TSP — 외판원 문제",
+    "Tensegrity 張拉整體": "텐세그리티",
+    "Fractal Mountain 碎形山水": "프랙탈 산수화",
+    "四色定理": "사색정리",
+    "集合論圖解": "집합론 다이어그램",
+    "家紋 Kamon": "가몬 (일본 가문)",
+    "台灣花磚": "대만 마졸리카 타일",
+    "Sunflowers 向日葵": "해바라기",
+    "Impression Sunrise 印象・日出": "인상, 해돋이",
+    "Ink Flow 墨流": "잉크 플로우",
+    "Endless Stairs 無盡階梯": "끝없는 계단",
+    "Escher 式等軸測不可能建築生成藝術。立方體、重複階梯、疊層金字塔、拱門、圓孔、高塔六種模組鎖在同一套等軸測網格上鋪滿直式畫面；緞帶路徑以隨機遊走穿梭建築之間，在頂面與側面之間轉折時利用深度歧義製造不可能幾何。三種色調隨機切換：均勻線稿的素描版、深藍底青色發光路徑加零星窗燈的霓虹夜版、米底炭黑陰影面塊的復古印刷版。點擊重新生成，T 鍵切換色調，S 鍵存圖。":
+      "에셔풍 아이소메트릭 불가능 건축 제너러티브 아트. 정육면체·반복 계단·지구라트·아치·원형 구멍·탑 6종 모듈이 하나의 아이소메트릭 격자 위에서 세로 화면을 가득 채웁니다. 리본 경로가 랜덤 워크로 건축 사이를 누비며, 윗면과 옆면이 전환되는 지점에서 깊이의 모호함을 이용해 불가능 도형을 만들어냅니다. 3가지 톤: 균일 선화 스케치, 시안빛 경로와 창문 불빛의 네온 나이트, 크림 바탕에 검은 그림자 면의 빈티지 인쇄. 클릭 재생성, T 키 톤 전환, S 키 저장.",
+    "Auto Spire 自動殺戮尖塔": "오토 스파이어",
+    "致敬《殺戮尖塔》的全自動爬塔演示。四位角色——鐵甲戰士、靜默獵手、故障機器人、觀者——各擁有約 55 張忠於原作數值的卡牌，加上 30 種遺物與 12 種藥水。AI 依斬殺優先、格擋需求、能力鋪場等啟發式自動出牌，爬完三幕共 45 層：小怪、精英、商店、營火，一路打到最終 Boss（覺醒者、時間吞噬者、雙子）。姿態、球體、真言、中毒、商店與戰績記錄完整實作。點擊切換速度，I 鍵看遺物藥水，空白鍵暫停，R 開新局，S 存圖。":
+      "『Slay the Spire』오마주 전자동 등반 데모. 4명의 캐릭터가 원작 수치에 충실한 약 55장의 카드와 30종 유물, 12종 포션을 보유. AI가 휴리스틱으로 자동 플레이하며 전 3막 45층(몬스터·엘리트·상점·모닥불)을 올라 최종 보스에 도전합니다. 스탠스·오브·만트라·중독·상점·전적 기록 모두 구현. 클릭으로 속도 전환, I 키로 유물 정보, 스페이스 일시정지, R 새 도전, S 저장.",
+    "Stereogram 立體視覺圖": "스테레오그램",
+    "隱藏式 3D 立體視覺圖（Autostereogram / Magic Eye）產生器。每次隨機藏入不同立體圖案：球體、甜甜圈、波浪曲面、水面漣漪、金字塔、山丘地形、浮空方塊、愛心、星星、文字等；搭配彩色亂點、黑白亂點、雜訊織紋、斜紋條帶四種紋理。用平行眼觀看，讓上方兩個定位點融合成三點，隱藏圖案便會浮現。採用經典 Thimbleby–Inglis–Witten 像素連結演算法含隱藏面檢查。點擊重新生成，A 鍵顯示答案，S 鍵存圖。":
+      "숨은 3D 오토스테레오그램(매직아이) 생성기. 구체·토러스·물결 곡면·잔물결·피라미드·구릉 지형·떠 있는 상자·하트·별·문자 등 입체 도형을 무작위로 숨기고, 컬러 도트·흑백 도트·노이즈 직조·대각선 스트라이프 4가지 텍스처로 그립니다. 평행법으로 상단의 두 안내 점이 세 개로 겹쳐 보이면 숨겨진 도형이 떠오릅니다. 고전적인 Thimbleby–Inglis–Witten 픽셀 연결 알고리즘(은면 제거 포함)을 사용. 클릭으로 재생성, A 키로 정답 표시, S 키로 저장.",
+    "Tulips 鬱金香花海": "튤립 꽃밭",
+    "油畫風格室外鬱金香花海。晴天、陰天、下雨、夜晚月光四種場景；水平色帶、對角斜紋、放射透視三種田野佈局；八種花色分帶種植，Perlin noise 疏密叢聚與偶發異色株模擬真實花田，遠景大氣霧化褪色、近景完整莖葉與杯形花瓣，花行間田壟土溝帶出農田質感。厚塗筆觸引擎：bezier 板狀筆觸＋鬃毛紋＋高光稜線。點擊重新生成，S 鍵存圖。":
+      "유화 스타일의 야외 튤립 꽃밭. 맑음·흐림·비·달밤 4가지 장면. 수평 컬러 밴드·대각선 스트라이프·방사형 원근의 3가지 밭 레이아웃. 8가지 튤립 색을 띠 모양으로 심고, Perlin 노이즈의 성긴 군집과 간혹 섞이는 이색 꽃이 실제 꽃 농장을 재현합니다. 원경은 대기 원근법으로 흐려지고, 근경 튤립은 줄기·잎·컵 모양 꽃잎까지 묘사. 이랑 사이 흙 고랑이 농장 느낌을 더합니다. 임파스토 붓터치 엔진: 베지어 판형 스트로크＋붓모 텍스처＋하이라이트 림. 클릭으로 재생성, S 키로 저장.",
+    "Auto Rubik 自動魔方": "오토 루빅",
+    "Tiny Planet 小星球": "타이니 플래닛",
+    "Cosmos 星塵宇宙": "코스모스",
+
+    // Card descriptions
+    "自動玩的俄羅斯方塊。AI 用 Dellacherie 啟發式（最大化消行、最小化高度/洞/凹凸）為每個方塊算最佳落點，無限連續玩。8 組配色，可切換速度（×0.5 ~ ×4）。":
+      "자동으로 플레이하는 테트리스. AI는 Dellacherie 휴리스틱(라인 클리어 최대화, 높이/구멍/요철 최소화)으로 각 블록의 최적 위치를 계산해 무한히 플레이합니다. 8가지 컬러 팔레트, 속도 전환(×0.5 ~ ×4) 지원.",
+    "Puyo Puyo 對戰 Tetris 自動對戰。兩個 AI 同時跑，Tetris 消行送對手垃圾 puyo、Puyo 連鎖送對手垃圾行。任一方爆頂判勝，自動 reset 下一場。5 組配色。":
+      "뿌요뿌요 vs 테트리스 자동 대전. 두 AI가 동시에 플레이하며 테트리스는 라인 클리어로 상대에게 방해 뿌요를, 뿌요는 연쇄로 상대에게 방해 행을 보냅니다. 먼저 천장에 닿는 쪽이 패배하고 자동으로 다음 경기로 리셋. 5가지 컬러 팔레트.",
+    "視覺化說明回溯法：決策樹邊探索邊長出來，當前 cursor 發光、找到解的分支轉金色、失敗的分支變灰。循環展示 Permutations、Combinations、N-Queens 三類問題。可切換速度（慢/正常/快/極速）。":
+      "백트래킹 알고리즘의 시각적 해설. 결정 트리가 탐색하며 자라나고 현재 커서는 빛나며 해에 도달한 가지는 금색으로, 실패한 가지는 회색으로 페이드됩니다. 순열, 조합, N-Queen 세 종류의 문제를 순환 전시. 속도 전환(느림/보통/빠름/초고속).",
+    "連續自動煙火秀。anime.js 控制火箭升空 ease curve 與爆炸 flash 環擴張，p5.js 渲染粒子物理。8 種爆炸樣式（牡丹、菊花、垂柳、環、棕櫚、心形、螺旋、Crossette 分裂）、多段子爆、火箭軌跡、Crackle 火花、星空 + 城市剪影。9 組配色，按 Finale 觸發 5 秒終曲狂炸。":
+      "끊임없는 자동 불꽃놀이 쇼. anime.js가 로켓 상승의 이즈 커브와 폭발 링 확장을 제어하고, p5.js가 파티클 물리를 렌더링. 8가지 폭발 스타일(모란, 국화, 수양, 링, 야자수, 하트, 나선, 크로셋 분열), 다단 2차 폭발, 로켓 궤적, 크래클 불꽃, 별하늘+도시 실루엣. 9가지 컬러 팔레트, Finale 버튼으로 5초간 피날레 대폭발.",
+    "參考 anime.js demo 常見的 stagger grid、timeline 編排與 SVG motion path，生成一張會呼吸的星圖。每次隨機種子產生不同軌道、星點、連線與色盤；3 種模式（radial / rings / lattice），可重新生成、切換模式與暫停。":
+      "anime.js 데모에서 자주 보이는 stagger grid, timeline 안무, SVG motion path를 참고한 숨 쉬는 별자리 지도입니다. 무작위 시드마다 궤도, 별점, 연결선, 팔레트가 달라집니다. 3가지 모드(radial / rings / lattice), 재생성, 모드 전환, 일시정지를 지원합니다.",
+    "受 Arrows GO! 啟發的箭頭連鎖反應 gen-art。每關 AI 在不同造型（圓、心、星、螺旋、葡萄串、菱形、外框、對角、散布、字母）的箭頭排列中找出最長連鎖起點，射線一格格清空。6 組配色、可切換速度、可手動點箭頭觸發。":
+      "Arrows GO!에서 영감을 받은 화살표 연쇄 반응 제너러티브 아트. 매 라운드 AI가 다양한 형태(원, 하트, 별, 나선, 포도송이, 다이아, 프레임, 대각, 산포, 문자)의 화살표 배열에서 가장 긴 연쇄의 시작점을 찾아, 빔이 한 칸씩 지워나갑니다. 6가지 컬러 팔레트, 속도 전환, 수동 클릭 발사 지원.",
+    "受 iOS 26 液態玻璃啟發。多彩流動色塊背景上飄浮多個透明玻璃形狀，real-time backdrop blur + 內側 highlight gradient + 雙層 rim 邊框 + 鏡面反光弧。3 種形狀模式（Bubbles 圓 / Lozenges 藥丸 / Cards 卡片）、6 組配色、可點擊推開或新增玻璃。":
+      "iOS 26의 리퀴드 글래스에서 영감. 흐르는 다채로운 색 필드 위로 투명 유리 형태들이 떠다니며, 실시간 backdrop blur, 내부 하이라이트 그라데이션, 이중 림 테두리, 정반사 호광이 어우러집니다. 3가지 형태 모드(Bubbles 원 / Lozenges 캡슐 / Cards 카드), 6가지 컬러 팔레트, 클릭으로 유리를 밀치거나 새로 추가 가능.",
+    "AI 自動玩貪吃蛇。用 BFS 找食物 + tail-reachability safety check（模擬吃完後能否 BFS 到尾巴）決定走法，不安全時 fallback 追尾巴繞圈拖時間。死亡會自動重生並換配色。6 組配色、可切換速度。":
+      "AI가 자동으로 플레이하는 스네이크. BFS로 먹이까지 최단 경로를 찾고, tail-reachability safety check(먹은 뒤에도 머리에서 꼬리까지 BFS로 닿는지 시뮬레이션)로 안전성을 확인. 위험하면 꼬리를 쫓는 회피 모드로 전환. 죽으면 자동 리스폰하며 컬러 교체. 6가지 컬러 팔레트, 속도 전환 지원.",
+    "台北公車即時動態 gen-art。以 Data.Taipei 公車資料在地圖上繪出車輛位置、速度色彩與發光軌跡，可切換路線並顯示路線形狀、車輛數、平均速度與資料更新時間。":
+      "타이베이 버스 실시간 제너러티브 아트. Data.Taipei 버스 데이터를 사용해 지도 위에 차량 위치, 속도 기반 색상, 빛나는 궤적을 그립니다. 노선을 전환해 노선 형태, 차량 수, 평균 속도, 데이터 갱신 시간을 볼 수 있습니다.",
+    "自動養貓 gen-art。2~4 隻像素貓在一間寬廣的房間裡自由活動：吃飯、睡覺、玩耍、跳上沙發/書桌/牆架/貓樹/貓床，偶爾互動。8 種隨機毛色（虎斑、三花、黑、白、灰、橘子、暹羅、賓士），每次隨機抽取且家具位置每場不同。日夜循環影響環境光、太陽月亮位置與星空，閒置一陣子會自動餵食、清貓砂、開關窗簾與檯燈。可點貓撫摸冒愛心、點窗簾/碗/砂/燈互動。移植自我自己寫的 ESP32-2432S028 (CYD) 電子養貓。":
+      "자동 고양이 키우기 제너러티브 아트. 2~4마리의 픽셀 고양이가 넓은 방을 자유롭게 돌아다니며 먹기·자기·놀기·소파/책상/벽 선반/캣타워/침대로 점프하고, 때때로 서로 어울립니다. 8가지 무작위 털 색깔(태비, 삼색, 흑, 백, 회, 오렌지, 샴, 턱시도)이 매번 무작위로 뽑히고 가구 배치도 매번 다릅니다. 주야 사이클이 환경광, 해와 달의 궤적, 별하늘을 바꾸고, 잠시 두면 자동으로 사료 보충, 화장실 청소, 커튼과 램프 토글을 합니다. 고양이를 클릭하면 쓰다듬어 하트가 떠오르며, 커튼/그릇/화장실/램프도 클릭으로 조작 가능. ESP32-2432S028 (CYD)에 직접 만든 전자 고양이를 이식한 버전.",
+    "SimCity 風格自動建城 gen-art（45 度等距投影）。AI 規劃井字主路 + 隨機支路 / 死巷；flood-fill 偵測街廓，整個街廓統一分區（R/C/I 不混雜）。大型街廓會出現 2×2 / 2×3 大型建案。道路有車流動畫；天氣循環（晴 / 陰 / 雨 / 夜，含閃電、雨幕、星空、霓虹窗），建築會老舊拆遷重蓋。HUD 顯示居住人口、稅收、政府支出與預算盈虧。":
+      "심시티 스타일의 자동 건설 도시 제너러티브 아트(45도 아이소메트릭). AI가 격자형 간선도로와 무작위 가지·막다른 길을 깔고, flood-fill로 블록을 검출하여 블록마다 용도를 단일화(주거/상업/공업 비혼합). 큰 블록에는 2×2 / 2×3 대형 개발이 등장. 도로에는 차량 흐름 애니메이션, 날씨는 맑음/흐림/비/밤 사이클(번개, 비 장막, 별하늘, 네온 창), 건물은 노후화로 철거·재건. HUD에는 거주 인구, 세수, 정부 지출, 예산 균형이 표시.",
+    "Yoot Tower / SimTower 風格自動經營高樓 gen-art（側視剖面）。B10 ~ 20F 共 31 層 17 種設施：辦公室、商城、地下街、餐廳、健身房、電影院、旅店客房 + 接待、SPA、泳池、洗衣店、停車場、地鐵站、垃圾清運、監控室與機房。四座電梯井共 16 部電梯，兩座一般全層停靠、兩座高速採 skip-stop 只服務 B10 ~ B3 + GF + 10F ~ 20F，SCAN 排程沿途同方向接客；雙向電扶梯貫穿 B10 ~ 10F。行人按時段從地鐵或大廳進入、上樓進駐目的設施、停留結束反向離開，並對每間房給出評分與留言。HUD 即時統計在樓人數、各類人流、最熱樓層、營收支出與滿意度，時鐘與天空同步晝夜及天氣（晴 / 雨 / 閃電 / 夜空），進度自動存到 LocalStorage。":
+      "요트 타워 / SimTower 스타일의 자동 운영 고층 빌딩 제너러티브 아트(측단면 뷰). B10~20F 총 31층에 17가지 테넌트: 사무실, 쇼핑몰, 지하 상가, 레스토랑, 헬스장, 영화관, 호텔 객실+프런트, 스파, 수영장, 세탁소, 주차장, 지하철역, 쓰레기 처리 센터, 보안실, 기계실. 엘리베이터 샤프트 4개에 총 16대 — 일반 샤프트 2개는 모든 층 정차, 고속 샤프트 2개는 스킵스톱 방식으로 B10~B3 + GF + 10F~20F만 운행. SCAN 방식이 같은 방향 승객을 도중에 픽업하고, 양방향 에스컬레이터는 B10 주차장에서 10F까지 관통. 행인은 시간대에 따라 지하철이나 로비에서 진입해 목적 테넌트로 올라가 체류 후 역방향으로 퇴장하며, 방문한 방마다 평점과 리뷰를 남깁니다. HUD는 빌딩 내 인원, 부류별 인파, 가장 붐비는 층, 수익과 지출, 만족도를 실시간 표시. 시계와 하늘은 주야 사이클 및 날씨(맑음/비/번개/별하늘)와 연동되고, 진행 상황은 LocalStorage에 자동 저장.",
+    "anime.js 製作的 loading 圖示矩陣。4×3 = 12 格，每格從 29 種 loader 隨機抽（不重複）：脈動、波形、旋轉、軌道、漣漪、進度條、星形、六邊形、鐘擺、花瓣、抖動、翻牌等。8 組配色，按鈕重新洗牌。":
+      "anime.js로 만든 로더 아이콘 매트릭스. 4×3 = 12칸에 29가지 로더에서 중복 없이 랜덤 배치: 펄스, 웨이브, 스피너, 오빗, 리플, 프로그레스 바, 별형, 육각형, 진자, 꽃잎, 진동, 플립 등. 8가지 컬러 팔레트, 버튼으로 셔플.",
+    "anime.js motion path 範例。14 個彩色粒子用 stagger 錯位沿 SVG 路徑流動，6 種程式生成路徑：Lissajous、Sine、Spiral、Infinity、Heart、Rose。5 組配色。":
+      "anime.js의 motion path 데모. 14개의 컬러 파티클이 stagger로 시차를 두고 SVG 경로를 따라 흐릅니다. 프로그래밍 생성 6가지 경로: 리사주, 사인, 나선, 무한대, 하트, 로즈. 5가지 컬러 팔레트.",
+    "anime.js SVG path morph 範例。3 層 blob 各自循環形變 + 反向旋轉，path 用相同 1M+8C+Z 結構程式生成才能 morph。7 組配色。":
+      "anime.js의 SVG path morph 데모. 3겹의 블롭이 각자 순환하며 변형되고 반대 방향으로 회전. 부드러운 모핑을 위해 경로는 동일한 1M+8C+Z 구조로 프로그래밍 생성. 7가지 컬러 팔레트.",
+    "anime.js timeline 範例。5×5 方塊網格 6 階段編排動畫：登場 → 旋轉 → 脈動 → 波動 → 爆炸 → 收回。6 組配色，每階段切換顏色。":
+      "anime.js의 timeline 데모. 5×5 박스 그리드가 6단계 안무를 진행: 등장 → 회전 → 펄스 → 웨이브 → 폭발 → 수렴. 6가지 컬러 팔레트, 단계마다 색상 변경.",
+    "anime.js stagger 動畫展示。16×16 圓點網格，7 種錯位模式：放射波、線性掃描、隨機散布、對角線、正弦流動、漣漪、角落爆裂。8 組配色，點按鈕切換場景。":
+      "anime.js의 stagger 쇼케이스. 16×16 도트 그리드에서 7가지 stagger 패턴: 방사 파동, 선형 스윕, 무작위 산포, 대각선 캐스케이드, 사인 흐름, 리플, 코너 버스트. 8가지 컬러 팔레트, 버튼으로 장면 전환.",
+    "像素風格自動牧場模擬。農夫 AI 自動耕地、播種、澆水、收割；四季輪替（春麥、夏番茄、秋南瓜、冬休耕）改變作物與天氣；牛、羊、雞、豬在畜欄內漫遊；穀倉、房屋、水井、池塘、果樹完整場景。含金幣計算、收穫特效、晴雨雪天氣、晝夜光照循環。":
+      "픽셀 아트 자동 농장 시뮬레이션. 농부 AI가 자동으로 경작·파종·물주기·수확. 사계절 순환(봄: 밀, 여름: 토마토, 가을: 호박, 겨울: 휴경)이 작물과 날씨를 바꿈. 소·양·닭·돼지가 축사에서 돌아다님. 헛간·집·우물·연못·과실수 완성된 장면. 금화 계산, 수확 이펙트, 맑음/비/눈 날씨, 낮밤 조명 사이클 포함.",
+    "GPU 流體模擬的墨水暈染。Navier-Stokes 求解器在 shader 中即時運算（渦度補強、Jacobi 壓力迭代、雙場平流），四色墨滴在紙上流動、捲旋、融合；Beer-Lambert 吸墨混色、邊緣沉澱水痕、三層紙紋。可拖曳攪動、點擊滴墨、四色墨盤切換，自動滴墨模式會自己作畫。":
+      "GPU 유체 시뮬레이션 잉크 번짐. 나비에-스토크스 솔버가 셰이더에서 실시간 연산(와도 보강, 야코비 압력 반복, 이중 필드 이류)하며 4가지 색 잉크가 종이 위에서 흐르고 소용돌이치고 섞인다. 베르-람베르트 흡수에 의한 감산 혼색, 가장자리 침전 물자국, 3층 종이 질감. 드래그로 젓고, 클릭으로 잉크를 떨어뜨리고, 4색 팔레트 전환. 자동 드립 모드는 스스로 그림을 그린다.",
+    "Three.js 程序生成的 3D 箱庭小星球。fxhash 決定地形噪波種子、海平面高度、五種星球主題（翠綠/火焰/沙漠/冰雪/紫晶）；FBM 噪波疊七層生成地形，高度決定生態帶（深海→淺海→沙灘→草地→森林→岩石→雪頂）；Instanced Mesh 植樹（最多 350 棵）、置放房屋與岩石；大氣光暈 rim shader、可探索雲朵、緩慢公轉日照。可滑鼠任意角度環繞探索。":
+      "Three.js 절차적 생성 3D 하코니와 소행성. fxhash가 지형 노이즈 시드, 해수면 높이, 5가지 행성 테마(에메랄드·화염·사막·빙설·수정)를 결정. 7옥타브 FBM 노이즈로 지형 생성, 고도가 생태계 구역(심해→얕은 바다→모래사장→초원→숲→암석→설원)을 결정. 인스턴스 메시로 최대 350그루 나무·집·바위 배치, 대기 림 셰이더·구름 스프라이트·서서히 공전하는 태양. 드래그로 자유롭게 탐색.",
+    "Three.js 粒子星河。fxhash 隨機決定螺旋臂數（2–4）、配色（藍白、暖橙、翡翠、紫霧）與粒子密度（50k–75k）；對數螺旋算法分布粒子群，中心核球自然隆起，星際雲氣層疊渲染；自訂 GLSL 著色器配 UnrealBloom 後處理光暈；OrbitControls 拖曳旋轉縮放，R 鍵重新生成，S 鍵存圖。":
+      "Three.js 파티클 은하. fxhash가 나선팔 수(2~4), 색상 팔레트(청백·따뜻한 주황·에메랄드·보라 안개), 파티클 밀도(50k~75k)를 무작위 결정. 로그 나선 알고리즘으로 파티클 배치, 중심 핵 팽창부와 성간 구름층 중첩. 커스텀 GLSL 셰이더와 UnrealBloom 후처리로 빛 번짐 표현. 드래그로 회전·줌, R키 재생성, S키 저장.",
+    "以演算法重現莫內《印象・日出》。沿用向日葵的厚塗筆觸引擎：霧藍灰的勒阿弗爾港、不透明橘紅日盤與水面搖曳的橘色碎筆倒影；霧中桅杆群、煙囪飄煙與 1–3 艘剪影小船。三種色調變體（經典藍灰、紫霧、玫瑰晨光），每次生成獨一無二，開頁逐筆作畫約 4 秒。":
+      "모네 《인상, 해돋이》를 알고리즘으로 재현. 해바라기와 같은 임파스토 붓터치 엔진 사용: 안개 낀 청회색 르아브르 항구, 불투명한 주황 태양, 수면에 일렁이는 주황색 조각 반사. 안개 속 돛대 무리, 흩날리는 굴뚝 연기, 1~3척의 실루엣 조각배. 3가지 색조 변형(클래식 청회, 보라 안개, 장미빛 새벽). 매번 유일무이하게 생성되며 약 4초간 한 붓씩 그려진다.",
+    "以演算法重現梵谷《向日葵》的厚塗油畫。八層 impasto 筆觸引擎疊出鬃毛紋、高光稜線與中央反光帶；noise 流場加漩渦驅動的星夜式流動背景；phyllotaxis 黃金角花心籽粒；四種瓶形 × 四種釉色隨機組合，三種色調變體（鉻黃、土耳其藍、淡青綠）。每次生成獨一無二，開頁逐筆作畫約 4 秒。":
+      "반 고흐 《해바라기》를 임파스토 유화로 재현하는 제너러티브 아트. 8층 붓터치 엔진이 강모 결·하이라이트 능선·중앙 반사띠를 쌓아 올리고, 노이즈 플로우 필드와 소용돌이가 《별이 빛나는 밤》풍의 흐르는 배경을 만든다. 황금각 필로택시스 꽃심, 4가지 병 모양 × 4가지 유약의 랜덤 조합, 3가지 색조 변형(크롬 옐로, 터쿼이즈, 연한 청록). 매번 유일무이하게 생성되며 약 4초간 한 붓씩 그려진다.",
+    "厚塗油畫生成藝術。弧形 bezier 筆觸由中心放射展開，疊加鬃毛紋、假 3D 光影與顏料噴濺，搭配紙底紋理模擬油畫顏料的隆起質感。10 組色盤可隨機抽取。":
+      "임파스토 유화 제너러티브 아트. 곡선 베지에 붓터치가 중심에서 방사상으로 펼쳐지며, 강모 결, 가상 3D 음영, 물감 튀김이 겹쳐지고, 종이 텍스처가 유화의 입체감을 재현. 10가지 컬러 팔레트에서 랜덤 추출.",
+    "Google 熱門搜尋趨勢文字雲，涵蓋台灣、美國、日本、英國四個地區。每小時自動更新，Hover 顯示來源地區，可按地區篩選。":
+      "Google 인기 검색 트렌드 워드클라우드. 대만, 미국, 일본, 영국 4개 지역을 다루며 매시간 자동 업데이트. 호버하면 출처 지역 표시, 지역별 필터 가능.",
+    "每日一字猜謎遊戲。每天早上 8 點更新一個 5-7 字母的英文單字，你有 8 次機會猜出正確答案。綠色=正確、黃色=位置錯、灰色=不存在。":
+      "매일 한 단어 추리 게임. 매일 아침 8시에 5~7글자의 영단어가 갱신되며 8번 안에 정답을 맞춰야 합니다. 초록=정답, 노랑=위치 오류, 회색=없음.",
+    "輸入你的 Wordle 線索，自動過濾並推薦最佳猜測。支援 5-7 字母、8 行輸入、字母頻率排序。點擊格子切換綠/黃/灰狀態。":
+      "Wordle 단서를 입력하면 자동 필터링하고 다음 최적 추측을 추천. 5~7글자, 8행 입력, 글자 빈도 정렬 지원. 셀 클릭으로 초록/노랑/회색 상태 전환.",
+    "經典水果機風格拉霸。傳統符號：🍒🍋🍊🍇🍉🔔💎7️⃣，帶權重隨機與賠率表。按 SPIN 或空白鍵拉霸，BET 調整下注。":
+      "클래식한 과일 머신 스타일의 슬롯. 전통 심볼 🍒🍋🍊🍇🍉🔔💎7️⃣, 가중 랜덤과 배당표 포함. SPIN 또는 스페이스 키로 회전, BET로 베팅액 조정.",
+    "多米諾骨牌連鎖倒塌生成藝術。6 種排列方式：螺旋、之字、同心圓、波浪、網格、瀑布。每張骨牌有隨機點數、3D 透視傾倒效果和地面陰影。自動循環、點擊重新生成。":
+      "도미노 연쇄 도미니 제너러티브 아트. 6가지 배열: 나선, 지그재그, 동심원, 파형, 그리드, 폭포. 각 타일은 무작위 점수, 3D 투시 쓰러짐, 바닥 그림자를 가짐. 자동 루프, 클릭으로 재생성.",
+    "經典 NP-hard 問題的演算法視覺化。三種解法逐步動畫：最近鄰居法（貪心）、2-Opt（局部優化）、模擬退火（全域搜尋）。觀察路徑如何從混亂逐步收斂到近似最優解。":
+      "고전 NP-hard 문제의 알고리즘 시각화. 세 가지 해법을 단계별로 애니메이션: 최근접 이웃(탐욕), 2-Opt(국소 최적화), 시뮬레이티드 어닐링(전역 탐색). 경로가 혼돈에서 근사 최적해로 수렴하는 과정을 관찰.",
+    "張拉整體結構生成藝術。剛性壓桿互不接觸，靠連續張力線維持平衡。3-5 桿結構在 3D 空間旋轉搖擺，三種佈局模式：單體、三聯、群落。10 組配色搭配光暈效果。":
+      "텐세그리티 구조 제너러티브 아트. 강체 압축 막대들은 서로 닿지 않고 연속된 인장 케이블로 균형을 유지. 3~5개 막대 구조가 3D 공간에서 회전·요동하며 단일, 트리오, 클러스터의 3가지 배치 모드. 10가지 컬러 팔레트에 글로우 효과.",
+    "中點位移碎形演算法生成多層山脈。5-7 層山嶺由遠到近、由淺到深，搭配水墨紋理線條、氤氳霧氣、水面倒影和月光。7 組配色：水墨、暮色、晨曦、深冬、翠嶺、月夜、赤壁。":
+      "중점 변위 프랙탈로 생성한 다층 산맥. 5~7겹의 능선이 원근·농담으로 겹치고, 수묵 텍스처, 안개, 수면 반영, 달빛이 어우러집니다. 7가지 컬러 팔레트: 수묵, 황혼, 새벽, 한겨울, 푸른 봉우리, 월야, 적벽.",
+    "完美迷宮生成藝術。DFS 遞迴回溯演算法產生 10×10 到 50×50 的隨機迷宮，點擊畫面觸發 BFS 解答動畫，路徑漸層從入口色過渡到出口色。16 組高對比配色。":
+      "완전 미로 제너러티브 아트. DFS 재귀 백트래킹으로 10×10~50×50의 무작위 미로를 생성하고, 클릭하면 BFS 해답 애니메이션이 실행되며 경로가 입구 색에서 출구 색으로 그라데이션. 16가지 고대비 컬러 팔레트.",
+    "用流體模擬解迷宮。從上方入口持續注入液體，重力下落、同列等位、壓力上推三個 pass 的細胞自動機驅動液面：岔路被灌滿、U 形段累積上升，最終從下方出口湧出。16 組配色，每組液體色獨立調校。":
+      "유체 시뮬레이션으로 미로 풀기. 상단 입구에서 액체를 계속 주입하고, 중력 낙하/같은 행 평탄화/압력 밀어올림 3패스 셀룰러 오토마타가 액면을 구동: 막다른 길이 채워지고 U자 구간이 솟아오르며 결국 하단 출구로 분출. 16가지 컬러 팔레트, 액체 색도 개별 조정.",
+    "Superellipse 變形動畫。網格中的圓點在圓形、四角星、彩色圓點之間持續變形，搭配尺寸脈動與背景反轉，創造催眠般的視覺節奏。16 組配色，每個 hash 獨特。":
+      "Superellipse 모핑 애니메이션. 그리드의 점들이 원, 네 갈래 별, 컬러 디스크 사이를 연속적으로 변형하며, 크기 펄스와 배경 반전이 최면적인 시각 리듬을 만들어냅니다. 16가지 컬러 팔레트, hash마다 고유.",
+    "栗子形 Truchet 瓷磚生成藝術。飽滿的水滴弧形連接邊緣中點，中間膨脹、兩端收尖，相鄰 tile 對接形成栗子般的有機曲線。19 組配色搭配紙質紋理。":
+      "밤톨 모양 Truchet 타일 제너러티브 아트. 통통한 물방울 모양의 아크가 각 변의 중점을 잇고, 중앙이 부풀고 양 끝이 뾰족해지며, 인접 타일이 이어져 밤톨 같은 유기적 곡선을 그립니다. 19가지 컬러 팔레트에 종이 텍스처.",
+    "圓形填充式 Truchet 瓷磚。四分之一圓在角落配對，相鄰 tile 連接形成完整圓形與有機圓潤圖案。22 組配色搭配紙質紋理，呈現飽滿的幾何視覺。":
+      "원 채움형 Truchet 타일. 사분원이 모서리에서 짝을 이루고, 인접 타일이 이어져 완전한 원과 유기적인 둥근 패턴을 형성. 22가지 컬러 팔레트에 종이 텍스처를 더한 풍성한 기하학적 비주얼.",
+    "扁平風格花束生成藝術。密集的海芋、罌粟花與鬱金香以大膽色塊填滿圓形構圖，8 組配色方案搭配 4 種密度變化，每次刷新都是獨一無二的花園。":
+      "플랫 디자인 부케 제너러티브 아트. 빽빽한 카라, 양귀비, 튤립이 과감한 색면으로 원형 구도를 채웁니다. 8가지 컬러 팔레트 × 4단계 밀도, 리로드할 때마다 유일무이한 정원.",
+    "鋼筆繪圖機風格的植物線描生成藝術。遞迴分支演算法產生有機樹木與垂藤，搭配格紋背景與飄落花瓣。純線條、無填色的 plotter art 美學。":
+      "펜 플로터 스타일의 식물 라인 아트 제너러티브 아트. 재귀 분기 알고리즘이 유기적인 나무와 늘어진 덩굴을 자라게 하고, 그리드 배경과 흩날리는 꽃잎이 더해집니다. 선만 사용하고 채색 없는 플로터 아트 미학.",
+    "生成藝術風格 Loader 矩陣。12 種類型：莫列波紋、Perlin 噪音流、李薩如曲線、洛倫茲吸引子、粒子軌跡、沃羅諾伊圖、雙擺混沌、遞迴方塊、變形蟲、網格擾動、費馬螺旋、多邊形變形。":
+      "제너러티브 아트 스타일의 로더 매트릭스. 12가지 유형: 무아레, 펄린 노이즈 흐름, 리사주 곡선, 로렌츠 끌개, 파티클 궤적, 보로노이 다이어그램, 이중 진자 카오스, 재귀 사각형, 아메바, 그리드 지터, 페르마 나선, 다각형 모핑.",
+    "n×m 網格的 Loading 動畫生成藝術。12 種 spinner 類型：旋轉弧、追逐圓點、脈衝環、雙環反轉、軌道球、時鐘掃描等，每個各有不同配色與速度。":
+      "n×m 그리드의 로딩 애니메이션 제너러티브 아트. 12가지 스피너 유형: 회전 호, 추격 도트, 펄스 링, 이중 역회전 링, 궤도구, 시계 스윕 등. 각자 다른 컬러와 속도.",
+    "九龍城寨風格的微縮城市。等角透視視角，密集建築有機堆疊，搭配底部懸空支撐柱、屋頂天線水塔、外露管線。鋼筆淡彩風格。":
+      "구룡성채 스타일의 미니어처 시티. 아이소메트릭 시점에서 빽빽한 건물이 유기적으로 쌓여 있고, 하부의 캔틸레버 지주, 옥상 안테나와 물탱크, 노출 배관이 함께. 펜과 옅은 채색의 미학.",
+    "離散數學四色定理的生成藝術。Voronoi 圖產生隨機平面地圖，透過 Welsh-Powell 貪婪演算法只用 4 種顏色著色，使相鄰區域永不同色。":
+      "이산수학의 사색정리 제너러티브 아트. 보로노이 다이어그램으로 무작위 평면 지도를 만들고, Welsh-Powell 그리디 알고리즘으로 단 4색만으로 칠해 인접 영역은 절대 같은 색이 되지 않도록 합니다.",
+    "離散數學集合論的互動式圖解。涵蓋聯集、交集、差集、補集、對稱差、冪集、笛卡兒積，搭配 Venn Diagram 與德摩根定律視覺化。":
+      "이산수학의 집합론을 인터랙티브하게 도해. 합집합, 교집합, 차집합, 여집합, 대칭차, 멱집합, 데카르트 곱을 다루며 벤 다이어그램과 드모르간 법칙을 시각화.",
+    "Dynamic Programming 視覺化教學。在隨機成本網格上，動畫展示 DP 表逐格填入過程，最後回溯出從左上到右下的最小成本路徑。":
+      "동적 계획법 시각화 튜토리얼. 무작위 비용 그리드 위에서 DP 표가 한 칸씩 채워지는 과정을 애니메이션으로 보여주고, 마지막에 좌상단에서 우하단까지의 최소 비용 경로를 역추적.",
+    "等角立體方塊堆疊，每個面隨機填入圓點、棋盤格、條紋、菱形等圖案。10 組配色風格，從霓虹到赤陶土都有。階梯式排列營造 3D 錯視效果。":
+      "아이소메트릭으로 쌓은 큐브. 각 면에는 점, 체크무늬, 줄무늬, 다이아몬드 등이 무작위로 들어가고, 네온부터 테라코타까지 10가지 컬러 스타일. 계단식 배치로 3D 착시 효과.",
+    "以日本傳統家紋為靈感，隨機生成菊、桐、蝶、鶴丸、青海波等 30 種經典紋樣。黑白米色的極簡配色，每次僅呈現一枚家紋。":
+      "일본 전통 가몬(가문 문양)에서 영감을 받아, 국화, 오동나무, 나비, 학환, 청해파 등 30종의 고전 문양을 무작위 생성. 흑백 베이지의 미니멀 컬러로, 매번 한 점의 가몬만 표시.",
+    "以台灣傳統花磚為靈感，隨機生成對稱花卉與幾何圖樣。17 組取自老花磚的配色，搭配八瓣花、蓮花、牡丹、水渦紋等 11 種圖案交織排列。":
+      "대만 전통 마졸리카 타일에서 영감을 받아, 대칭적인 꽃과 기하 무늬를 무작위 생성. 옛 타일에서 추출한 17가지 컬러 팔레트에 팔판화, 연꽃, 모란, 물소용돌이 등 11가지 모티프가 어우러져 배열.",
+    "經典 Truchet 瓷磚的曲線變體，透過隨機旋轉的弧線組合出迷宮般的流動路徑。擁有 60+ 組調色盤，從 Bauhaus 到 Evangelion 風格皆有。Inspired by RoniBlock":
+      "고전 Truchet 타일의 곡선 변형. 무작위로 회전하는 아크가 미로 같은 흐르는 경로를 만들어냅니다. 바우하우스부터 에반게리온 스타일까지 60종 이상의 팔레트. Inspired by RoniBlock.",
+    "Truchet 瓷磚的編織變體，兩條緞帶交叉產生 over/under 立體錯覺。陰影與高光營造布料編織質感，支援弧線與對角線兩種風格。":
+      "Truchet 타일의 직조 변형. 두 리본이 교차해 over/under 입체 착시를 만들고, 음영과 하이라이트가 직물의 짜임 질감을 연출. 곡선과 대각선 두 가지 스타일 지원.",
+    "在三角形網格上探索色彩與幾何的交織。透過色彩漸變與格狀結構，生成萬花筒般的視覺韻律。":
+      "삼각 격자 위에서 색채와 기하의 얽힘을 탐색. 색 그라데이션과 격자 구조가 만화경 같은 시각 리듬을 만들어냅니다.",
+    "經典八皇后問題的互動式求解。點擊棋盤放置第一個皇后，演算法自動用 backtracking 找出合法的 8 皇后配置，逐一動畫展示。":
+      "고전 8-Queens 문제의 인터랙티브 솔버. 보드를 클릭해 첫 퀸을 두면 백트래킹 알고리즘이 합법적인 8-Queens 배치를 찾아 하나씩 애니메이션으로 표시.",
+    "以台北捷運配色為基底，模擬地鐵路線圖的生成動畫。隨機生成站點與多條路線，呈現城市交通網路的有機生長過程。":
+      "타이베이 MRT 컬러를 기반으로 한 지하철 노선도 생성 애니메이션. 역과 여러 노선을 무작위로 생성하며 도시 교통망이 유기적으로 성장하는 과정을 보여줍니다.",
+    "自然粒子場景生成藝術。1500+ 粒子在 3D 空間中飄動、層疊，組成山脊、雲霧、洋流、潮汐、極光幕等有機景觀。每個 fxhash 種子生成獨特場景：漸層背景、配色、粒子密度、漂移速度、湍流強度、地平線高度、曲率皆不同。支援滑鼠/觸控互動推開粒子。使用 Perlin noise 模擬自然飄動，細微呼吸脈動營造生命感。響應式設計。":
+      "자연 파티클 장면 제너러티브 아트. 1500개 이상의 파티클이 3D 공간을 떠다니며 겹쳐, 능선, 안개, 해류, 조수, 오로라 장막 등 유기적인 풍경을 구성. 각 fxhash 시드는 독특한 장면을 생성: 그라데이션 배경, 컬러 팔레트, 파티클 밀도, 드리프트 속도, 난류 강도, 수평선 높이, 곡률이 모두 다릅니다. 마우스/터치로 파티클을 밀어낼 수 있음. Perlin 노이즈로 자연스러운 떠다님을 재현하고, 미세한 호흡 펄스가 생명감을 자아냅니다. 반응형 디자인.",
+    "Three.js 3D 魔方自動打亂解題視覺化。22 步隨機打亂（相鄰步不重複同面），解題序列為打亂的反向逆步；easeInOutCubic 流暢轉面動畫，pivot-group 技法確保顏色正確貼合；頂部序列 chip 即時高亮當前步、底部顯示解題進度，循環展示。支援滑鼠拖曳、縮放，S 鍵存圖。":
+      "Three.js 3D 루빅스 큐브 자동 스크램블 & 자동 해결 시각화. 22수 랜덤 스크램블(같은 면 연속 없음), 해법은 스크램블의 역순 역수. easeInOutCubic의 부드러운 회전 애니메이션, pivot-group 방식으로 면 색상 정확 추적. 상단 칩이 현재 수를 실시간 하이라이트, 하단에 진행 상황 표시, 무한 루프. 드래그 회전, 스크롤 줌, S 키로 저장."
+  };
+
+  // 選擇對應語言；若該語言找不到該 key 就退回英文
+  var primary = (langCode === "ja") ? T_JA : (langCode === "ko") ? T_KO : T_EN;
+
+  // 走訪所有 title / 描述 / footer 把文字替換
+  var nodes = document.querySelectorAll("header h1, header p, .card h2, .card p, footer");
+  for (var i = 0; i < nodes.length; i++) {
+    var el = nodes[i];
+    var raw = el.textContent;
+    var key = raw.trim();
+    var translated = primary.hasOwnProperty(key) ? primary[key] :
+                     T_EN.hasOwnProperty(key) ? T_EN[key] : null;
+    if (translated !== null) {
+      // 保留前後空白（footer 之類可能有 indent）
+      el.textContent = raw.replace(key, translated);
+    }
+  }
+})();
+</script>
 
 </body>
 </html>

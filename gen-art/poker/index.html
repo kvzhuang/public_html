@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>🃏 撲克 & 紙牌遊戲 · Card Games</title>
+  <meta name="description" content="kvzhuang 的撲克／紙牌／麻將遊戲合輯：UNO、日本立直麻將、德州撲克、奧馬哈撲克、大老二、小丑對決(Balatro 風)、橋牌、21 點。">
+  <meta name="theme-color" content="#0e2620">
+  <meta property="og:title" content="🃏 撲克 & 紙牌遊戲 · Card Games">
+  <meta property="og:description" content="UNO、日本立直麻將、德州撲克、奧馬哈撲克、大老二、小丑對決、橋牌、21 點——點入即玩。">
+  <meta property="og:type" content="website">
+  <style>
+    :root{ --gold:#e9c46a; }
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; min-height:100%; color:#eef2ea;
+      background:radial-gradient(circle at 50% 8%, #1c4a3d, #0a1512);
+      font-family:"Noto Sans TC","Hiragino Sans",system-ui,sans-serif; }
+    .wrap{ max-width:1080px; margin:0 auto; padding:26px 18px 60px; }
+    .back{ display:inline-block; color:#9fc0b2; text-decoration:none; font-size:13px; letter-spacing:.06em; margin-bottom:10px; }
+    .back:hover{ color:var(--gold); }
+    h1{ font-size:30px; margin:6px 0 4px; letter-spacing:.04em; }
+    h1 .en{ font-size:16px; color:#9fb6a9; font-weight:400; letter-spacing:.14em; }
+    .sub{ color:#b9c8bd; font-size:14px; margin-bottom:22px; line-height:1.6; }
+    .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px; }
+    .card{ display:flex; flex-direction:column; text-decoration:none; color:inherit;
+      background:linear-gradient(#17352b,#0f2620); border:1px solid #ffffff1c; border-radius:16px; overflow:hidden;
+      box-shadow:0 10px 30px #0007; transition:transform .12s, border-color .12s, box-shadow .12s; }
+    .card:hover{ transform:translateY(-4px); border-color:var(--gold); box-shadow:0 16px 40px #0009; }
+    .prev{ position:relative; height:190px; background:#0b1a15; overflow:hidden; border-bottom:1px solid #ffffff14; }
+    .prev iframe{ position:absolute; inset:0; width:167%; height:167%; transform:scale(.6); transform-origin:top left; border:0; pointer-events:none; }
+    .prev .badge{ position:absolute; top:10px; left:12px; font-size:30px; filter:drop-shadow(0 2px 4px #000a); }
+    .body{ padding:14px 16px 16px; }
+    .body h2{ margin:0 0 3px; font-size:19px; color:var(--gold); }
+    .body .z{ font-size:12px; color:#9fb6a9; letter-spacing:.14em; margin-bottom:8px; }
+    .body p{ margin:0 0 10px; font-size:13px; color:#d3ddd4; line-height:1.6; }
+    .tags{ display:flex; gap:6px; flex-wrap:wrap; }
+    .tag{ font-size:11px; background:#ffffff14; border:1px solid #ffffff22; border-radius:20px; padding:3px 10px; color:#c7d3c9; }
+    .play{ margin-top:12px; display:inline-block; font-size:13px; color:var(--gold); }
+    footer{ text-align:center; color:#7f948a; font-size:12px; margin-top:34px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../">← 回 gen-art 首頁</a>
+    <h1>🃏 撲克 &amp; 紙牌遊戲 <span class="en">Card Games</span></h1>
+    <p class="sub">我做的撲克／紙牌小遊戲合輯——點卡片即進入遊戲。多數可直接對電腦對戰。</p>
+
+    <div class="grid">
+
+      <a class="card" href="../quoridor/">
+        <div class="prev"><span class="badge">🧱</span><iframe src="../quoridor/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>步步為營 Quoridor</h2>
+          <div class="z">尋路封鎖 · 對電腦</div>
+          <p>9×9 棋盤，輪流「移動棋子一格」或「放一塊擋牆」，搶先抵達對向底線。擋牆不能把對手完全封死。電腦用 BFS 尋路＋擋牆策略，一塊牆就能翻盤，充滿心理戰。存檔續玩。</p>
+          <div class="tags"><span class="tag">策略</span><span class="tag">尋路</span><span class="tag">對電腦</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../mahjong-solitaire/">
+        <div class="prev"><span class="badge">🀄</span><iframe src="../mahjong-solitaire/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>麻將接龍 Mahjong Solitaire</h2>
+          <div class="z">上海／龜殼 · 配對消除</div>
+          <p>經典麻將接龍：消除「上方沒被壓、左右有一側空」的自由牌，兩張同款配對消掉，清空 144 張過關。每局保證可解，含提示／悔棋／洗牌與 CSS 動畫、計時與存檔。</p>
+          <div class="tags"><span class="tag">麻將</span><span class="tag">單人</span><span class="tag">益智</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../solitaire/">
+        <div class="prev"><span class="badge">🃏</span><iframe src="../solitaire/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>經典接龍 Klondike Solitaire</h2>
+          <div class="z">單人紙牌 · 抽牌接龍</div>
+          <p>經典撲克接龍：抽牌堆翻牌，桌面七列降序＋紅黑交替疊放，空列放 K，四座由 A→K 同花收牌，清空整副獲勝。可拖曳或點選移動、雙擊送上基座，含悔棋／提示／自動完成、計時與存檔。內建求解器<b>保證每局都解得開</b>，過關還有 Windows 風格的撲克牌彈跳動畫。</p>
+          <div class="tags"><span class="tag">接龍</span><span class="tag">單人</span><span class="tag">益智</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../minesweeper/">
+        <div class="prev"><span class="badge">💣</span><iframe src="../minesweeper/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>踩地雷 Minesweeper</h2>
+          <div class="z">經典益智 · 單人</div>
+          <p>經典踩地雷：初級／中級／高級三種難度，左鍵翻開、右鍵或長按插旗，數字代表周圍八格的地雷數，翻開所有非雷格即獲勝。首擊必安全、零格自動展開、已翻數字可「和牌開數字」一次展開周圍。含計時、剩餘雷數、笑臉重開與存檔，支援手機（插旗模式）。</p>
+          <div class="tags"><span class="tag">踩地雷</span><span class="tag">益智</span><span class="tag">單人</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../poker-wordle/">
+        <div class="prev"><span class="badge">🃏</span><iframe src="../poker-wordle/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>撲克 Wordle Poker Wordle</h2>
+          <div class="z">推理解謎 · 演繹法</div>
+          <p>Wordle 式撲克推理：6 次內猜出 5 張謎底手牌。每張牌分「數字／花色」兩維度給綠黃灰提示＋高低箭頭，猜錯逐步解鎖牌型等線索。純演繹、無機率，附統計與存檔。</p>
+          <div class="tags"><span class="tag">wordle</span><span class="tag">推理</span><span class="tag">解謎</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../pandemic/">
+        <div class="prev"><span class="badge">🦠</span><iframe src="../pandemic/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>瘟疫危機 Pandemic</h2>
+          <div class="z">合作桌遊 · 世界地圖</div>
+          <p>合作型：操控多名防疫專家，在四種病毒擴散全球前研發 4 種解藥。蜂巢六角世界地圖、全角色特能＋事件卡、悔棋／情勢提示／教學，即時存檔。單人控多角色（無 AI 對手，敵人是牌堆）。</p>
+          <div class="tags"><span class="tag">合作</span><span class="tag">策略</span><span class="tag">桌遊</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../dice-wars/">
+        <div class="prev"><span class="badge">🎲</span><iframe src="../dice-wars/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>骰子戰爭 Dice Wars</h2>
+          <div class="z">蜂巢六角 · 回合制策略</div>
+          <p>你是紫色，領地有 2 顆以上骰子即可攻擊鄰國，擲骰比大小奪地。可在連通地盤間調度骰子、隨機換地圖、2～8 人對電腦，目標吞併整張地圖。進度自動存檔。</p>
+          <div class="tags"><span class="tag">骰子</span><span class="tag">策略</span><span class="tag">對電腦</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../rummikub/">
+        <div class="prev"><span class="badge">🁫</span><iframe src="../rummikub/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>拉密牌 Rummikub</h2>
+          <div class="z">數字牌組合 · 對電腦</div>
+          <p>經典拉密牌：一人對三電腦。用「組」（同數字不同色 3~4 張）或「順」（同色連號 ≥3 張）出牌，🃏鬼牌代任意牌，首次下牌需滿 30 分。破冰後可借用桌上的牌自由拆併重組（系統自動求解合法排列），先出完手牌者勝。</p>
+          <div class="tags"><span class="tag">拉密</span><span class="tag">數字牌</span><span class="tag">對電腦</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../uno/">
+        <div class="prev"><span class="badge">🎴</span><iframe src="../uno/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>UNO 一人對三電腦</h2>
+          <div class="z">UNO · CARD SHEDDING</div>
+          <p>經典 UNO：出同色或同數字／符號的牌，善用跳過 ⊘、反轉 ⇄、+2、萬用 🌈、+4。先出完手牌得對手手牌分數，累計先達 500 分全場勝出。對三位電腦競速。</p>
+          <div class="tags"><span class="tag">UNO</span><span class="tag">紙牌</span><span class="tag">對電腦</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../mahjong/">
+        <div class="prev"><span class="badge">🀄</span><iframe src="../mahjong/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>日本立直麻將 Riichi</h2>
+          <div class="z">RIICHI MAHJONG · 13 張</div>
+          <p>一人對三電腦的立直麻將：摸牌自動排序、吃／碰／槓、立直、自摸／榮和、寶牌與裏寶牌、役種番符計分，東風戰 4 局分高下。</p>
+          <div class="tags"><span class="tag">麻將</span><span class="tag">立直</span><span class="tag">對電腦</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../balatro/">
+        <div class="prev"><span class="badge">🎰</span><iframe src="../balatro/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>小丑對決 Joker Duel</h2>
+          <div class="z">BALATRO 風 ROGUELIKE</div>
+          <p>撲克牌型 × 小丑加成的 roguelike run：Ante／盲注、星球牌升級牌型、塔羅消耗品、Boss 特殊規則、商店經濟，對電腦競速攻頂 Ante 8，進度自動存檔。</p>
+          <div class="tags"><span class="tag">balatro</span><span class="tag">roguelike</span><span class="tag">對電腦</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../texas-poker/">
+        <div class="prev"><span class="badge">🃏</span><iframe src="../texas-poker/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>德州撲克 Texas Poker</h2>
+          <div class="z">TEXAS HOLD'EM</div>
+          <p>經典德州撲克牌局：翻牌、轉牌、河牌，下注、跟注、加注、蓋牌，與電腦玩家比大小。</p>
+          <div class="tags"><span class="tag">德州撲克</span><span class="tag">poker</span><span class="tag">對電腦</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../omaha-poker/">
+        <div class="prev"><span class="badge">🃏</span><iframe src="../omaha-poker/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>奧馬哈撲克 Omaha Poker</h2>
+          <div class="z">OMAHA HOLD'EM</div>
+          <p>德州撲克的奧馬哈變體：每人發 4 張底牌，成手時必須「恰好用 2 張底牌 ＋ 3 張公共牌」。翻牌、轉牌、河牌與下注跟德州相同，但同花與順子的算法大不同，牌力更兇更刺激。與電腦玩家比大小。</p>
+          <div class="tags"><span class="tag">奧馬哈</span><span class="tag">poker</span><span class="tag">對電腦</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../big-two/">
+        <div class="prev"><span class="badge">🀄</span><iframe src="../big-two/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>大老二 Big Two</h2>
+          <div class="z">大富豪 · BIG TWO</div>
+          <p>大老二／大富豪甩牌對戰：單張、對子、順子、同花、葫蘆、鐵支、同花順，鬥智出牌先出完者勝。</p>
+          <div class="tags"><span class="tag">大老二</span><span class="tag">紙牌</span><span class="tag">對電腦</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../bridge/">
+        <div class="prev"><span class="badge">♠️</span><iframe src="../bridge/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>橋牌 Bridge</h2>
+          <div class="z">CONTRACT BRIDGE</div>
+          <p>橋牌：叫牌與打牌，四家兩對，計算王牌與磴數。</p>
+          <div class="tags"><span class="tag">橋牌</span><span class="tag">bridge</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+      <a class="card" href="../blackjack/">
+        <div class="prev"><span class="badge">🂡</span><iframe src="../blackjack/" loading="lazy" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="body">
+          <h2>21 點 Blackjack</h2>
+          <div class="z">BLACKJACK</div>
+          <p>21 點：向莊家要牌，點數逼近 21 又不爆牌，比莊家大即贏。</p>
+          <div class="tags"><span class="tag">blackjack</span><span class="tag">21點</span><span class="tag">對莊家</span></div>
+          <span class="play">▶ 開始遊玩</span>
+        </div>
+      </a>
+
+    </div>
+    <footer>lab4.kvzhuang.net · gen-art / poker</footer>
+  </div>
+</body>
+</html>

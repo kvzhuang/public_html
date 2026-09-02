@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>破碎還原 · Ceramic Shatter - Generative Art</title>
+  <meta name="description" content="three.js 程序生成的陶瓷器皿：從內部炸裂成帶壁厚的瓷片、再無縫還原回原狀的循環。內部發光核與點光營造由內而外的能量，釉面環境反射，每次生成獨一無二的造型與釉色。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#0e1013">
+  <meta property="og:title" content="破碎還原 · Ceramic Shatter - Generative Art">
+  <meta property="og:description" content="陶瓷從內部破碎又還原的循環，three.js 生成，每次獨一無二。">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    html, body { margin:0; padding:0; overflow:hidden; background:radial-gradient(circle at 50% 40%, #1a1d22, #0a0b0d); }
+    #c { display:block; width:100vw; height:100vh; cursor:grab; }
+    #c:active { cursor:grabbing; }
+    #hint { position:fixed; bottom:14px; left:0; right:0; text-align:center; font:11px/1.6 monospace; letter-spacing:.2em;
+      color:rgba(210,205,195,.42); pointer-events:none; user-select:none; text-shadow:0 1px 4px #000; }
+  </style>
+  <script type="importmap">
+  { "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  } }
+  </script>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="hint">CLICK · 重新生成 ─ 拖曳 · 旋轉 ─ S · 儲存畫面</div>
+  <script type="module">
+    import('./sketch.js?v=' + Date.now());
+  </script>
+</body>
+</html>

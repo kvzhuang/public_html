@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-3GP0KMK7NS');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>🀄 麻將接龍 · Mahjong Solitaire</title>
+  <meta name="description" content="經典麻將接龍（上海/龜殼）：消除上方無壓、左右有空的自由牌配對，清空全盤 144 張。保證每局可解，含提示／悔棋／洗牌與 CSS 動畫。">
+  <meta name="theme-color" content="#0e2620">
+  <style>
+    :root{--gold:#e9c46a;}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    html,body{margin:0;min-height:100%;color:#eef2ea;background:radial-gradient(circle at 50% 6%,#15503f,#08150f);
+      font-family:"Noto Sans TC","Hiragino Sans",system-ui,sans-serif;}
+    .wrap{max-width:640px;margin:0 auto;padding:14px 10px 40px;}
+    .back{color:#9fc0b2;text-decoration:none;font-size:13px;}.back:hover{color:var(--gold);}
+    h1{font-size:21px;margin:6px 0 2px;}h1 .en{font-size:12px;color:#9fb6a9;font-weight:400;letter-spacing:.12em;}
+    .sub{color:#b9c8bd;font-size:12px;margin:2px 0 8px;line-height:1.5;}
+    .hud{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;margin:6px 2px;}
+    .hud .chip{background:#12342a;border:1px solid #ffffff1c;border-radius:20px;padding:3px 10px;}
+    .stage{position:relative;background:#0c2a20;border:1px solid #ffffff18;border-radius:12px;padding:8px;overflow:auto;}
+    #board{position:relative;margin:0 auto;}
+    .tile{position:absolute;width:40px;height:54px;border-radius:6px;cursor:pointer;
+      background:linear-gradient(#fdfbf2,#ece6d2);border:1px solid #b8ad8e;
+      box-shadow:2px 3px 0 #9a8f70, 0 0 0 1px #fff6 inset;
+      display:flex;align-items:center;justify-content:center;flex-direction:column;
+      font-weight:800;line-height:1;user-select:none;transition:transform .1s, box-shadow .1s, opacity .3s;}
+    .tile .f{font-size:17px;}
+    .tile .n{font-size:15px;}
+    .tile.two .f{font-size:22px;}
+    .tile.locked{filter:brightness(.82) saturate(.7);cursor:default;}
+    .tile.sel{transform:translateY(-3px);box-shadow:0 0 0 3px var(--gold), 2px 3px 0 #9a8f70;}
+    .tile.gone{opacity:0;transform:scale(.2) rotate(12deg);pointer-events:none;}
+    .tile.bad{animation:bad .4s;}
+    @keyframes bad{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-4px)}}
+    .link{position:absolute;height:4px;border-radius:3px;transform-origin:0 50%;pointer-events:none;z-index:99999;
+      background:linear-gradient(90deg,#fff2c2,#ffd24d,#fff2c2);box-shadow:0 0 10px 2px #ffd24dcc,0 0 3px #fff inset;
+      animation:linkdraw .24s ease-out forwards, linkfade .26s .30s forwards;}
+    @keyframes linkdraw{from{transform:rotate(var(--ang)) scaleX(0)}to{transform:rotate(var(--ang)) scaleX(1)}}
+    @keyframes linkfade{to{opacity:0}}
+    .link .spark{position:absolute;top:50%;width:10px;height:10px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 8px 3px #ffe08a;}
+    .link .spark.a{left:0}.link .spark.b{right:0}
+    .tile.hintp{animation:hintp .8s 2;}
+    @keyframes hintp{0%,100%{box-shadow:2px 3px 0 #9a8f70}50%{box-shadow:0 0 0 3px #5fd0ff,2px 3px 0 #9a8f70}}
+    .tile.dealin{animation:dealin .35s both;}
+    @keyframes dealin{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:scale(1)}}
+    .bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px;}
+    .bar button{font-family:inherit;border:0;border-radius:9px;padding:9px 15px;font-size:13.5px;font-weight:700;cursor:pointer;background:#1c3a30;color:#dcebe2;border:1px solid #ffffff26;}
+    .bar button.pri{background:var(--gold);color:#12251d;}
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,14,11,.86);z-index:99;padding:20px;text-align:center;}
+    .overlay.show{display:flex;}
+    .panel{max-width:380px;background:#12342a;border:1px solid #ffffff22;border-radius:14px;padding:22px;}
+    .panel h2{margin:0 0 8px;}.panel p{color:#c3d3c9;font-size:13.5px;line-height:1.8;}
+    .panel button{margin-top:12px;border:0;border-radius:9px;padding:9px 18px;font-weight:700;background:var(--gold);color:#12251d;cursor:pointer;font-family:inherit;}
+    .note{color:#9fb6a9;font-size:12px;line-height:1.7;margin-top:14px;background:#0f2620;border:1px solid #ffffff14;border-radius:10px;padding:10px 14px;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../poker/">← 返回遊戲合輯</a>
+    <h1>🀄 麻將接龍 <span class="en">MAHJONG SOLITAIRE</span></h1>
+    <div class="sub">消除「上方沒被壓、左或右至少一邊是空」的<b>自由牌</b>，兩張同款配對消掉，清空 144 張獲勝。花配任意花、季配任意季。<b>每局保證可解</b>。</div>
+
+    <div class="hud">
+      <span class="chip">剩 <b id="hleft">144</b></span>
+      <span class="chip">步數 <b id="hmoves">0</b></span>
+      <span class="chip">⏱ <b id="htime">0:00</b></span>
+      <span class="chip">可消 <b id="hpairs">-</b></span>
+    </div>
+
+    <div class="stage"><div id="board"></div></div>
+
+    <div class="bar">
+      <button id="hintBtn">💡 提示</button>
+      <button id="undoBtn">↩️ 悔棋</button>
+      <button id="shuffleBtn">🔀 洗牌</button>
+      <button id="newBtn" class="pri">🆕 新局</button>
+    </div>
+
+    <div class="note">
+      <b>規則</b>：牌堆成龜殼三層。可點的牌＝上面沒有牌壓著、且左右至少一側沒有同層牌。點兩張<b>同款</b>牌即可消除。<br>
+      🀫 <b>花</b>（梅蘭竹菊）彼此可互配、<b>季</b>（春夏秋冬）彼此可互配。卡關可用 🔀 洗牌（重排成仍可解）。
+    </div>
+  </div>
+
+  <div id="over" class="overlay"><div class="panel"><h2 id="ottl"></h2><p id="omsg"></p><button id="oBtn">再來一局</button></div></div>
+
+  <script>
+  (function(){
+    var s=document.createElement('script'); s.src='mjsolitaire.js?v='+Date.now();
+    s.onload=function(){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot(); };
+    document.body.appendChild(s);
+    var A, board, UX=20, UY=27, TW=40, TH=54, OFX=6, OFY=8, timer=null;
+
+    function boot(){
+      A=window.__mj; board=document.getElementById('board');
+      board.addEventListener('click', onClick);
+      document.getElementById('newBtn').onclick=function(){ A.clearSave(); A.newGame(); render(true); };
+      document.getElementById('oBtn').onclick=function(){ document.getElementById('over').className='overlay'; A.clearSave(); A.newGame(); render(true); };
+      document.getElementById('hintBtn').onclick=doHint;
+      document.getElementById('undoBtn').onclick=function(){ if(A.undo()) render(false); };
+      document.getElementById('shuffleBtn').onclick=function(){ if(A.reshuffle()){ render(false); flashPairs(); } };
+      if(!A.load()) A.newGame();
+      render(true);
+      timer=setInterval(updateHud, 1000);
+      if(location.search.indexOf('demo')>=0){ setTimeout(function(){ var h=A.hint(); if(h){ var e1=tileEl(h[0]); if(e1)e1.click(); var e2=tileEl(h[1]); if(e2)e2.click(); } }, 300); }
+    }
+
+    function pos(sl){ return { left: sl.x*UX - sl.z*OFX + 10, top: sl.y*UY - sl.z*OFY + 10 }; }
+    // 把 n 個示意圖排成每列最多 3 個（置中）
+    function rowsOf(n){ var r=[],left=n; while(left>0){ var c=Math.min(3,left); r.push(c); left-=c; } return r; }
+    function svgFace(kind,num,color){
+      var VW=30, VH=42, rows=rowsOf(num), rh=VH/rows.length, items='';
+      var idx=0;
+      for(var ri=0;ri<rows.length;ri++){
+        var c=rows[ri], totalW=c*10, sx=(VW-totalW)/2, cy=ri*rh+rh/2;
+        for(var i=0;i<c;i++){
+          var cx=sx+i*10+5;
+          if(kind==='T'){ var r=Math.min(3.4,rh*0.30); items+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+color+'" stroke="#0004" stroke-width="0.6"/>'; }
+          else { var h=rh*0.66, w=3.6; items+='<rect x="'+(cx-w/2).toFixed(1)+'" y="'+(cy-h/2).toFixed(1)+'" width="'+w+'" height="'+h.toFixed(1)+'" rx="1.8" fill="'+color+'"/>'; }
+          idx++;
+        }
+      }
+      return '<svg width="30" height="42" viewBox="0 0 30 42" style="display:block">'+items+'</svg>';
+    }
+    function faceHTML(sl){
+      var k=sl.key||'';
+      if((k[0]==='T'||k[0]==='B') && k.length===2){       // 筒/條 → 示意圖
+        return svgFace(k[0], parseInt(k.slice(1),10), sl.color);
+      }
+      if(k[0]==='W' && k.length===2){                     // 萬 → 數字＋萬
+        return '<span class="n" style="color:'+sl.color+'">'+sl.face+'</span>';
+      }
+      return '<span class="f" style="color:'+sl.color+'">'+sl.face+'</span>';  // 字牌/花/季
+    }
+
+    function render(deal){
+      var S=A.state(); board.innerHTML='';
+      var maxL=0,maxT=0;
+      S.slots.forEach(function(sl){
+        if(!sl.alive) return;
+        var el=document.createElement('div'); el.className='tile two'; el.dataset.id=sl.id;
+        var p=pos(sl); el.style.left=p.left+'px'; el.style.top=p.top+'px';
+        el.style.zIndex = sl.z*1000 + sl.y*20 + sl.x;
+        el.innerHTML=faceHTML(sl);
+        if(!A.freeNow(sl.id)) el.classList.add('locked');
+        if(S.selected===sl.id) el.classList.add('sel');
+        if(deal){ el.classList.add('dealin'); el.style.animationDelay=((sl.z*40+sl.y*2+sl.x)*3)+'ms'; }
+        board.appendChild(el);
+        maxL=Math.max(maxL,p.left+TW); maxT=Math.max(maxT,p.top+TH);
+      });
+      board.style.width=maxL+'px'; board.style.height=maxT+'px';
+      updateHud();
+      var S2=A.state(); if(S2.status!=='playing') setTimeout(showOver,400);
+    }
+
+    function tileEl(id){ return board.querySelector('.tile[data-id="'+id+'"]'); }
+    function tileCenter(id){ var el=tileEl(id); if(!el) return null; return { x: el.offsetLeft+TW/2, y: el.offsetTop+TH/2 }; }
+    function drawLink(id1,id2){
+      var a=tileCenter(id1), b=tileCenter(id2); if(!a||!b) return;
+      var dx=b.x-a.x, dy=b.y-a.y, len=Math.sqrt(dx*dx+dy*dy), ang=Math.atan2(dy,dx)*180/Math.PI;
+      var line=document.createElement('div'); line.className='link';
+      line.style.left=a.x+'px'; line.style.top=(a.y-2)+'px'; line.style.width=len+'px';
+      line.style.setProperty('--ang', ang+'deg');
+      line.innerHTML='<span class="spark a"></span><span class="spark b"></span>';
+      board.appendChild(line);
+      setTimeout(function(){ if(line.parentNode) line.parentNode.removeChild(line); }, 620);
+    }
+
+    function onClick(e){
+      var t=e.target.closest('.tile'); if(!t) return;
+      var id=parseInt(t.dataset.id,10);
+      var r=A.click(id);
+      if(r.type==='select'){ t.classList.add('sel'); }
+      else if(r.type==='deselect'){ t.classList.remove('sel'); }
+      else if(r.type==='mismatch'){ r.ids.forEach(function(i){ var el=tileEl(i); if(el){el.classList.remove('sel');el.classList.add('bad');setTimeout(function(){el.classList.remove('bad');},400);} }); }
+      else if(r.type==='match'){
+        drawLink(r.ids[0], r.ids[1]);            // 先畫連線
+        setTimeout(function(){                    // 稍後才讓兩張牌消失
+          r.ids.forEach(function(i){ var el=tileEl(i); if(el){ el.classList.remove('sel'); el.classList.add('gone'); setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); refreshLocks(); },300); } });
+        }, 180);
+        setTimeout(function(){ updateHud(); if(r.win) showOver(); },560);
+      }
+      // locked → 無動作
+    }
+
+    // 消除後更新哪些牌變自由（移除 locked class）
+    function refreshLocks(){
+      var S=A.state();
+      S.slots.forEach(function(sl){ if(!sl.alive) return; var el=tileEl(sl.id); if(!el) return;
+        if(A.freeNow(sl.id)) el.classList.remove('locked'); else el.classList.add('locked'); });
+    }
+
+    function doHint(){
+      var h=A.hint();
+      if(!h){ if(A.aliveCount()>0){ document.getElementById('hpairs').textContent='0（可洗牌）'; } return; }
+      h.forEach(function(i){ var el=tileEl(i); if(el){ el.classList.add('hintp'); setTimeout(function(){el.classList.remove('hintp');},1600);} });
+    }
+    function flashPairs(){ /* 洗牌後閃一下可消對 */ }
+
+    function fmt(s){ var m=Math.floor(s/60),ss=s%60; return m+':'+(ss<10?'0':'')+ss; }
+    function updateHud(){
+      var S=A.state(); if(!S) return;
+      document.getElementById('hleft').textContent=A.aliveCount();
+      document.getElementById('hmoves').textContent=S.moves;
+      document.getElementById('htime').textContent=fmt(A.elapsed());
+      var mv=A.hasMove();
+      document.getElementById('hpairs').textContent = mv? '有' : (A.aliveCount()>0?'0（需洗牌）':'-');
+    }
+
+    function showOver(){
+      var S=A.state(); if(S.status!=='won'){ return; }
+      document.getElementById('ottl').textContent='🎉 全部消除，過關！';
+      document.getElementById('omsg').innerHTML='用了 <b>'+S.moves+'</b> 步、<b>'+fmt(A.elapsed())+'</b>。';
+      document.getElementById('over').className='overlay show';
+    }
+  })();
+  </script>
+</body>
+</html>

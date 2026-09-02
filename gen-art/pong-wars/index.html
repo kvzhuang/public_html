@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pong Wars 領地爭奪</title>
+  <meta name="description" content="Pong Wars 領地爭奪：兩顆彈跳球各屬一方，擊中對方格子就反彈並翻成自己的顏色，前線無限來回。Canvas 生成式互動。">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <style>
+    :root{
+      --mint:#e6f0ea; --teal:#1c4a54;
+      --ink:#eaf3f0; --muted:#9fbcb6; --gold:#ffd479;
+      --panel:rgba(10,22,24,.72); --line:rgba(255,255,255,.14);
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0;height:100%;}
+    body{
+      min-height:100vh;display:flex;flex-direction:column;align-items:center;
+      gap:14px;padding:16px;
+      font-family:"Noto Sans TC",system-ui,-apple-system,"Segoe UI",sans-serif;
+      color:var(--ink);
+      background:radial-gradient(120% 120% at 50% 0%, #16302f 0%, #0b1618 55%, #070f10 100%);
+    }
+    .topbar{
+      width:min(720px,96vw);display:flex;align-items:center;justify-content:space-between;
+      gap:12px;flex-wrap:wrap;
+      background:var(--panel);border:1px solid var(--line);border-radius:14px;
+      padding:10px 16px;backdrop-filter:blur(12px);box-shadow:0 14px 40px #0007;
+    }
+    .brand{display:flex;align-items:baseline;gap:10px;min-width:0;}
+    .brand h1{margin:0;font-size:clamp(16px,2.4vw,22px);white-space:nowrap;}
+    .brand .en{color:var(--muted);font-size:12px;font-weight:600;}
+
+    /* 比分條 */
+    .score{width:min(720px,96vw);}
+    .score-bar{
+      position:relative;height:34px;border-radius:10px;overflow:hidden;
+      border:1px solid var(--line);box-shadow:inset 0 2px 8px #0006;
+      background:var(--teal);
+    }
+    .score-fill{position:absolute;inset:0;width:50%;background:var(--mint);transition:width .25s ease;}
+    .score-lab{
+      position:absolute;top:0;height:100%;display:flex;align-items:center;
+      padding:0 12px;font-weight:900;font-variant-numeric:tabular-nums;font-size:14px;
+    }
+    .score-lab.l{left:0;color:#16414a;}
+    .score-lab.r{right:0;color:#eaf6f2;}
+
+    /* 棋盤（含灰色漸層邊框，仿參考圖）*/
+    .board-wrap{
+      padding:12px;border-radius:22px;
+      background:linear-gradient(150deg,#c9d3cf,#8ea19b 45%,#6f827c);
+      box-shadow:0 30px 70px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.25);
+    }
+    canvas{display:block;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15);}
+
+    .controls{
+      width:min(720px,96vw);display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+      justify-content:center;
+      background:var(--panel);border:1px solid var(--line);border-radius:14px;
+      padding:10px 12px;backdrop-filter:blur(12px);box-shadow:0 14px 40px #0007;
+    }
+    .btn{
+      min-height:38px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);
+      background:rgba(255,255,255,.07);color:var(--ink);font-weight:800;cursor:pointer;font-size:14px;
+      transition:.14s;
+    }
+    .btn:hover{background:rgba(255,255,255,.14);transform:translateY(-1px);}
+    .btn.gold{background:linear-gradient(180deg,#ffe08a,#e5ad3c);color:#231600;border-color:#ffe6a8;}
+    .field{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:13px;font-weight:700;}
+    input[type=range]{accent-color:var(--gold);width:120px;}
+    select{
+      background:#12302f;color:var(--ink);border:1px solid var(--line);border-radius:8px;
+      padding:6px 8px;font:inherit;
+    }
+    .val{color:var(--gold);font-weight:900;min-width:34px;text-align:right;}
+    footer{color:var(--muted);font-size:12px;text-align:center;max-width:96vw;}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <h1>🏓 領地爭奪</h1>
+      <span class="en">Pong Wars · 無限對戰</span>
+    </div>
+    <div class="field">🏆 領先 <strong id="leadText" style="color:var(--gold)">—</strong></div>
+  </div>
+
+  <div class="score">
+    <div class="score-bar">
+      <div class="score-fill" id="scoreFill"></div>
+      <div class="score-lab l"><span>🌱 薄荷 </span>&nbsp;<span id="mintText">0</span></div>
+      <div class="score-lab r"><span id="tealText">0</span>&nbsp;<span> 深海 🌊</span></div>
+    </div>
+  </div>
+
+  <div class="board-wrap">
+    <canvas id="board"></canvas>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="pauseBtn">⏸ 暫停</button>
+    <div class="field">速度
+      <input type="range" id="speed" min="0.3" max="3" step="0.1" value="1">
+      <span class="val" id="spdText">1x</span>
+    </div>
+    <label class="field">每邊球數
+      <select id="balls">
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+      </select>
+    </label>
+    <label class="field">格數
+      <select id="grid">
+        <option value="14">14</option>
+        <option value="20" selected>20</option>
+        <option value="28">28</option>
+        <option value="40">40</option>
+      </select>
+    </label>
+    <label class="field">發球
+      <select id="launch">
+        <option value="v" selected>直向 ↕</option>
+        <option value="h">橫向 ↔</option>
+      </select>
+    </label>
+    <button class="btn" id="trailBtn">✨ 拖尾：開</button>
+    <button class="btn gold" id="resetBtn">🔄 重開</button>
+  </div>
+
+  <footer>
+    兩顆球各據一方，撞到對方領地就反彈並把該格翻成自己的顏色 — 前線無限來回。<br>
+    參考自 <a href="https://pong-wars.koenvangilst.nl/" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;font-weight:700">Pong Wars · Koen van Gilst ↗</a>
+  </footer>
+
+  <script>
+    (function(){
+      var boot = function(){
+        var s = document.createElement('script');
+        s.src = 'pong-wars.js?v=' + Date.now();
+        document.body.appendChild(s);
+      };
+      if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(boot, 0);
+      else document.addEventListener('DOMContentLoaded', boot);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>🀄 日本立直麻將 · Riichi Mahjong</title>
+  <meta name="description" content="日本立直麻將（13 張）：你對三位電腦。吃／碰／槓、立直、自摸／榮和、寶牌與裏寶牌、役種番符計分，東風戰 4 局分高下。">
+  <meta name="theme-color" content="#0e3a2a">
+  <meta property="og:title" content="🀄 日本立直麻將 · Riichi Mahjong">
+  <meta property="og:description" content="一人對三電腦的立直麻將：吃／碰／槓、立直、自摸／榮和、寶牌、役種計分。">
+  <meta property="og:type" content="website">
+  <style>
+    :root{ --felt:#0e3a2a; --gold:#e9c46a; --tile:#f6f2e6; --ink:#1c1c22; }
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; min-height:100%; color:#eef2ea;
+      background:radial-gradient(circle at 50% 20%, #16543c, #072118);
+      font-family:"Noto Sans TC","Hiragino Sans",system-ui,sans-serif; }
+    .wrap{ max-width:900px; margin:0 auto; padding:10px 12px 60px; }
+    .bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
+    .bar a{ color:#9fc0b2; text-decoration:none; font-size:13px; }
+    .bar a:hover{ color:var(--gold); }
+    .bar h1{ font-size:19px; margin:0; letter-spacing:.03em; }
+    .bar .sp{ flex:1; }
+    .bar button{ background:#ffffff18; color:#eef2ea; border:1px solid #ffffff33; border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer; }
+    .bar button:hover{ border-color:var(--gold); }
+    #msg{ text-align:center; min-height:22px; font-size:14px; color:var(--gold); margin:6px 0; }
+
+    /* 對手區 */
+    .opps{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+    .opp{ flex:1; min-width:180px; background:#ffffff10; border:1px solid #ffffff1e; border-radius:10px; padding:7px 9px; }
+    .opp.dealer{ border-color:var(--gold); }
+    .opp.turn{ box-shadow:0 0 0 2px #7fd9a6 inset; background:#ffffff18; }
+    .otop{ display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+    .otop .ohead{ flex:1; }
+    .avatar{ width:46px; height:46px; border-radius:50%; overflow:hidden; border:2px solid var(--gold); cursor:pointer; flex:0 0 auto; box-shadow:0 2px 6px #0007; transition:transform .1s; }
+    .avatar:hover{ transform:scale(1.08); }
+    .avatar img{ width:100%; height:100%; object-fit:cover; object-position:50% 28%; display:block; }
+    .opp.turn .avatar{ border-color:#7fd9a6; }
+    .fullart{ max-width:100%; max-height:72vh; border-radius:12px; box-shadow:0 12px 44px #000b; }
+    .ohead{ font-size:12px; color:#cfe3d6; line-height:1.4; }
+    .ohead b{ color:#fff; font-size:14px; }
+    .obacks{ display:flex; flex-wrap:wrap; gap:2px; margin:5px 0; }
+    .river{ display:flex; flex-wrap:wrap; gap:2px; min-height:22px; }
+
+    /* 中央資訊 */
+    .center{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; align-items:center; margin:10px 0; }
+    .cb{ background:#00000038; border:1px solid #ffffff22; border-radius:9px; padding:6px 11px; font-size:13px; }
+    .doraw{ display:inline-flex; align-items:center; gap:5px; }
+
+    /* 玩家區 */
+    .me{ background:#ffffff10; border:1px solid #ffffff20; border-radius:12px; padding:9px; margin-top:6px; }
+    .me.dealer{ border-color:var(--gold); }
+    .me.turn{ box-shadow:0 0 0 2px #7fd9a6 inset; }
+    .myriver{ margin-bottom:8px; }
+    .meinfo{ font-size:13px; color:#cfe3d6; margin:4px 0 8px; }
+    .hand.myhand{ display:flex; gap:5px; flex-wrap:wrap; justify-content:center; }
+    /* 立直選牌提示 */
+    .myhand.picking .tile.rok{ box-shadow:0 0 0 2px #61d996, 0 3px 9px #0008, inset 0 -3px 0 #d9d2bd; border-color:#61d996; }
+    .myhand.picking .tile.rok:hover{ transform:translateY(-6px); border-color:#61d996; }
+    .myhand.picking .tile.rno{ opacity:.32; }
+    .myhand.picking .tile.rno:hover{ transform:none; border-color:#cbc3ab; }
+
+    /* 牌 */
+    .tile{ background:linear-gradient(#fffdf6,#efe9d8); color:var(--ink); border-radius:7px; border:1px solid #cbc3ab;
+      box-shadow:0 2px 4px #0006, inset 0 -3px 0 #d9d2bd; display:inline-flex; flex-direction:column; align-items:center; justify-content:center;
+      width:38px; height:52px; line-height:1; user-select:none; }
+    .myhand .tile{ cursor:pointer; transition:transform .08s; }
+    .myhand .tile:hover{ transform:translateY(-6px); border-color:var(--gold); }
+    .tile.drawn{ margin-left:12px; box-shadow:0 2px 6px #000a, inset 0 -3px 0 #d9d2bd, 0 0 0 2px var(--gold); }
+    .tile.m{ color:#c0392b; } .tile.p{ color:#2673c0; } .tile.s{ color:#1f9d4d; }
+    .tile .n{ font-size:19px; font-weight:800; line-height:1; }
+    .tile .mk{ font-size:12px; font-weight:800; line-height:1; margin-top:1px; }
+    .tile .si{ width:15px; height:15px; margin-top:2px; display:block; }
+    .tile .z{ font-size:22px; font-weight:800; }
+    .tile.sm{ width:24px; height:33px; border-radius:5px; box-shadow:0 1px 2px #0006, inset 0 -2px 0 #d9d2bd; }
+    .tile.sm .n{ font-size:12px; } .tile.sm .mk{ font-size:7px; } .tile.sm .si{ width:10px; height:10px; margin-top:1px; } .tile.sm .z{ font-size:14px; }
+    .tile.back{ background:linear-gradient(#1f7a52,#155c3d); border-color:#0c3d29; box-shadow:0 2px 4px #0007, inset 0 -3px 0 #0e4630; }
+    .tile.back.sm{ width:16px; height:22px; }
+    .tile.riichi{ transform:rotate(90deg); background:linear-gradient(#fff6d8,#f0e2a8); }
+
+    /* 動作按鈕 */
+    #actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:14px; min-height:44px; }
+    .act{ border:0; border-radius:10px; padding:11px 22px; font-size:16px; font-weight:800; cursor:pointer; }
+    .act.win{ background:var(--gold); color:#3a2c00; }
+    .act.riichi{ background:#e76f51; color:#fff; }
+    .act.pass{ background:#ffffff22; color:#eef2ea; }
+    .hint2{ font-size:13px; color:#9fb6a9; align-self:center; }
+
+    /* overlay */
+    #overlay{ position:fixed; inset:0; background:#000c; display:none; align-items:center; justify-content:center; padding:18px; z-index:20; }
+    #overlay.show{ display:flex; }
+    .modal{ background:linear-gradient(#17402e,#0c2a1e); border:1px solid var(--gold); border-radius:16px; padding:22px 24px; max-width:560px; width:100%; text-align:center; box-shadow:0 24px 70px #000c; }
+    #ov-title{ font-size:22px; color:var(--gold); margin-bottom:10px; }
+    #ov-body{ font-size:15px; color:#e6efe8; line-height:1.6; }
+    #ov-actions{ display:flex; gap:12px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
+    .ovbtn{ background:var(--gold); color:#3a2c00; border:0; border-radius:10px; padding:11px 20px; font-size:15px; font-weight:700; cursor:pointer; }
+    .reshand{ display:flex; gap:4px; justify-content:center; flex-wrap:wrap; margin:6px 0 12px; }
+    .yakubox{ display:flex; flex-direction:column; gap:3px; max-width:320px; margin:0 auto 10px; }
+    .yk{ display:flex; justify-content:space-between; background:#ffffff12; border-radius:6px; padding:4px 12px; font-size:14px; }
+    .yk b{ color:var(--gold); }
+    .resline{ font-size:18px; margin:8px 0; } .resline b{ color:var(--gold); font-size:22px; }
+    .deltas{ font-size:14px; color:#cfe3d6; margin-top:6px; }
+    .up{ color:#7fd9a6; } .dn{ color:#ef8a7a; }
+    .ranks .rk{ font-size:17px; margin:6px 0; } .ranks .tot{ color:var(--gold); font-weight:800; }
+    .drawbox div{ font-size:15px; margin:5px 0; }
+    .rules{ text-align:left; font-size:14px; line-height:1.7; } .rules b{ color:var(--gold); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bar">
+      <a href="../poker/">← 撲克紙牌</a>
+      <h1>🀄 日本立直麻將</h1>
+      <span class="sp"></span>
+      <button id="rules">玩法</button>
+      <button id="newgame">新對局</button>
+    </div>
+    <div id="msg"></div>
+    <div id="table"></div>
+    <div id="actions"></div>
+  </div>
+  <div id="overlay"><div class="modal"><div id="ov-title"></div><div id="ov-body"></div><div id="ov-actions"></div></div></div>
+  <script>
+    // 時間戳破快取，確保載入最新 game.js
+    (function(){ var s=document.createElement('script'); s.src='game.js?v='+Date.now(); document.body.appendChild(s); })();
+  </script>
+</body>
+</html>

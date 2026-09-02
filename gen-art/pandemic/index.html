@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-3GP0KMK7NS');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>🦠 瘟疫危機 · Pandemic</title>
+  <meta name="description" content="合作型桌遊 Pandemic 的網頁版：世界地圖蜂巢六角、單人控多角色、全角色特能與特殊事件卡、感染／疫情／爆發引擎，即時存檔。">
+  <meta name="theme-color" content="#0b1418">
+  <style>
+    :root{--gold:#e9c46a;}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% 0%,#12303a,#070d10);
+      color:#e7eef0;font-family:"Noto Sans TC","Hiragino Sans",system-ui,sans-serif;}
+    .wrap{max-width:1060px;margin:0 auto;padding:14px 12px 50px;}
+    .back{color:#9fc0c9;text-decoration:none;font-size:13px;}.back:hover{color:var(--gold);}
+    h1{font-size:22px;margin:6px 0 2px;}h1 .en{font-size:13px;color:#9fb6bd;font-weight:400;letter-spacing:.14em;}
+    .sub{color:#9fb6bd;font-size:12.5px;margin:2px 0 10px;line-height:1.6;}
+    .stage{position:relative;background:#060f12;border:1px solid #ffffff1a;border-radius:12px;padding:8px;overflow:auto;}
+    #board{display:block;margin:0 auto;max-width:100%;}
+    .hud{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:10px 2px;font-size:13px;}
+    .hud .chip{background:#12242a;border:1px solid #ffffff1c;border-radius:20px;padding:3px 10px;}
+    .cures{display:inline-flex;gap:5px;align-items:center;}
+    .dot{width:14px;height:14px;border-radius:50%;display:inline-block;border:1px solid #0006;font-size:10px;text-align:center;line-height:14px;color:#0a1a1e;}
+    .bar{display:flex;flex-wrap:wrap;gap:7px;margin:8px 2px;}
+    button{font-family:inherit;cursor:pointer;border:0;border-radius:9px;padding:8px 13px;font-size:13px;font-weight:700;color:#0c1a1e;background:var(--gold);transition:filter .1s,transform .1s;}
+    button:hover{filter:brightness(1.08);transform:translateY(-1px);}
+    button.g{background:#1c343c;color:#dcebef;border:1px solid #ffffff26;}
+    button.on{background:#e2574c;color:#fff;}
+    button:disabled{opacity:.4;cursor:not-allowed;}
+    .hand{display:flex;flex-wrap:wrap;gap:6px;margin:8px 2px;min-height:34px;}
+    .card{font-size:12px;font-weight:700;color:#0c1a1e;border-radius:8px;padding:5px 9px;border:2px solid #0004;cursor:pointer;}
+    .card.discard{outline:2px dashed #fff;}
+    #roleabil{font-size:12px;color:#bcd0d5;margin:2px 2px;}
+    #hint{font-size:12.5px;color:#ffd98a;min-height:17px;margin:4px 2px;}
+    #logbox{font-size:11.5px;color:#a9c0c6;line-height:1.6;margin-top:8px;background:#0b171b;border:1px solid #ffffff12;border-radius:10px;padding:8px 12px;max-height:110px;overflow:auto;}
+    .overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(4,10,12,.86);backdrop-filter:blur(2px);border-radius:12px;text-align:center;padding:20px;z-index:5;}
+    .overlay.show{display:flex;}
+    .panel h2{margin:0 0 8px;font-size:22px;}.panel p{color:#bcd0d5;font-size:13px;margin:6px 0 14px;line-height:1.7;}
+    .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0;}
+    .note{color:#93a9af;font-size:12px;line-height:1.7;margin-top:14px;background:#0b171b;border:1px solid #ffffff12;border-radius:10px;padding:10px 14px;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../poker/">← 返回遊戲合輯</a>
+    <h1>🦠 瘟疫危機 <span class="en">PANDEMIC</span></h1>
+    <div class="sub">合作桌遊：操控多名防疫專家，在四種病毒擴散全球前研發 4 種解藥。世界地圖蜂巢六角・全角色特能＋事件卡・即時存檔。<b>（第三期）</b></div>
+
+    <div class="stage">
+      <canvas id="board" width="900" height="560"></canvas>
+      <div id="setup" class="overlay show">
+        <div class="panel">
+          <h2>開始新局</h2>
+          <p>選玩家數與難度。你輪流操控所有角色（合作制，敵人是牌堆）。每個角色有不同特殊能力。</p>
+          <div class="row"><b style="align-self:center">玩家數</b>
+            <button data-np="2">2 人</button><button data-np="3">3 人</button><button data-np="4">4 人</button></div>
+          <div class="row"><b style="align-self:center">難度</b>
+            <button class="g" data-ep="4">簡單(4)</button><button class="g" data-ep="5">普通(5)</button><button class="g" data-ep="6">困難(6)</button></div>
+          <div id="setupsel" style="color:#ffd98a;font-size:13px;margin-top:8px;">玩家數：3　難度：5</div>
+          <div class="row"><button id="startBtn">開始遊戲</button></div>
+        </div>
+      </div>
+      <div id="over" class="overlay">
+        <div class="panel"><h2 id="overmsg"></h2><button id="againBtn">再玩一局</button></div>
+      </div>
+      <div id="tut" class="overlay">
+        <div class="panel" style="max-width:520px;text-align:left;">
+          <h2 style="text-align:center;">📖 新手教學</h2>
+          <p style="color:#cfe0d6;">
+            <b>目標</b>：合力研發 4 種顏色的解藥（藍黃黑紅）。<br><br>
+            <b>每回合三步</b>：① 做 4 個行動 → ② 抽 2 張玩家卡 → ③ 依感染率翻感染卡放病毒方塊。<br><br>
+            <b>行動</b>（點鈕或地圖）：<br>
+            ・點<b>相鄰城市</b>＝移動；<b>直飛</b>棄該城卡飛過去；<b>包機</b>棄所在城卡飛任意城；<b>跳站</b>研究站互跳<br>
+            ・<b>治療</b>移除方塊；<b>建站</b>蓋研究站；<b>給卡</b>同城交換城市卡<br>
+            ・<b>解藥</b>：在研究站集滿同色 5 張（科學家 4）<br><br>
+            <b>★事件卡</b>（紫色）：點了直接施放，<b>不花行動</b>。<br>
+            <b>角色特能</b>：面板上方會顯示目前角色的能力。<br>
+            <b>悔棋</b>：可還原本回合已做的行動（抽牌/感染後不可）。<br><br>
+            <b>會輸</b>：爆發滿 8 次／某色方塊用盡／玩家牌庫抽乾。城市外圈<span style="color:#ff6b6b">紅圈</span>＝已 3 方塊，再感染就爆發。
+          </p>
+          <div class="row"><button onclick="document.getElementById('tut').className='overlay';">開始遊玩</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="roleabil"></div>
+    <div class="hud" id="hud"></div>
+    <div class="bar" id="actbar"></div>
+    <div id="hint"></div>
+    <div class="hand" id="hand"></div>
+    <div id="hintsbox" style="display:none;font-size:12.5px;color:#cfe0d6;line-height:1.8;margin:8px 2px;background:#10241c;border:1px solid #ffffff14;border-radius:10px;padding:10px 14px;"></div>
+    <div id="logbox"></div>
+
+    <div class="note">
+      <b>玩法</b>：每回合 4 行動 → 抽 2 卡 → 感染。點<b>相鄰城市</b>移動；行動鈕做 直飛／包機／跳站／建站／治療／給卡／解藥。手牌的 <span style="color:#c98cff">★事件卡</span> 點了即可施放（不花行動）。<br>
+      研究站集滿同色 5 張（科學家 4）研發解藥；4 解藥全出＝<b>勝</b>。爆發滿 8／方塊用盡／牌庫抽盡＝<b>敗</b>。城市外圈<span style="color:#ff6b6b">紅圈</span>＝已 3 方塊（再感染就爆發）。
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    var s = document.createElement('script');
+    s.src = 'pandemic.js?v=' + Date.now();
+    s.onload = function () {
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+      else boot();
+    };
+    document.body.appendChild(s);
+
+    var A, cv, ctx, DPR = 1, LAY, np = 3, ep = 5;
+    var mode = null, colorChoice = null, evIdx = -1, opsDiscard = null, dispatchPi = -1, showHints = false;
+
+    function boot() {
+      A = window.__pandemic;
+      cv = document.getElementById('board'); ctx = cv.getContext('2d');
+      A.setOnChange(function () { render(); A.save(); });
+      cv.addEventListener('click', onMapClick);
+      document.querySelectorAll('#setup [data-np]').forEach(function (b) { b.onclick = function () { np = +b.dataset.np; updSetup(); }; });
+      document.querySelectorAll('#setup [data-ep]').forEach(function (b) { b.onclick = function () { ep = +b.dataset.ep; updSetup(); }; });
+      document.getElementById('startBtn').onclick = function () { overCounted=false; resetModes(); A.setup(np, ep); hideSetup(); layoutBoard(); render(); A.save(); };
+      document.getElementById('againBtn').onclick = function () { overCounted=false; A.clearSave(); document.getElementById('over').className = 'overlay'; document.getElementById('setup').className = 'overlay show'; updSetup(); };
+      updSetup();
+      var am = location.search.match(/auto=(\d)\.(\d)/);
+      if (am) { np = +am[1]; ep = +am[2]; A.setup(np, ep); hideSetup(); layoutBoard(); render(); A.save(); return; }
+      if (A.load()) { hideSetup(); layoutBoard(); render(); }
+    }
+    function updSetup(){ document.getElementById('setupsel').innerHTML = '玩家數：'+np+'　難度：'+ep+'<br>'+statsLine(); }
+    function hideSetup(){ document.getElementById('setup').className = 'overlay'; }
+    function resetModes(){ mode=null;colorChoice=null;evIdx=-1;opsDiscard=null;dispatchPi=-1; }
+
+    function layoutBoard() {
+      LAY = A.layout(17);
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      cv.width = LAY.w * DPR; cv.height = LAY.h * DPR;
+      cv.style.width = LAY.w + 'px'; cv.style.height = LAY.h + 'px';
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+
+    function hexPath(x, y, r) {
+      ctx.beginPath();
+      for (var i = 0; i < 6; i++) { var a = Math.PI / 180 * (60 * i - 30); var px = x + r * Math.cos(a), py = y + r * Math.sin(a); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
+      ctx.closePath();
+    }
+    function render() {
+      var S = A.state(); if (!S || !LAY) return;
+      var hex = LAY.hex, CITY = A.CITY, COL = A.COLORS;
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      ctx.fillStyle = '#081318'; ctx.fillRect(0, 0, LAY.w, LAY.h);
+      LAY.cells.forEach(function (c) {
+        hexPath(c.x, c.y, hex - 0.5);
+        if (c.land) { ctx.fillStyle = COL[c.color]; ctx.globalAlpha = 0.34; ctx.fill(); ctx.globalAlpha = 1; ctx.lineWidth = 0.6; ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.stroke(); }
+        else { ctx.fillStyle = '#0c2432'; ctx.fill(); ctx.lineWidth = 0.5; ctx.strokeStyle = 'rgba(90,150,180,0.10)'; ctx.stroke(); }
+      });
+      ctx.textAlign = 'center'; ctx.font = 'italic 15px Georgia,serif'; ctx.fillStyle = 'rgba(150,205,230,0.4)';
+      ctx.fillText('大西洋', (CITY['New York'].x + CITY['London'].x) / 2, CITY['New York'].y + 6);
+      ctx.fillText('太平洋', CITY['San Francisco'].x - hex * 3.2, CITY['Los Angeles'].y + 20);
+      ctx.fillText('太平洋', CITY['Tokyo'].x + hex * 3.4, CITY['Manila'].y + 10);
+      ctx.fillText('印度洋', (CITY['Chennai'].x + CITY['Khartoum'].x) / 2 + 10, CITY['Jakarta'].y + 6);
+      Object.keys(CITY).forEach(function (n) {
+        var a = CITY[n];
+        a.adj.forEach(function (m) {
+          if (n < m) {
+            var b = CITY[m], long = Math.abs(a.x - b.x) > LAY.w * 0.5;
+            ctx.setLineDash(long ? [4, 4] : []); ctx.lineWidth = long ? 1 : 1.2;
+            ctx.strokeStyle = long ? 'rgba(160,200,220,0.22)' : 'rgba(200,225,235,0.28)';
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          }
+        });
+      });
+      ctx.setLineDash([]);
+      var lastOut = S.lastOut || [];
+      Object.keys(CITY).forEach(function (n) {
+        var c = CITY[n], cell = S.cubes[n];
+        if (lastOut.indexOf(n) >= 0) { ctx.beginPath(); ctx.arc(c.x, c.y, 13, 0, 7); ctx.strokeStyle = 'rgba(255,140,40,0.95)'; ctx.lineWidth = 3; ctx.stroke(); }
+        var danger = cell.blue === 3 || cell.yellow === 3 || cell.black === 3 || cell.red === 3;
+        if (danger) { ctx.beginPath(); ctx.arc(c.x, c.y, 11, 0, 7); ctx.strokeStyle = 'rgba(255,70,70,0.9)'; ctx.lineWidth = 2; ctx.stroke(); }
+        ctx.beginPath(); ctx.arc(c.x, c.y, 7, 0, 7); ctx.fillStyle = COL[c.color]; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.6; ctx.fill(); ctx.stroke();
+        if (S.stations.indexOf(n) >= 0) { ctx.fillStyle = '#fff'; ctx.strokeStyle = '#0a1a1e'; ctx.lineWidth = 1; ctx.fillRect(c.x + 5, c.y - 12, 8, 8); ctx.strokeRect(c.x + 5, c.y - 12, 8, 8); }
+        var ox = 0;
+        ['blue', 'yellow', 'black', 'red'].forEach(function (col) {
+          var q = cell[col]; if (!q) return;
+          for (var i = 0; i < q; i++) { ctx.fillStyle = COL[col]; ctx.strokeStyle = '#0009'; ctx.lineWidth = 0.8; var bx = c.x - 12 + ox, by = c.y + 9 + i * 5; ctx.fillRect(bx, by, 5, 4.5); ctx.strokeRect(bx, by, 5, 4.5); }
+          ox += 6;
+        });
+        ctx.font = '8px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = '#dfeaee'; ctx.fillText(c.zh, c.x, c.y - 10);
+      });
+      S.players.forEach(function (p, i) {
+        var c = CITY[p.city];
+        var ang = i / S.numPlayers * Math.PI * 2, rx = c.x + Math.cos(ang) * 12, ry = c.y + Math.sin(ang) * 12;
+        var picked = (mode === 'dispatch' && dispatchPi === i);
+        ctx.beginPath(); ctx.arc(rx, ry, 5.5, 0, 7); ctx.fillStyle = A.roleColor(p.role);
+        ctx.strokeStyle = picked ? '#ffd98a' : (i === S.turn ? '#fff' : '#0a1a1e'); ctx.lineWidth = (picked || i === S.turn) ? 2.6 : 1.2; ctx.fill(); ctx.stroke();
+      });
+      renderHud(); renderBar(); renderHand(); renderLog();
+      if (S.status !== 'playing') showOver(S);
+    }
+
+    function renderHud() {
+      var S = A.state(), h = document.getElementById('hud'), pr = S.players[S.turn];
+      var cures = ['blue','yellow','black','red'].map(function (c) { var on=S.cures[c],er=S.eradicated[c]; return '<span class="dot" style="background:'+A.COLORS[c]+';opacity:'+(on?1:0.28)+'">'+(er?'×':on?'✓':'')+'</span>'; }).join('');
+      var left = ['blue','yellow','black','red'].map(function (c) { return '<span style="color:'+A.COLORS[c]+'">■</span>'+S.left[c]; }).join(' ');
+      h.innerHTML =
+        '<span class="chip">🎭 <b style="color:'+A.roleColor(pr.role)+'">'+A.roleName(pr.role)+'</b>（'+A.CITY[pr.city].zh+'）</span>'+
+        '<span class="chip">剩 '+S.actionsLeft+' 行動</span>'+
+        '<span class="chip">感染率 '+[2,2,2,3,3,4,4][S.rateIdx]+'</span>'+
+        '<span class="chip">💥 '+S.outbreaks+'/8</span>'+
+        '<span class="chip cures">解藥 '+cures+'</span>'+
+        '<span class="chip">方塊 '+left+'</span>';
+      var rdef = A.ROLES.filter(function(r){return r.id===pr.role;})[0];
+      document.getElementById('roleabil').innerHTML = '🎭 '+A.roleName(pr.role)+'：'+(rdef?rdef.abil:'');
+    }
+
+    function actBtn(label, fn, cls) { var b=document.createElement('button'); b.textContent=label; if(cls)b.className=cls; b.onclick=fn; return b; }
+    function colZh(c){ return {blue:'藍',yellow:'黃',black:'黑',red:'紅'}[c]; }
+    function renderBar() {
+      var S = A.state(), bar = document.getElementById('actbar'), pr = S.players[S.turn]; bar.innerHTML = '';
+      if (S.mustDiscard >= 0) { setHint('手牌超過 7 張，點下方手牌棄到剩 7 張。'); return; }
+      var acting = S.status === 'playing';
+      bar.appendChild(actBtn('🚑 治療', startTreat, mode==='treat'?'on':'g'));
+      bar.appendChild(actBtn('🏥 建站', function(){ apply(A.actBuild()); }, 'g'));
+      bar.appendChild(actBtn('💊 解藥', startCure, mode==='cure'?'on':'g'));
+      bar.appendChild(actBtn('🤝 給卡', doShare, mode==='share-pick'?'on':'g'));
+      bar.appendChild(actBtn('✈️ 直飛', function(){ setMode('direct'); }, mode==='direct'?'on':'g'));
+      bar.appendChild(actBtn('🛩️ 包機', function(){ setMode('charter'); }, mode==='charter'?'on':'g'));
+      bar.appendChild(actBtn('🚉 跳站', function(){ setMode('shuttle'); }, mode==='shuttle'?'on':'g'));
+      if (pr.role==='ops' && S.stations.indexOf(pr.city)>=0 && !S.opsMoveUsed)
+        bar.appendChild(actBtn('🚀 專送', startOpsMove, (mode==='opsmove-pick'||mode==='opsmove-dest')?'on':'g'));
+      if (pr.role==='dispatcher')
+        bar.appendChild(actBtn('🧭 調度會合', function(){ setMode('dispatch'); dispatchPi=-1; setHint('調度：先點一個有棋子的城市選棋子。'); render(); }, mode==='dispatch'?'on':'g'));
+      var ub = actBtn('↩️ 悔棋', function(){ resetModes(); A.undoAction(); }, 'g'); if(!A.canUndo()) ub.disabled=true; bar.appendChild(ub);
+      bar.appendChild(actBtn('⏭️ 結束回合', function(){ resetModes(); A.endActions(); }));
+      bar.appendChild(actBtn('💡 提示', function(){ showHints=!showHints; render(); }, showHints?'on':'g'));
+      bar.appendChild(actBtn('📖 教學', function(){ document.getElementById('tut').className='overlay show'; }, 'g'));
+      bar.appendChild(actBtn('🆕 新局', function(){ document.getElementById('againBtn').onclick(); }, 'g'));
+      if (mode==='treat' || mode==='cure') (colorChoice||[]).forEach(function(col){
+        bar.appendChild(actBtn('■ '+colZh(col), function(){ if(mode==='treat')apply(A.actTreat(col)); else apply(A.actCure(col)); mode=null;colorChoice=null; }, ''));
+      });
+      if (!acting) Array.prototype.forEach.call(bar.querySelectorAll('button'), function(b){ if(b.textContent.indexOf('新局')<0) b.disabled=true; });
+      var hb = document.getElementById('hintsbox');
+      if (showHints) { hb.style.display='block'; hb.innerHTML = '💡 <b>情勢提示</b><br>' + A.computeHints().join('<br>'); }
+      else hb.style.display='none';
+    }
+
+    function renderHand() {
+      var S = A.state(), hd = document.getElementById('hand'), pr = S.players[S.turn]; hd.innerHTML = '';
+      var lbl = document.createElement('span'); lbl.style.cssText='font-size:12px;color:#9fb6bd;align-self:center'; lbl.textContent='手牌：'; hd.appendChild(lbl);
+      pr.hand.forEach(function (c, idx) {
+        var el = document.createElement('span'); el.className='card';
+        if (c.t==='epidemic'){ el.textContent='疫情'; el.style.background='#333'; el.style.color='#fff'; }
+        else if (c.t==='event'){ el.textContent='★'+c.name; el.style.background='#b06fe0'; el.style.color='#fff'; }
+        else { el.textContent=A.CITY[c.city].zh; el.style.background=A.COLORS[c.color]; }
+        if (S.mustDiscard===S.turn) el.classList.add('discard');
+        el.onclick = function(){ onHandCard(idx, c); };
+        hd.appendChild(el);
+      });
+    }
+    function renderLog(){ var S=A.state(); document.getElementById('logbox').innerHTML = S.log.slice(-9).reverse().join('<br>'); }
+
+    function shareTargetPi() { var S=A.state(), here=S.players[S.turn].city, ti=-1; S.players.forEach(function(p,i){ if(ti<0 && i!==S.turn && p.city===here) ti=i; }); return ti; }
+    function onHandCard(idx, c) {
+      var S = A.state();
+      if (S.mustDiscard === S.turn) { A.discardCard(S.turn, idx); return; }
+      if (c.t === 'event') { startEvent(idx, c); return; }
+      if (c.t !== 'city') return;
+      if (mode === 'direct') { apply(A.actDirectFlight(c.city)); mode=null; }
+      else if (mode === 'opsmove-pick') { opsDiscard = c.city; mode='opsmove-dest'; setHint('🚀 專送：點目的城市（將棄「'+A.CITY[c.city].zh+'」）。'); }
+      else if (mode === 'share-pick') { var ti=shareTargetPi(); if(ti<0){setHint('同城沒有其他角色。');return;} apply(A.actShare(ti, true, c.city)); mode=null; }
+    }
+    function startEvent(idx, c) {
+      var S = A.state();
+      if (c.ev==='quiet' || c.ev==='forecast') { apply(A.playEvent(S.turn, idx)); mode=null; return; }
+      evIdx = idx;
+      if (c.ev==='airlift'){ mode='ev-airlift'; setHint('★空運：點地圖城市，把目前角色移過去。'); }
+      else if (c.ev==='grant'){ mode='ev-grant'; setHint('★政府補助：點一座沒有研究站的城市建站。'); }
+      else if (c.ev==='resilient'){ mode='ev-resilient'; setHint('★堅韌人口：點一座「感染棄牌中」的城市永久移出。'); }
+      render();
+    }
+    function startOpsMove(){ mode='opsmove-pick'; setHint('🚀 專送：先點手牌一張城市卡當作要棄的卡。'); render(); }
+
+    function setMode(m){ mode=(mode===m?null:m); colorChoice=null; setHint(hintFor(mode)); render(); }
+    function hintFor(m){ return m==='direct'?'直飛：點手牌城市卡飛過去（棄該卡）。':m==='charter'?'包機：點地圖任一城市（棄「所在城市」卡）。':m==='shuttle'?'跳站：點另一個有研究站的城市。':''; }
+    function setHint(t){ document.getElementById('hint').textContent = t||''; }
+    function apply(res){ if(res && !res.ok) setHint('⚠️ '+res.msg); else setHint(''); render(); A.save(); }
+
+    function startTreat(){
+      var S=A.state(), cell=S.cubes[S.players[S.turn].city];
+      var cols=['blue','yellow','black','red'].filter(function(c){return cell[c]>0;});
+      if(!cols.length){ setHint('這座城市沒有方塊可治療。'); return; }
+      if(cols.length===1){ apply(A.actTreat(cols[0])); mode=null; return; }
+      mode='treat'; colorChoice=cols; setHint('選要治療的顏色。'); render();
+    }
+    function startCure(){
+      var S=A.state(), pr=S.players[S.turn], need=pr.role==='scientist'?4:5, cnt={blue:0,yellow:0,black:0,red:0};
+      pr.hand.forEach(function(c){ if(c.t==='city')cnt[c.color]++; });
+      if(S.stations.indexOf(pr.city)<0){ setHint('要在研究站才能研發解藥。'); return; }
+      var cols=['blue','yellow','black','red'].filter(function(c){return !S.cures[c]&&cnt[c]>=need;});
+      if(!cols.length){ setHint('沒有足夠同色卡（需 '+need+' 張）可研發。'); return; }
+      if(cols.length===1){ apply(A.actCure(cols[0])); mode=null; return; }
+      mode='cure'; colorChoice=cols; setHint('選要研發的解藥顏色。'); render();
+    }
+    function doShare(){
+      var S=A.state(), pr=S.players[S.turn], here=pr.city, ti=shareTargetPi();
+      if(ti<0){ setHint('同城沒有其他角色可交換。'); return; }
+      if(pr.role==='researcher' && pr.hand.some(function(c){return c.t==='city';})){
+        mode='share-pick'; setHint('研究員給卡：點手牌一張城市卡給同城夥伴。'); render(); return;
+      }
+      var iHave = pr.hand.some(function(c){return c.t==='city'&&c.city===here;});
+      apply(A.actShare(ti, iHave));
+    }
+
+    function onMapClick(e) {
+      var S = A.state(); if (!S || S.status !== 'playing' || S.mustDiscard >= 0) return;
+      var rect = cv.getBoundingClientRect(), mx=(e.clientX-rect.left), my=(e.clientY-rect.top);
+      var CITY=A.CITY, best=null, bd=1e9;
+      Object.keys(CITY).forEach(function(n){ var c=CITY[n]; var d=(c.x-mx)*(c.x-mx)+(c.y-my)*(c.y-my); if(d<bd){bd=d;best=n;} });
+      if (!best || bd > 280) return;
+      if (mode==='charter'){ apply(A.actCharter(best)); mode=null; }
+      else if (mode==='shuttle'){ apply(A.actShuttle(best)); mode=null; }
+      else if (mode==='direct'){ setHint('直飛請點手牌卡，不是地圖。'); }
+      else if (mode==='ev-airlift'){ apply(A.playEvent(S.turn, evIdx, {movePi:S.turn, city:best})); mode=null; evIdx=-1; }
+      else if (mode==='ev-grant'){ apply(A.playEvent(S.turn, evIdx, {city:best})); mode=null; evIdx=-1; }
+      else if (mode==='ev-resilient'){ apply(A.playEvent(S.turn, evIdx, {city:best})); mode=null; evIdx=-1; }
+      else if (mode==='opsmove-dest'){ apply(A.actOpsMove(best, opsDiscard)); mode=null; opsDiscard=null; }
+      else if (mode==='dispatch'){
+        var pawnHere = -1; S.players.forEach(function(p,i){ if(pawnHere<0 && p.city===best) pawnHere=i; });
+        if (dispatchPi < 0){ if(pawnHere>=0){ dispatchPi=pawnHere; setHint('已選 '+A.roleName(S.players[pawnHere].role)+'，點一座「有其他棋子」的城市會合過去。'); render(); } else setHint('請點一個有棋子的城市來選棋子。'); }
+        else { apply(A.actRendezvous(dispatchPi, best)); mode=null; dispatchPi=-1; }
+      }
+      else { apply(A.actMoveDrive(best)); }
+    }
+
+    var overCounted = false;
+    function stats(){ try{return JSON.parse(localStorage.getItem('pandemic.stats')||'{"played":0,"won":0,"lost":0}');}catch(e){return {played:0,won:0,lost:0};} }
+    function bumpStats(won){ var s=stats(); s.played++; won?s.won++:s.lost++; try{localStorage.setItem('pandemic.stats',JSON.stringify(s));}catch(e){} }
+    function statsLine(){ var s=stats(); return '📊 戰績 '+s.won+' 勝 '+s.lost+' 敗（共 '+s.played+' 局）'; }
+    function showOver(S){
+      var o=document.getElementById('over');
+      if(!overCounted){ overCounted=true; bumpStats(S.status==='won'); }
+      document.getElementById('overmsg').innerHTML = (S.status==='won' ? '🏆 四種解藥全部研發成功，世界得救了！' : '💀 落敗：'+(S.lostReason||'疫情失控')+'。') + '<br><span style="font-size:14px;color:#bcd0d5">'+statsLine()+'</span>';
+      o.className='overlay show';
+    }
+  })();
+  </script>
+</body>
+</html>

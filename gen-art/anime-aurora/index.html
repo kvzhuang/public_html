@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Anime Aurora — Generative Art</title>
+  <meta name="description" content="Aurora Borealis 極光模擬。anime.js 驅動 10 個獨立控制點的有機律動，多層光帶疊加漸層與模糊光暈，搭配星空與樹線剪影。">
+  <meta name="author" content="kvzhuang">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #010308; overflow: hidden; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+
+    #label {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(180, 230, 210, 0.35);
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="label">Aurora Borealis &nbsp;·&nbsp; anime.js</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script>
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  canvas.width  = W = window.innerWidth;
+  canvas.height = H = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── Stars ────────────────────────────────────────────────────────────────────
+const STAR_COUNT = 260;
+const stars = Array.from({ length: STAR_COUNT }, () => {
+  const obj = {
+    x:  Math.random(),
+    y:  Math.random() * 0.78,
+    r:  Math.random() * 1.3 + 0.15,
+    a:  Math.random() * 0.5 + 0.1,
+  };
+  (function animate() {
+    anime({
+      targets: obj,
+      a: Math.random() * 0.85 + 0.05,
+      duration: 1200 + Math.random() * 3500,
+      easing: 'easeInOutSine',
+      complete: animate,
+      delay: Math.random() * 4000,
+    });
+  })();
+  return obj;
+});
+
+// ── Aurora bands ─────────────────────────────────────────────────────────────
+// Each band: control points animated independently via anime.js
+const NP = 10;  // control points per band
+
+const BAND_DEFS = [
+  { base: 0.18, bw: 0.065, h: 148, s: 92, l: 62 },  // vivid green
+  { base: 0.27, bw: 0.080, h: 165, s: 85, l: 58 },  // teal
+  { base: 0.34, bw: 0.055, h: 186, s: 80, l: 62 },  // cyan
+  { base: 0.41, bw: 0.075, h: 210, s: 75, l: 65 },  // sky blue
+  { base: 0.24, bw: 0.095, h: 275, s: 70, l: 68 },  // violet
+];
+
+const hueObj = { v: 0 };
+anime({ targets: hueObj, v: 360, duration: 80000, easing: 'linear', loop: true });
+
+const bands = BAND_DEFS.map(def => {
+  // Control points — each animated independently
+  const pts = Array.from({ length: NP }, (_, i) => {
+    const obj = { y: def.base + (Math.random() - 0.5) * 0.06 };
+    (function animate() {
+      anime({
+        targets: obj,
+        y: def.base + (Math.random() - 0.5) * 0.22,
+        duration: 3500 + Math.random() * 8000,
+        easing: 'easeInOutSine',
+        complete: animate,
+        delay: i * 80,
+      });
+    })();
+    return obj;
+  });
+
+  // Per-band opacity pulse
+  const opObj = { v: Math.random() * 0.2 + 0.05 };
+  (function animate() {
+    anime({
+      targets: opObj,
+      v: Math.random() * 0.60 + 0.04,
+      duration: 4000 + Math.random() * 7000,
+      easing: 'easeInOutSine',
+      complete: animate,
+    });
+  })();
+
+  return { ...def, pts, opObj };
+});
+
+// ── Catmull-Rom spline ───────────────────────────────────────────────────────
+function crMove(pts, t = 0.5) {
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[Math.min(pts.length - 1, i + 2)];
+    ctx.bezierCurveTo(
+      p1.x + (p2.x - p0.x) * t / 3, p1.y + (p2.y - p0.y) * t / 3,
+      p2.x - (p3.x - p1.x) * t / 3, p2.y - (p3.y - p1.y) * t / 3,
+      p2.x, p2.y,
+    );
+  }
+}
+
+function crLine(pts, t = 0.5) {
+  ctx.lineTo(pts[0].x, pts[0].y);
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[Math.min(pts.length - 1, i + 2)];
+    ctx.bezierCurveTo(
+      p1.x + (p2.x - p0.x) * t / 3, p1.y + (p2.y - p0.y) * t / 3,
+      p2.x - (p3.x - p1.x) * t / 3, p2.y - (p3.y - p1.y) * t / 3,
+      p2.x, p2.y,
+    );
+  }
+}
+
+// ── Treeline (deterministic noise silhouette) ────────────────────────────────
+function drawTreeline() {
+  const groundY = H * 0.87;
+
+  // Sky glow near horizon
+  const horizGrad = ctx.createLinearGradient(0, groundY - H * 0.08, 0, groundY);
+  horizGrad.addColorStop(0, 'rgba(0,20,15,0)');
+  horizGrad.addColorStop(1, 'rgba(0,15,10,0.7)');
+  ctx.fillStyle = horizGrad;
+  ctx.fillRect(0, groundY - H * 0.08, W, H * 0.08);
+
+  // Dark ground
+  ctx.fillStyle = '#000608';
+  ctx.fillRect(0, groundY, W, H - groundY);
+
+  // Pine tree silhouette
+  ctx.fillStyle = '#000d0a';
+  ctx.beginPath();
+  ctx.moveTo(0, groundY + 2);
+  for (let x = 0; x <= W + 12; x += 7) {
+    const t1 = Math.sin(x * 0.018) * 14;
+    const t2 = Math.sin(x * 0.055 + 1.3) * 9;
+    const t3 = Math.sin(x * 0.13 + 2.7) * 5;
+    const treeH = 18 + t1 + t2 + t3;
+    ctx.lineTo(x, groundY - Math.max(0, treeH));
+  }
+  ctx.lineTo(W, groundY + 2);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// ── Globe ────────────────────────────────────────────────────────────────────
+const globeSpin = { v: 0 };
+anime({ targets: globeSpin, v: 360, duration: 26000, easing: 'linear', loop: true });
+
+const TILT = 42 * Math.PI / 180;   // 42° forward tilt — shows north pole clearly
+
+function gProject(latDeg, lonDeg, spin) {
+  const la = latDeg * Math.PI / 180;
+  const lo = lonDeg * Math.PI / 180 + spin;
+  const x =  Math.cos(la) * Math.sin(lo);
+  const y =  Math.sin(la);
+  const z =  Math.cos(la) * Math.cos(lo);
+  const y2 = y * Math.cos(TILT) - z * Math.sin(TILT);
+  const z2 = y * Math.sin(TILT) + z * Math.cos(TILT);
+  return { sx: x, sy: -y2, vis: z2 >= -0.05 };
+}
+
+function drawGlobe() {
+  const R  = Math.min(W, H) * 0.115;
+  const cx = W - R - 22;
+  const cy = H - R - 22;
+  const spin = globeSpin.v * Math.PI / 180;
+
+  // ── Atmosphere glow ──
+  const atm = ctx.createRadialGradient(cx, cy, R * 0.88, cx, cy, R * 1.42);
+  atm.addColorStop(0,   `hsla(${(hueObj.v + 145) % 360},80%,55%,0.12)`);
+  atm.addColorStop(0.5, `hsla(${(hueObj.v + 145) % 360},70%,50%,0.04)`);
+  atm.addColorStop(1,   'rgba(0,0,0,0)');
+  ctx.fillStyle = atm;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * 1.42, 0, Math.PI * 2);
+  ctx.fill();
+
+  // ── Clip to sphere ──
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, R - 0.5, 0, Math.PI * 2);
+  ctx.clip();
+
+  // Ocean base
+  const ocean = ctx.createRadialGradient(cx - R * 0.28, cy - R * 0.28, R * 0.1, cx, cy, R);
+  ocean.addColorStop(0,   '#1e5268');
+  ocean.addColorStop(0.6, '#0d2a3a');
+  ocean.addColorStop(1,   '#05111a');
+  ctx.fillStyle = ocean;
+  ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
+
+  // ── Latitude / longitude grid ──
+  ctx.lineWidth = 0.6;
+  // Lat lines
+  for (let lat = -60; lat <= 90; lat += 30) {
+    ctx.beginPath();
+    let first = true;
+    for (let lo = -180; lo <= 182; lo += 2) {
+      const p = gProject(lat, lo, spin);
+      if (p.vis) {
+        const px = cx + p.sx * R, py = cy + p.sy * R;
+        first ? (ctx.moveTo(px, py), first = false) : ctx.lineTo(px, py);
+      } else { first = true; }
+    }
+    ctx.strokeStyle = lat === 0
+      ? 'rgba(100,210,180,0.28)'
+      : 'rgba(80,170,150,0.12)';
+    ctx.stroke();
+  }
+  // Lon lines
+  for (let lo = 0; lo < 360; lo += 30) {
+    ctx.beginPath();
+    let first = true;
+    for (let lat = -80; lat <= 90; lat += 2) {
+      const p = gProject(lat, lo, spin);
+      if (p.vis) {
+        const px = cx + p.sx * R, py = cy + p.sy * R;
+        first ? (ctx.moveTo(px, py), first = false) : ctx.lineTo(px, py);
+      } else { first = true; }
+    }
+    ctx.strokeStyle = 'rgba(80,160,140,0.10)';
+    ctx.stroke();
+  }
+
+  // ── Polar ice cap (lat > 78°) ──
+  ctx.beginPath();
+  let firstIce = true;
+  for (let lo = -180; lo <= 182; lo += 3) {
+    const p = gProject(78, lo, spin);
+    if (p.vis) {
+      const px = cx + p.sx * R, py = cy + p.sy * R;
+      firstIce ? (ctx.moveTo(px, py), firstIce = false) : ctx.lineTo(px, py);
+    } else { firstIce = true; }
+  }
+  const pole = gProject(90, 0, spin);
+  if (pole.vis) ctx.lineTo(cx + pole.sx * R, cy + pole.sy * R);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(200,235,248,0.22)';
+  ctx.fill();
+
+  // ── Aurora oval ring (lat ~64-72°, the actual auroral zone) ──
+  const aHue = (hueObj.v + 148) % 360;
+  // Outer edge 72°
+  ctx.beginPath();
+  let fa = true;
+  for (let lo = -180; lo <= 182; lo += 2) {
+    const p = gProject(72, lo, spin);
+    if (p.vis) {
+      const px = cx + p.sx * R, py = cy + p.sy * R;
+      fa ? (ctx.moveTo(px, py), fa = false) : ctx.lineTo(px, py);
+    } else { fa = true; }
+  }
+  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = `hsla(${aHue},90%,68%,0.85)`;
+  ctx.stroke();
+
+  // Inner edge 64°
+  ctx.beginPath();
+  fa = true;
+  for (let lo = -180; lo <= 182; lo += 2) {
+    const p = gProject(64, lo, spin);
+    if (p.vis) {
+      const px = cx + p.sx * R, py = cy + p.sy * R;
+      fa ? (ctx.moveTo(px, py), fa = false) : ctx.lineTo(px, py);
+    } else { fa = true; }
+  }
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = `hsla(${(aHue + 20) % 360},85%,60%,0.55)`;
+  ctx.stroke();
+
+  ctx.restore();  // end clip
+
+  // ── Rim light ──
+  const rim = ctx.createRadialGradient(cx - R * 0.25, cy - R * 0.25, R * 0.6, cx, cy, R);
+  rim.addColorStop(0.75, 'rgba(80,200,160,0)');
+  rim.addColorStop(1,    `hsla(${aHue},70%,60%,0.45)`);
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.strokeStyle = rim;
+  ctx.lineWidth = 1.8;
+  ctx.stroke();
+
+  // ── Tiny label ──
+  ctx.fillStyle = `rgba(140,220,190,0.45)`;
+  ctx.font = `${Math.max(9, R * 0.14)}px 'Helvetica Neue', sans-serif`;
+  ctx.letterSpacing = '0.12em';
+  ctx.textAlign = 'center';
+  ctx.fillText('AURORAL ZONE', cx, cy + R + 14);
+}
+
+// ── Aurora renderer ──────────────────────────────────────────────────────────
+function renderBands(opScale) {
+  bands.forEach(band => {
+    const op = band.opObj.v * opScale;
+    if (op < 0.012) return;
+
+    const hue = (band.h + hueObj.v) % 360;
+
+    const upper = band.pts.map((pt, i) => ({
+      x: (i / (NP - 1)) * W,
+      y: (pt.y - band.bw * 0.5) * H,
+    }));
+    const lower = [...band.pts.map((pt, i) => ({
+      x: (i / (NP - 1)) * W,
+      y: (pt.y + band.bw * 0.5) * H,
+    }))].reverse();
+
+    const midY = band.pts.reduce((s, p) => s + p.y, 0) / band.pts.length;
+    const grad = ctx.createLinearGradient(0, (midY - band.bw) * H, 0, (midY + band.bw) * H);
+    grad.addColorStop(0.00, `hsla(${hue},${band.s}%,${band.l}%,0)`);
+    grad.addColorStop(0.30, `hsla(${hue},${band.s}%,${band.l}%,${op * 0.9})`);
+    grad.addColorStop(0.55, `hsla(${hue},${band.s}%,${band.l}%,${op})`);
+    grad.addColorStop(0.80, `hsla(${hue},${band.s}%,${band.l}%,${op * 0.7})`);
+    grad.addColorStop(1.00, `hsla(${hue},${band.s}%,${band.l}%,0)`);
+
+    ctx.beginPath();
+    crMove(upper);
+    crLine(lower);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+  });
+}
+
+// ── Main draw loop ───────────────────────────────────────────────────────────
+function draw() {
+  requestAnimationFrame(draw);
+
+  // Sky gradient
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0.00, '#010208');
+  sky.addColorStop(0.55, '#010510');
+  sky.addColorStop(1.00, '#020814');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+
+  // Stars
+  for (const s of stars) {
+    ctx.beginPath();
+    ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(215,230,255,${s.a})`;
+    ctx.fill();
+  }
+
+  // Aurora: wide soft glow
+  ctx.save();
+  ctx.filter = 'blur(28px)';
+  renderBands(0.65);
+  ctx.restore();
+
+  // Aurora: mid blur
+  ctx.save();
+  ctx.filter = 'blur(9px)';
+  renderBands(0.80);
+  ctx.restore();
+
+  // Aurora: crisp core
+  ctx.save();
+  ctx.filter = 'blur(2px)';
+  renderBands(0.55);
+  ctx.restore();
+
+  // Treeline
+  drawTreeline();
+
+  // Globe
+  drawGlobe();
+}
+
+draw();
+</script>
+</body>
+</html>

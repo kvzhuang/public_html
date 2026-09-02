@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>🪙 加密貨幣模擬倉 · Crypto Sandbox</title>
+  <meta name="description" content="Telegram 加密貨幣模擬交易（sandbox 虛擬幣，無法用於現實）：BTC/ETH/BNB/SOL、1–10x 槓桿、做多做空。此頁即時呈現各玩家的模擬投資戰績（暱稱只顯示頭尾各 2 字）。">
+  <meta name="theme-color" content="#0b1020">
+  <meta property="og:title" content="🪙 加密貨幣模擬倉 · Crypto Sandbox">
+  <meta property="og:description" content="Telegram 加密貨幣模擬倉的玩家戰績即時榜（虛擬幣）。">
+  <meta property="og:type" content="website">
+  <style>
+    :root{ --up:#16c784; --dn:#ea3943; --gold:#e9c46a; }
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; min-height:100%; color:#e7ecf3;
+      background:radial-gradient(circle at 50% 0%, #17203a, #080b16);
+      font-family:"Noto Sans TC","Hiragino Sans",system-ui,sans-serif; }
+    .wrap{ max-width:860px; margin:0 auto; padding:18px 14px 60px; }
+    a.back{ color:#8fa6c8; text-decoration:none; font-size:13px; }
+    h1{ font-size:26px; margin:8px 0 2px; }
+    h1 .en{ font-size:15px; color:#8fa6c8; font-weight:400; letter-spacing:.1em; }
+    .sub{ color:#93a4bd; font-size:13px; line-height:1.6; margin:6px 0 14px; }
+    .sub b{ color:#c9d6ea; }
+    .charts{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:16px; }
+    @media(max-width:560px){ .charts{ grid-template-columns:1fr; } }
+    .chart{ background:#0f1730; border:1px solid #ffffff16; border-radius:12px; padding:10px 12px 6px; }
+    .chart .top{ display:flex; align-items:baseline; gap:8px; }
+    .chart .c{ font-size:14px; font-weight:800; color:#c9d6ea; }
+    .chart .sp{ flex:1; }
+    .chart .p{ font-size:19px; font-weight:800; }
+    .chart .chg{ font-size:12px; font-weight:700; }
+    .chart canvas{ width:100%; height:88px; display:block; margin-top:6px; }
+    .updated{ font-size:12px; color:#6f819c; margin-bottom:10px; }
+
+    .card{ background:linear-gradient(#101a34,#0b1226); border:1px solid #ffffff14; border-radius:14px; padding:14px 16px; margin-bottom:12px; box-shadow:0 8px 22px #0006; }
+    .card.rank1{ border-color:#e9c46a88; } .card.rank2{ border-color:#c0c8d488; } .card.rank3{ border-color:#cd7f4088; }
+    .chead{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .medal{ font-size:20px; width:30px; text-align:center; }
+    .nm{ font-size:18px; font-weight:800; letter-spacing:.06em; }
+    .sp{ flex:1; }
+    .eq{ text-align:right; } .eq .v{ font-size:19px; font-weight:800; } .eq .s{ font-size:12px; color:#93a4bd; }
+    .pnl{ font-weight:800; } .up{ color:var(--up); } .dn{ color:var(--dn); }
+    .stats{ display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; font-size:13px; color:#b9c6dc; }
+    .pos{ margin-top:10px; display:flex; flex-direction:column; gap:5px; }
+    .prow{ display:flex; align-items:center; gap:8px; background:#0c1428; border:1px solid #ffffff10; border-radius:9px; padding:6px 10px; font-size:13px; }
+    .badge{ font-size:11px; font-weight:800; border-radius:5px; padding:1px 6px; }
+    .long{ background:#16c78426; color:var(--up); } .short{ background:#ea394326; color:var(--dn); }
+    .lev{ color:#e9c46a; font-weight:700; }
+    .prow .sp{ flex:1; }
+    .empty{ color:#6f819c; font-size:13px; }
+    footer{ text-align:center; color:#5d6e88; font-size:12px; margin-top:26px; line-height:1.7; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../">← gen-art</a>
+    <h1>🪙 加密貨幣模擬倉 <span class="en">Crypto Sandbox</span></h1>
+    <p class="sub">Telegram bot 上的加密貨幣<b>模擬</b>交易戰績榜（BTC / ETH / BNB / SOL，1–10x 槓桿，做多做空）。
+      <b>虛擬幣，無法用於現實</b>；價格取自幣安公開資料。暱稱只顯示<b>頭尾各 2 字</b>、中間以 * 遮蔽。</p>
+
+    <div class="charts" id="charts"></div>
+    <div class="updated" id="updated"></div>
+    <div id="board"></div>
+    <footer>lab4.kvzhuang.net · gen-art / crypto-sandbox　—　純模擬娛樂，非投資建議</footer>
+  </div>
+
+  <script>
+    const COIN = { BTC:'₿ BTC', ETH:'Ξ ETH', BNB:'🔶 BNB', SOL:'◎ SOL' };
+    const fmt = (n, d=2) => Number(n).toLocaleString('en-US', { minimumFractionDigits:d, maximumFractionDigits:d });
+    const sign = n => (n >= 0 ? 'up' : 'dn');
+    const esc = s => String(s).replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m]));
+
+    function drawChart(coin, h, dir) {
+      const cv = document.querySelector(`canvas[data-coin="${coin}"]`);
+      if (!cv) return;
+      const dpr = window.devicePixelRatio || 1;
+      const w = cv.clientWidth || 320, ht = cv.clientHeight || 88;
+      cv.width = w * dpr; cv.height = ht * dpr;
+      const g = cv.getContext('2d'); g.scale(dpr, dpr);
+      g.clearRect(0, 0, w, ht);
+      if (h.length < 2) { g.fillStyle = '#6f819c'; g.font = '12px sans-serif'; g.fillText('累積資料中…', 8, ht / 2); return; }
+      const lo = Math.min(...h), hi = Math.max(...h), rng = (hi - lo) || (hi * 0.01) || 1;
+      const pad = 4, plotw = w - pad * 2, ploth = ht - pad * 2;
+      const X = i => pad + i / (h.length - 1) * plotw;
+      const Y = v => pad + (hi - v) / rng * ploth;
+      const up = dir === 'up', col = up ? '#16c784' : '#ea3943';
+      // 線下填色
+      g.beginPath(); g.moveTo(X(0), ht - pad);
+      h.forEach((v, i) => g.lineTo(X(i), Y(v)));
+      g.lineTo(X(h.length - 1), ht - pad); g.closePath();
+      const grad = g.createLinearGradient(0, pad, 0, ht);
+      grad.addColorStop(0, up ? 'rgba(22,199,132,.32)' : 'rgba(234,57,67,.32)');
+      grad.addColorStop(1, 'rgba(15,23,48,0)');
+      g.fillStyle = grad; g.fill();
+      // 線
+      g.beginPath(); h.forEach((v, i) => (i ? g.lineTo(X(i), Y(v)) : g.moveTo(X(i), Y(v))));
+      g.strokeStyle = col; g.lineWidth = 2; g.lineJoin = 'round'; g.stroke();
+      // 末端點
+      g.fillStyle = col; g.beginPath(); g.arc(X(h.length - 1), Y(h[h.length - 1]), 2.6, 0, 7); g.fill();
+    }
+
+    async function load() {
+      let st;
+      try { st = await (await fetch('state.json?v=' + Date.now())).json(); }
+      catch (e) { document.getElementById('updated').textContent = '（尚無資料，等玩家開始交易）'; return; }
+      // 行情 + 走勢圖
+      const p = st.prices || {}, hist = st.history || {};
+      document.getElementById('charts').innerHTML = Object.keys(COIN).map(c => {
+        const h = hist[c] || [];
+        const first = h.length ? h[0] : (p[c] || 0);
+        const last = h.length ? h[h.length - 1] : (p[c] || 0);
+        const chg = first ? (last - first) / first * 100 : 0;
+        const cls = sign(chg);
+        return `<div class="chart"><div class="top"><span class="c">${COIN[c]}/USDT</span><span class="sp"></span>`
+          + `<span class="p ${cls}">${p[c] ? fmt(p[c]) : '—'}</span>`
+          + `<span class="chg ${cls}">${chg >= 0 ? '▲' : '▼'}${chg >= 0 ? '+' : ''}${fmt(chg, 2)}%</span></div>`
+          + `<canvas data-coin="${c}"></canvas></div>`;
+      }).join('');
+      requestAnimationFrame(() => Object.keys(COIN).forEach(c => drawChart(c, hist[c] || [], sign(((hist[c] || []).slice(-1)[0] - (hist[c] || [0])[0]) || 0))));
+      const t = st.ts ? new Date(st.ts) : null;
+      document.getElementById('updated').textContent = '更新：' + (t ? t.toLocaleString('zh-TW') : '—') + '　·　每 45 秒取價一次';
+      // 玩家榜
+      const users = st.users || [];
+      if (!users.length) { document.getElementById('board').innerHTML = '<div class="empty">還沒有人交易——到 Telegram bot /start 開始模擬投資吧。</div>'; return; }
+      document.getElementById('board').innerHTML = users.map((u, i) => {
+        const medal = ['🥇','🥈','🥉'][i] || (i + 1) + '.';
+        const rk = i < 3 ? ' rank' + (i + 1) : '';
+        const posHtml = (u.open && u.open.length)
+          ? `<div class="pos">` + u.open.map(o =>
+              `<div class="prow"><span>${COIN[o.coin] || o.coin}</span>`
+              + `<span class="badge ${o.side}">${o.side === 'long' ? '多' : '空'}</span>`
+              + `<span class="lev">${o.lev}x</span><span class="sp"></span>`
+              + `<span>保證金 ${fmt(o.margin,0)}</span>`
+              + `<span class="pnl ${sign(o.pnl)}">${o.pnl>=0?'+':''}${fmt(o.pnl,0)}（${o.roi>=0?'+':''}${fmt(o.roi,1)}%）</span></div>`).join('')
+            + `</div>`
+          : `<div class="pos"><span class="empty">目前無持倉</span></div>`;
+        return `<div class="card${rk}"><div class="chead">`
+          + `<span class="medal">${medal}</span><span class="nm">${esc(u.name)}</span><span class="sp"></span>`
+          + `<span class="eq"><div class="v">${fmt(u.equity,0)} <span class="s">USDT</span></div>`
+          + `<div class="s pnl ${sign(u.pnl_total)}">總 ${u.pnl_total>=0?'+':''}${fmt(u.pnl_total,0)}（${u.roi>=0?'+':''}${fmt(u.roi,1)}%）</div></span></div>`
+          + `<div class="stats"><span>可用 ${fmt(u.balance,0)}</span>`
+          + `<span>已實現 <b class="${sign(u.realized)}">${u.realized>=0?'+':''}${fmt(u.realized,0)}</b></span>`
+          + `<span>未實現 <b class="${sign(u.unrealized)}">${u.unrealized>=0?'+':''}${fmt(u.unrealized,0)}</b></span>`
+          + `<span>已平 ${u.trades} 筆</span></div>`
+          + posHtml + `</div>`;
+      }).join('');
+    }
+    load();
+    setInterval(load, 15000);
+  </script>
+</body>
+</html>

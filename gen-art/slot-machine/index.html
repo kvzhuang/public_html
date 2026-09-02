@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>拉霸機 Slot Machine</title>
+  <meta name="description" content="經典拉霸機，傳統水果機風格。拉下拉桿試試手氣！">
+  <meta name="author" content="kvzhuang">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #1a0a00;
+      font-family: 'Arial', sans-serif;
+      user-select: none;
+    }
+
+    .machine {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(420px, 92vw);
+      background: linear-gradient(145deg, #8B0000, #B22222, #8B0000);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow:
+        0 0 40px rgba(255,50,0,0.3),
+        inset 0 2px 4px rgba(255,255,255,0.15),
+        0 8px 30px rgba(0,0,0,0.6);
+      border: 3px solid #D4AF37;
+    }
+
+    .title {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #FFD700;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5), 0 0 20px rgba(255,215,0,0.3);
+      letter-spacing: 0.15em;
+      margin-bottom: 12px;
+    }
+
+    .lights {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .light {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #FFD700;
+      box-shadow: 0 0 6px #FFD700;
+      animation: blink 0.6s infinite alternate;
+    }
+    .light:nth-child(even) { animation-delay: 0.3s; }
+    @keyframes blink {
+      0% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    .display {
+      background: #111;
+      border-radius: 12px;
+      padding: 12px;
+      border: 3px solid #D4AF37;
+      margin-bottom: 16px;
+    }
+
+    .reels {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .reel-window {
+      width: 90px; height: 220px;
+      background: #FFFFF0;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      border: 2px solid #888;
+      box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .reel-strip {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      transition: none;
+    }
+
+    .reel-item {
+      width: 90px; height: 73.33px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+    }
+
+    /* 中線 */
+    .reel-window::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 0;
+      width: 100%; height: 2px;
+      background: rgba(255,0,0,0.4);
+      transform: translateY(-1px);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* 上下漸層遮罩 */
+    .reel-window::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.25) 0%,
+        transparent 30%,
+        transparent 70%,
+        rgba(0,0,0,0.25) 100%
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .credits {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 0 4px;
+    }
+
+    .credit-box {
+      background: #111;
+      border: 2px solid #D4AF37;
+      border-radius: 8px;
+      padding: 6px 14px;
+      text-align: center;
+    }
+    .credit-box .label {
+      font-size: 0.65rem;
+      color: #D4AF37;
+      letter-spacing: 0.1em;
+    }
+    .credit-box .value {
+      font-size: 1.3rem;
+      color: #FFD700;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 14px 28px;
+      letter-spacing: 0.1em;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .btn:active {
+      transform: scale(0.95);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-spin {
+      background: linear-gradient(180deg, #FFD700, #DAA520);
+      color: #4a2000;
+      box-shadow: 0 4px 12px rgba(255,215,0,0.4);
+      flex: 1;
+      max-width: 200px;
+    }
+    .btn-spin:hover:not(:disabled) {
+      box-shadow: 0 4px 20px rgba(255,215,0,0.6);
+    }
+
+    .btn-bet {
+      background: linear-gradient(180deg, #666, #444);
+      color: #FFD700;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      min-width: 70px;
+    }
+
+    .message {
+      text-align: center;
+      height: 28px;
+      line-height: 28px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #FFD700;
+      text-shadow: 0 0 10px rgba(255,215,0,0.5);
+      margin-bottom: 8px;
+    }
+    .message.win {
+      animation: flash 0.3s infinite alternate;
+      color: #FF4444;
+      font-size: 1.2rem;
+    }
+    @keyframes flash {
+      0% { text-shadow: 0 0 10px rgba(255,0,0,0.5); }
+      100% { text-shadow: 0 0 30px rgba(255,0,0,1), 0 0 60px rgba(255,215,0,0.5); }
+    }
+
+    .paytable {
+      margin-top: 14px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid #D4AF3755;
+    }
+    .paytable-title {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #D4AF37;
+      letter-spacing: 0.15em;
+      margin-bottom: 6px;
+    }
+    .paytable-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px 16px;
+      font-size: 0.78rem;
+      color: #ccc;
+    }
+    .paytable-grid span:nth-child(even) {
+      text-align: right;
+      color: #FFD700;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="machine">
+  <div class="title">SLOT MACHINE</div>
+
+  <div class="lights">
+    <div class="light"></div><div class="light"></div><div class="light"></div>
+    <div class="light"></div><div class="light"></div><div class="light"></div>
+    <div class="light"></div><div class="light"></div><div class="light"></div>
+    <div class="light"></div><div class="light"></div><div class="light"></div>
+  </div>
+
+  <div class="display">
+    <div class="reels" id="reels"></div>
+  </div>
+
+  <div class="message" id="message">按 SPIN 開始！</div>
+
+  <div class="credits">
+    <div class="credit-box">
+      <div class="label">CREDIT</div>
+      <div class="value" id="credit">1000</div>
+    </div>
+    <div class="credit-box">
+      <div class="label">BET</div>
+      <div class="value" id="betDisplay">10</div>
+    </div>
+    <div class="credit-box">
+      <div class="label">WIN</div>
+      <div class="value" id="winDisplay">0</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-bet" id="btnBet">BET</button>
+    <button class="btn btn-spin" id="btnSpin">🎰 SPIN</button>
+  </div>
+
+  <div class="paytable">
+    <div class="paytable-title">PAYTABLE</div>
+    <div class="paytable-grid">
+      <span>7️⃣ 7️⃣ 7️⃣</span><span>x100</span>
+      <span>💎 💎 💎</span><span>x50</span>
+      <span>🔔 🔔 🔔</span><span>x25</span>
+      <span>🍉 🍉 🍉</span><span>x15</span>
+      <span>🍇 🍇 🍇</span><span>x10</span>
+      <span>🍊 🍊 🍊</span><span>x8</span>
+      <span>🍋 🍋 🍋</span><span>x6</span>
+      <span>🍒 🍒 🍒</span><span>x4</span>
+      <span>🍒 🍒 ⭐</span><span>x2</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== 傳統拉霸符號 =====
+const SYMBOLS = ['🍒','🍋','🍊','🍇','🍉','🔔','💎','7️⃣'];
+
+// 權重（越前面越常出現）
+const WEIGHTS = [25, 20, 18, 15, 12, 6, 3, 1];
+const TOTAL_WEIGHT = WEIGHTS.reduce((a, b) => a + b, 0);
+
+// 賠率 (三個一樣)
+const PAYOUTS = {
+  '7️⃣': 100,
+  '💎': 50,
+  '🔔': 25,
+  '🍉': 15,
+  '🍇': 10,
+  '🍊': 8,
+  '🍋': 6,
+  '🍒': 4,
+};
+
+// ===== 狀態 =====
+let credit = 1000;
+let bet = 10;
+let spinning = false;
+const betLevels = [5, 10, 25, 50, 100];
+let betIdx = 1;
+
+const ITEMS_PER_REEL = 40; // 轉動用的符號數量
+const VISIBLE = 3;         // 可見行數
+const ITEM_H = 73.33;      // 每格高度
+
+// ===== 初始化滾輪 =====
+const reelsEl = document.getElementById('reels');
+const strips = [];
+
+for (let r = 0; r < 3; r++) {
+  const win = document.createElement('div');
+  win.className = 'reel-window';
+
+  const strip = document.createElement('div');
+  strip.className = 'reel-strip';
+
+  // 初始靜態顯示
+  const initSymbols = generateReelSymbols(VISIBLE);
+  initSymbols.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'reel-item';
+    item.textContent = s;
+    strip.appendChild(item);
+  });
+
+  win.appendChild(strip);
+  reelsEl.appendChild(win);
+  strips.push(strip);
+}
+
+// ===== 帶權重隨機選符號 =====
+function weightedRandom() {
+  let r = Math.random() * TOTAL_WEIGHT;
+  for (let i = 0; i < SYMBOLS.length; i++) {
+    r -= WEIGHTS[i];
+    if (r <= 0) return SYMBOLS[i];
+  }
+  return SYMBOLS[0];
+}
+
+function generateReelSymbols(count) {
+  const arr = [];
+  for (let i = 0; i < count; i++) {
+    arr.push(weightedRandom());
+  }
+  return arr;
+}
+
+// ===== SPIN =====
+function spin() {
+  if (spinning) return;
+  if (credit < bet) {
+    showMessage('Credit 不足！', false);
+    return;
+  }
+
+  spinning = true;
+  credit -= bet;
+  updateUI();
+  showMessage('轉動中...', false);
+  document.getElementById('winDisplay').textContent = '0';
+  document.getElementById('btnSpin').disabled = true;
+  document.getElementById('btnBet').disabled = true;
+
+  // 決定結果（中間那列）
+  const results = [weightedRandom(), weightedRandom(), weightedRandom()];
+
+  // 為每個滾輪產生長條
+  const reelData = [];
+  for (let r = 0; r < 3; r++) {
+    const count = ITEMS_PER_REEL + floor(Math.random() * 10);
+    const symbols = generateReelSymbols(count);
+    // 最後三個 = 結果（中間那個是 index count-2）
+    symbols[symbols.length - 3] = weightedRandom();       // 上
+    symbols[symbols.length - 2] = results[r];              // 中（結果）
+    symbols[symbols.length - 1] = weightedRandom();        // 下
+    reelData.push(symbols);
+  }
+
+  // 動畫
+  const delays = [0, 300, 600]; // 每個滾輪停止的延遲
+
+  for (let r = 0; r < 3; r++) {
+    animateReel(r, reelData[r], delays[r], () => {
+      if (r === 2) {
+        // 最後一個滾輪停止後判定
+        checkResult(results);
+      }
+    });
+  }
+}
+
+function animateReel(reelIdx, symbols, extraDelay, onDone) {
+  const strip = strips[reelIdx];
+
+  // 重建 strip 內容
+  strip.innerHTML = '';
+  symbols.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'reel-item';
+    item.textContent = s;
+    strip.appendChild(item);
+  });
+
+  // 起始位置（頂部）
+  strip.style.transition = 'none';
+  strip.style.top = '0px';
+
+  // 強制 reflow
+  strip.offsetHeight;
+
+  // 目標位置：讓倒數第二個符號在中間
+  const targetTop = -(symbols.length - 2) * ITEM_H + ITEM_H;
+
+  const duration = 2000 + extraDelay;
+
+  // 使用 CSS transition
+  strip.style.transition = `top ${duration}ms cubic-bezier(0.15, 0.85, 0.35, 1)`;
+  strip.style.top = targetTop + 'px';
+
+  setTimeout(() => {
+    // 播放停止音效感（震動反饋）
+    if (onDone) onDone();
+  }, duration + 50);
+}
+
+// ===== 判定結果 =====
+function checkResult(results) {
+  const [a, b, c] = results;
+  let winAmount = 0;
+  let msg = '';
+
+  if (a === b && b === c) {
+    // 三個一樣
+    const multiplier = PAYOUTS[a] || 3;
+    winAmount = bet * multiplier;
+    msg = `🎉 ${a}${a}${a} x${multiplier}！贏 ${winAmount}！`;
+  } else if (a === b || b === c || a === c) {
+    // 兩個一樣
+    if (a === '🍒' || b === '🍒' || c === '🍒') {
+      // 有櫻桃的兩個配對
+      const cherryCount = [a, b, c].filter(s => s === '🍒').length;
+      if (cherryCount >= 2) {
+        winAmount = bet * 2;
+        msg = `🍒 兩顆櫻桃！贏 ${winAmount}！`;
+      }
+    }
+  }
+
+  if (winAmount > 0) {
+    credit += winAmount;
+    document.getElementById('winDisplay').textContent = winAmount;
+    showMessage(msg, true);
+  } else {
+    showMessage('再試一次！', false);
+  }
+
+  updateUI();
+  spinning = false;
+  document.getElementById('btnSpin').disabled = false;
+  document.getElementById('btnBet').disabled = false;
+
+  if (credit <= 0) {
+    setTimeout(() => {
+      credit = 1000;
+      updateUI();
+      showMessage('免費補充 1000 Credit！', false);
+    }, 1500);
+  }
+}
+
+// ===== UI =====
+function updateUI() {
+  document.getElementById('credit').textContent = credit;
+  document.getElementById('betDisplay').textContent = bet;
+}
+
+function showMessage(text, isWin) {
+  const el = document.getElementById('message');
+  el.textContent = text;
+  el.className = isWin ? 'message win' : 'message';
+}
+
+function changeBet() {
+  if (spinning) return;
+  betIdx = (betIdx + 1) % betLevels.length;
+  bet = betLevels[betIdx];
+  if (bet > credit) {
+    betIdx = 0;
+    bet = betLevels[0];
+  }
+  updateUI();
+}
+
+function floor(n) { return Math.floor(n); }
+
+// ===== 事件 =====
+document.getElementById('btnSpin').addEventListener('click', spin);
+document.getElementById('btnBet').addEventListener('click', changeBet);
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    spin();
+  }
+});
+</script>
+
+</body>
+</html>

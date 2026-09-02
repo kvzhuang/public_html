@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Auto City — Generative Art</title>
+  <meta name="description" content="Self-building SimCity-style city in isometric (45°) view with weather cycles (sunny / cloudy / rain / night), traffic, mega-projects, and an aging-demolition loop. One zone per block (no R/C/I mixing). Live HUD shows population, tax income, government spending, and net budget.">
+  <meta name="author" content="kvzhuang">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: #0d1117;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+    }
+    main { overflow: hidden; display: flex; justify-content: center; align-items: center; max-width: 100vw; max-height: calc(100vh - 52px); }
+    main canvas { display: block; max-width: 100%; max-height: 100%; }
+    #controls { display: flex; justify-content: center; gap: 12px; padding: 10px; }
+    #controls button {
+      padding: 12px 24px; border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 600; color: #fff;
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
+    }
+    #controls button:active { opacity: 0.7; }
+    #btn-new   { background: #34C759; color: #fff; }
+    #btn-speed { background: #FF9500; color: #fff; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <main id="city-container"></main>
+  <div id="controls">
+    <button id="btn-new">New City</button>
+    <button id="btn-speed">Speed</button>
+  </div>
+  <script src="sketch.js?v=20260525d"></script>
+</body>
+</html>

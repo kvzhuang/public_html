@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+  <html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LINE App 偵測</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 16px;
+        padding: 32px 24px;
+        width: 100%;
+        max-width: 360px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        text-align: center;
+      }
+
+      .logo {
+        width: 72px;
+        height: 72px;
+        background: #06C755;
+        border-radius: 20px;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+      }
+
+      h1 { font-size: 20px; color: #111; margin-bottom: 8px; }
+
+      .subtitle {
+        font-size: 14px;
+        color: #888;
+        margin-bottom: 28px;
+        line-height: 1.5;
+      }
+
+      .btn {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .btn:active { opacity: 0.8; }
+      .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+      .btn-primary { background: #06C755; color: white; }
+      .btn-secondary {
+        background: #f0f0f0;
+        color: #444;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+
+      .status {
+        margin-top: 24px;
+        padding: 14px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        display: none;
+      }
+      .status.show { display: block; }
+      .status.detecting { background: #FFF8E1; color: #F59E0B; }
+      .status.found     { background: #E8F5E9; color: #16a34a; }
+      .status.not-found { background: #FEF2F2; color: #dc2626; }
+
+      .spinner {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid currentColor;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .platform-badge {
+        display: inline-block;
+        font-size: 11px;
+        background: #eee;
+        color: #666;
+        border-radius: 20px;
+        padding: 2px 10px;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo">💬</div>
+      <h1>LINE App 偵測</h1>
+      <p class="subtitle">點擊下方按鈕，偵測您的裝置是否已安裝 LINE App</p>
+      <div class="platform-badge" id="platformBadge">偵測平台中...</div>
+
+      <button class="btn btn-primary" id="detectBtn" onclick="startDetect()">
+        偵測是否安裝 LINE
+      </button>
+      <button class="btn btn-secondary" onclick="goDownload()">
+        前往下載 LINE
+      </button>
+
+      <div class="status" id="status"></div>
+    </div>
+
+    <script>
+      const TIMEOUT_MS = 2000;
+
+      // ── 平台判斷 ──────────────────────────────────────────
+      const ua = navigator.userAgent;
+      const isAndroid = /Android/i.test(ua);
+      const isIOS     = /iPhone|iPad|iPod/i.test(ua);
+      const isMobile  = isAndroid || isIOS;
+
+      document.getElementById('platformBadge').textContent =
+        isIOS     ? 'iOS Safari' :
+        isAndroid ? 'Android Chrome' :
+                    '桌面瀏覽器（僅供測試）';
+
+      // ── 狀態顯示 ──────────────────────────────────────────
+      function showStatus(type, html) {
+        const el = document.getElementById('status');
+        el.className = `status show ${type}`;
+        el.innerHTML = html;
+      }
+
+      // ── 核心偵測邏輯 ──────────────────────────────────────
+      function detectLineApp() {
+        return new Promise((resolve) => {
+          let detected = false;
+
+          const cleanup = () => {
+            document.removeEventListener('visibilitychange', onHide);
+            window.removeEventListener('blur', onBlur);
+          };
+
+          const onHide = () => {
+            if (document.hidden) {
+              detected = true;
+              clearTimeout(timer);
+              cleanup();
+              resolve(true);
+            }
+          };
+
+          const onBlur = () => {
+            detected = true;
+            clearTimeout(timer);
+            cleanup();
+            resolve(true);
+          };
+
+          const timer = setTimeout(() => {
+            cleanup();
+            resolve(detected);
+          }, TIMEOUT_MS);
+
+          document.addEventListener('visibilitychange', onHide);
+          window.addEventListener('blur', onBlur);
+
+          // 依平台選擇 URL Scheme
+          if (isAndroid) {
+            // Intent URL：偵測時不帶 fallback_url
+            // 有裝 → 開啟 LINE → blur/visibilitychange 觸發
+            // 沒裝 → 什麼都不發生 → timeout 正確判斷未安裝
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = 'intent://resolve/#Intent;scheme=line;package=jp.naver.line.android;end';
+            document.body.appendChild(iframe);
+            setTimeout(() => iframe.remove(), 3000);
+          } else {
+            // iOS / 桌面
+            window.location.href = 'line://';
+          }
+        });
+      }
+
+      // ── 按鈕觸發 ──────────────────────────────────────────
+      async function startDetect() {
+        const btn = document.getElementById('detectBtn');
+        btn.disabled = true;
+
+        showStatus('detecting',
+          '<span class="spinner"></span> 偵測中，請稍候...'
+        );
+
+        const hasLine = await detectLineApp();
+
+        btn.disabled = false;
+
+        if (hasLine) {
+          showStatus('found',
+            '✅ 已安裝 LINE！正在嘗試開啟...'
+          );
+          // 已安裝 → 這裡換成你的實際目標，例如開啟 LIFF 或官方帳號
+          // window.location.href = 'https://liff.line.me/YOUR_LIFF_ID';
+        } else {
+          showStatus('not-found',
+            '❌ 未偵測到 LINE App<br><small style="font-weight:400">請確認已安裝，或改用網頁版點餐</small>'
+          );
+        }
+      }
+
+      // ── 下載按鈕 ──────────────────────────────────────────
+      function goDownload() {
+        if (isIOS) {
+          window.location.href = 'https://apps.apple.com/app/line/id443904275';
+        } else if (isAndroid) {
+          window.location.href = 'https://play.google.com/store/apps/details?id=jp.naver.line.android';
+        } else {
+          window.location.href = 'https://line.me/download';
+        }
+      }
+    </script>
+  </body>
+  </html>

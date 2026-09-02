@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Ink Flow 墨流 - Generative Art</title>
+  <meta name="description" content="GPU 流體模擬的墨水暈染：Navier-Stokes 求解器在 shader 中即時運算，四色墨滴在紙上流動、捲旋、融合。可拖曳攪動、點擊滴墨。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#14110c">
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      background: #14110c;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    canvas {
+      display: block;
+      width: 100vw; height: 100vh;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    #hint {
+      position: fixed; bottom: 14px; left: 0; right: 0;
+      text-align: center;
+      font: 11px/1.6 monospace;
+      letter-spacing: .2em;
+      color: rgba(120, 110, 90, .55);
+      pointer-events: none;
+      user-select: none;
+      text-shadow: 0 1px 2px rgba(255,255,255,.4);
+    }
+    #palette {
+      position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 8px;
+      pointer-events: none;
+    }
+    .swatch {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.55);
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+      opacity: .55; transition: opacity .2s, transform .2s;
+    }
+    .swatch.active { opacity: 1; transform: scale(1.22); }
+  </style>
+  <script id="fxhash-snippet">
+    let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+    var fxhash = "oo" + Array(49).fill(0).map(_ => alphabet[(Math.random() * alphabet.length) | 0]).join("");
+    let b58dec = function(str) {
+      return [...str].reduce((p, c) => p * alphabet.length + alphabet.indexOf(c) | 0, 0);
+    };
+    let fxhashTrunc = fxhash.slice(2);
+    let regex = new RegExp(".{" + ((fxhashTrunc.length / 4) | 0) + "}", "g");
+    let hashes = fxhashTrunc.match(regex).map(h => b58dec(h));
+    let sfc32 = function(a, b, c, d) {
+      return function() {
+        a |= 0; b |= 0; c |= 0; d |= 0;
+        var t = (a + b | 0) + d | 0;
+        d = d + 1 | 0;
+        a = b ^ (b >>> 9);
+        b = c + (c << 3) | 0;
+        c = (c << 21) | (c >>> 11);
+        c = c + t | 0;
+        return (t >>> 0) / 4294967296;
+      };
+    };
+    var fxrand = sfc32(hashes[0], hashes[1], hashes[2], hashes[3]);
+    var isFxpreview = new URLSearchParams(window.location.search).get("preview") === "1";
+    function fxpreview() { window.dispatchEvent(new Event("fxhash-preview")); }
+    window.$fxhashFeatures = {};
+  </script>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="palette"></div>
+  <div id="hint">DRAG · 攪動 ─ CLICK · 滴墨 ─ 1-4 · 選色 ─ A · 自動滴墨 ─ C · 清紙 ─ S · 儲存</div>
+  <script>
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'sketch.js?v=' + Date.now();
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

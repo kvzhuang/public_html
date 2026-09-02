@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Liquid Glass — Generative Art</title>
+  <meta name="description" content="iOS 26 Liquid Glass-inspired gen-art using native -webkit-backdrop-filter. Glass shapes float over a flowing color field with real-time backdrop blur, specular highlights and inner glow.">
+  <meta name="author" content="kvzhuang">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: #0a0a0f;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+    }
+    main { overflow: hidden; display: flex; justify-content: center; align-items: center; max-width: 100vw; max-height: calc(100vh - 52px); }
+    .stage { position: relative; display: inline-block; line-height: 0; }
+    .stage canvas { display: block; max-width: 100%; max-height: 100%; }
+    #glass-layer {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      overflow: hidden; pointer-events: none;
+    }
+
+    .glass {
+      position: absolute;
+      top: 0; left: 0;
+      pointer-events: auto;
+      will-change: transform;
+      backdrop-filter: blur(8px) saturate(140%);
+      -webkit-backdrop-filter: blur(8px) saturate(140%);
+      background: rgba(255, 255, 255, 0.025);
+      /* 拿掉 border，全部用 inset shadow 做柔邊（沒有硬線條痕跡） */
+      box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.14),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.10),    /* 細邊光：1px 內側白光，比 border 柔 */
+        inset 0 1px 2px rgba(255, 255, 255, 0.28),    /* 上緣亮邊 */
+        inset 0 -1px 2px rgba(0, 0, 0, 0.05);          /* 下緣暗邊 */
+    }
+    /* 鏡面反光：更小範圍，alpha 降到 0.25 */
+    .glass::before {
+      content: "";
+      position: absolute;
+      top: 8%; left: 14%;
+      width: 32%; height: 18%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 30% 30%,
+        rgba(255,255,255,0.28) 0%,
+        rgba(255,255,255,0.04) 50%,
+        transparent 80%);
+      filter: blur(2px);
+      pointer-events: none;
+    }
+    /* 下方暗角（透明玻璃底部稍微壓暗，立體感）*/
+    .glass::after {
+      content: "";
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 25%;
+      background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.04));
+      pointer-events: none;
+    }
+
+    /* 只 4 邊形 */
+    .glass-pill     { border-radius: 999px; }
+    .glass-squircle { border-radius: 28%; }
+    .glass-card     { border-radius: 22px; }
+
+    .glass-pill::before {
+      top: 12%; left: 8%; width: 35%; height: 50%;
+    }
+    .glass-card::before {
+      top: 6%; left: 6%; width: 38%; height: 24%;
+    }
+
+    #controls { display: flex; justify-content: center; gap: 12px; padding: 10px; }
+    #controls button {
+      padding: 12px 24px; border: none; border-radius: 999px;
+      font-size: 15px; font-weight: 600; color: #fff;
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
+      backdrop-filter: blur(10px) saturate(180%);
+      -webkit-backdrop-filter: blur(10px) saturate(180%);
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.20);
+    }
+    #controls button:active { opacity: 0.7; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <main id="glass-container">
+    <div class="stage" id="stage"></div>
+  </main>
+  <div id="controls">
+    <button id="btn-add">Add Glass</button>
+    <button id="btn-shuffle">New Scene</button>
+    <button id="btn-mode">Mode</button>
+  </div>
+  <script src="sketch.js?v=20260523g"></script>
+</body>
+</html>

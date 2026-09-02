@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>八皇后問題視覺化</title>
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --board-dark: #b58863;
+            --board-light: #f0d9b5;
+            --accent: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 { color: var(--accent); }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: opacity 0.3s;
+        }
+
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(8, 50px);
+            border: 5px solid var(--accent);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+        }
+
+        .dark { background-color: var(--board-dark); }
+        .light { background-color: var(--board-light); }
+
+        .queen {
+            animation: pop 0.3s ease-out;
+            cursor: default;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>八皇后問題視覺化</h1>
+    
+    <div class="controls">
+        <button id="startBtn">開始演示</button>
+        <button id="resetBtn">重置</button>
+    </div>
+
+    <div id="board"></div>
+    <div id="status">點擊「開始」觀察回溯演算法過程...</div>
+
+    <script>
+    const boardEl = document.getElementById('board');
+const statusEl = document.getElementById('status');
+let board = Array(8).fill().map(() => Array(8).fill(0));
+let isSolving = false;
+
+function createBoard() {
+    boardEl.innerHTML = '';
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const cell = document.createElement('div');
+            cell.className = `cell ${(r + c) % 2 === 0 ? 'light' : 'dark'}`;
+            cell.id = `cell-${r}-${c}`;
+            // 加入點擊事件
+            cell.onclick = () => handleCellClick(r, c);
+            boardEl.appendChild(cell);
+        }
+    }
+}
+
+async function handleCellClick(row, col) {
+    if (isSolving) return; // 防止重複執行
+    
+    // 重置棋盤
+    resetBoard();
+    isSolving = true;
+    statusEl.innerText = `已固定首個皇后於 (${row+1}, ${col+1})，正在尋找解法...`;
+
+    // 放置使用者選的皇后
+    board[row][col] = 1;
+    updateUI(row, col, true);
+
+    // 開始求解（跳過已經放了皇后的那一欄）
+    if (await solve(0, col)) {
+        statusEl.innerText = "成功找到包含該位置的解！";
+    } else {
+        statusEl.innerText = "抱歉，該起始位置無法組成八皇后解。";
+    }
+    isSolving = false;
+}
+
+// 核心演算法：增加了 skipCol 參數
+async function solve(col, skipCol) {
+    if (col >= 8) return true;
+    
+    // 如果這一欄已經是使用者放的地方，直接跳到下一欄
+    if (col === skipCol) return await solve(col + 1, skipCol);
+
+    for (let i = 0; i < 8; i++) {
+        if (isSafe(i, col)) {
+            board[i][col] = 1;
+            updateUI(i, col, true);
+            await new Promise(r => setTimeout(r, 50));
+
+            if (await solve(col + 1, skipCol)) return true;
+
+            board[i][col] = 0;
+            updateUI(i, col, false);
+        }
+    }
+    return false;
+}
+
+// 檢查安全性需涵蓋所有方向（因為起始皇后可能在任何地方）
+function isSafe(row, col) {
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            if (board[i][j] === 1) {
+                if (i === row || j === col) return false; // 同行或同列
+                if (Math.abs(i - row) === Math.abs(j - col)) return false; // 對角線
+            }
+        }
+    }
+    return true;
+}
+
+function updateUI(row, col, active) {
+    const cell = document.getElementById(`cell-${row}-${col}`);
+    cell.innerHTML = active ? '👑' : '';
+}
+
+function resetBoard() {
+    board = Array(8).fill().map(() => Array(8).fill(0));
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(c => c.innerHTML = '');
+}
+
+createBoard();
+    </script>
+</body>
+</html>

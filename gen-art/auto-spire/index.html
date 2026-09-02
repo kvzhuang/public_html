@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Auto Spire 自動殺戮尖塔 - Generative Art</title>
+  <meta name="description" content="自動遊玩的殺戮尖塔致敬作：四角色、200 張卡牌、遺物藥水系統，AI 自動出牌爬 Act 1。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#14101e">
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 40%, #221a34, transparent 55rem),
+        #14101e;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #holder canvas {
+      display: block;
+      border: 12px solid #1e1830;
+      outline: 2px solid #4a3a68;
+      box-shadow: 0 30px 80px rgba(0,0,0,.72), inset 0 0 40px rgba(0,0,0,.3);
+      cursor: pointer;
+    }
+    #hint {
+      position: fixed; bottom: 12px; left: 0; right: 0;
+      text-align: center;
+      font: 11px/1.6 monospace;
+      letter-spacing: .18em;
+      color: rgba(190, 160, 255, .4);
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="holder"></div>
+  <div id="hint">CLICK · 切換速度 ─ I / 點頂欄 · 遺物藥水資訊 ─ SPACE · 暫停 ─ R · 新爬塔 ─ C · 重置記錄 ─ S · 存圖</div>
+  <script>
+    (function(){
+      var v = Date.now();
+      ['data.js','engine.js','sketch.js'].reduce(function(p, f){
+        return p.then(function(){
+          return new Promise(function(res){
+            var s = document.createElement('script');
+            s.src = f + '?v=' + v;
+            s.onload = res;
+            document.body.appendChild(s);
+          });
+        });
+      }, Promise.resolve());
+    })();
+  </script>
+</body>
+</html>

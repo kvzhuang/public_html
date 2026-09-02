@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Kowloon 九龍城寨 - Generative Art</title>
+  <meta name="description" content="three.js 程序生成的九龍城寨風格巨構：密集堆疊違建高樓、頂樓水塔冷氣、霓虹招牌與糾纏電纜，霧氣夜景。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#0a0d10">
+  <style>
+    html, body { margin: 0; padding: 0; overflow: hidden; background: #0a0d10; }
+    #c { display: block; width: 100vw; height: 100vh; cursor: pointer; }
+    #label {
+      position: fixed; top: 16px; left: 0; right: 0; text-align: center;
+      font: 13px/1.5 monospace; letter-spacing: .18em;
+      color: rgba(255, 200, 130, .55); pointer-events: none; user-select: none;
+      text-shadow: 0 1px 4px #000;
+    }
+    #hint {
+      position: fixed; bottom: 14px; left: 0; right: 0; text-align: center;
+      font: 11px/1.6 monospace; letter-spacing: .2em;
+      color: rgba(220, 200, 180, .38); pointer-events: none; user-select: none;
+      text-shadow: 0 1px 4px #000;
+    }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="label"></div>
+  <div id="hint">CLICK · 重新生成 ─ 拖曳 · 旋轉 ─ S · 儲存畫面</div>
+  <script type="module">
+    import('./sketch.js?v=' + Date.now());
+  </script>
+</body>
+</html>

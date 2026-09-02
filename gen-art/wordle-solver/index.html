@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Wordle Solver</title>
+  <meta name="description" content="Wordle solver tool. Enter your clues and get word suggestions.">
+  <meta name="author" content="kvzhuang">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: #121213;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      padding: 16px 0 8px;
+      border-bottom: 1px solid #3a3a3c;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    header p {
+      font-size: 0.8rem;
+      color: #818384;
+      margin-top: 4px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      padding: 16px;
+    }
+
+    /* Word length selector */
+    .length-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+    }
+
+    .length-selector label { color: #818384; }
+
+    .length-btn {
+      width: 36px;
+      height: 36px;
+      border: 2px solid #3a3a3c;
+      background: transparent;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .length-btn.active {
+      background: #538d4e;
+      border-color: #538d4e;
+    }
+
+    /* Guess rows */
+    .guess-section { margin-bottom: 16px; }
+
+    .guess-row {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 6px;
+      align-items: center;
+    }
+
+    .guess-row .row-label {
+      width: 20px;
+      font-size: 0.75rem;
+      color: #565758;
+      text-align: center;
+    }
+
+    .tile-input {
+      width: 48px;
+      height: 48px;
+      border: 2px solid #3a3a3c;
+      background: transparent;
+      color: #fff;
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      outline: none;
+      caret-color: transparent;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .tile-input:focus { border-color: #565758; }
+    .tile-input.correct { background: #538d4e; border-color: #538d4e; }
+    .tile-input.present { background: #b59f3b; border-color: #b59f3b; }
+    .tile-input.absent  { background: #3a3a3c; border-color: #3a3a3c; }
+
+    .row-clear {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      color: #565758;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .row-clear:hover { color: #fff; background: #3a3a3c; }
+
+    /* Instructions */
+    .instructions {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      font-size: 0.78rem;
+      color: #818384;
+    }
+
+    .instructions span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    .dot.g { background: #538d4e; }
+    .dot.y { background: #b59f3b; }
+    .dot.d { background: #3a3a3c; }
+
+    /* Buttons */
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-primary { background: #538d4e; color: #fff; }
+    .btn-primary:hover { background: #6aaf5e; }
+    .btn-secondary { background: #3a3a3c; color: #fff; }
+    .btn-secondary:hover { background: #4a4a4c; }
+
+    /* Results */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .results-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .results-count {
+      font-size: 0.85rem;
+      color: #818384;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 6px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .results-grid::-webkit-scrollbar { width: 6px; }
+    .results-grid::-webkit-scrollbar-thumb { background: #3a3a3c; border-radius: 3px; }
+
+    .word-card {
+      background: #1e1e20;
+      border: 1px solid #2a2a2c;
+      border-radius: 4px;
+      padding: 8px 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+
+    .word-card.top-pick {
+      background: #1a2e1a;
+      border-color: #538d4e;
+      color: #6aaf5e;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: #565758;
+      font-size: 0.95rem;
+    }
+
+    /* Excluded letters */
+    .exclude-section {
+      margin-bottom: 16px;
+    }
+
+    .exclude-section label {
+      font-size: 0.85rem;
+      color: #818384;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .exclude-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #1e1e20;
+      border: 2px solid #3a3a3c;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 1rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      outline: none;
+    }
+
+    .exclude-input:focus { border-color: #565758; }
+
+    @media (max-width: 420px) {
+      .tile-input { width: 40px; height: 40px; font-size: 1.2rem; }
+      .instructions { flex-wrap: wrap; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>WORDLE SOLVER</h1>
+    <p>Enter your guesses and clues to find the answer</p>
+  </header>
+
+  <div class="container">
+    <div class="length-selector">
+      <label>Letters:</label>
+      <button class="length-btn" data-len="5">5</button>
+      <button class="length-btn active" data-len="6">6</button>
+      <button class="length-btn" data-len="7">7</button>
+    </div>
+
+    <div class="instructions">
+      <span>Click tile to cycle:</span>
+      <span><span class="dot g"></span> Correct</span>
+      <span><span class="dot y"></span> Wrong spot</span>
+      <span><span class="dot d"></span> Not in word</span>
+    </div>
+
+    <div class="guess-section" id="guessSection"></div>
+
+    <div class="exclude-section">
+      <label>Additional excluded letters (optional):</label>
+      <input type="text" class="exclude-input" id="excludeInput" placeholder="e.g. XYZQW" maxlength="26">
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="solveBtn">Solve</button>
+      <button class="btn btn-secondary" id="resetBtn">Reset</button>
+    </div>
+
+    <div id="results"></div>
+  </div>
+
+  <script src="solver.js"></script>
+</body>
+</html>

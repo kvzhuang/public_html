@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Chestnut Truchet — Generative Art</title>
+
+  <meta name="description" content="Generative chestnut-shaped Truchet tiles. Fat teardrop arcs connect edge midpoints, creating organic chestnut-like patterns and flowing curves.">
+  <meta name="keywords" content="fxhash, generative art, Truchet, chestnut, p5.js, algorithmic art, creative coding">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#1A1A2E">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Chestnut Truchet — Generative Art">
+  <meta property="og:description" content="Fat teardrop Truchet tiles forming chestnut-shaped organic patterns with bold color palettes.">
+
+  <style>
+    html, body { margin: 0; padding: 0; overflow: hidden; background: #000; }
+    canvas { display: block; }
+  </style>
+
+  <script id="fxhash-snippet">
+    let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+    var fxhash = "oo" + Array(49).fill(0).map(_ => alphabet[(Math.random() * alphabet.length) | 0]).join("");
+    let b58dec = function(str) { return [...str].reduce((p, c) => p * alphabet.length + alphabet.indexOf(c) | 0, 0); };
+    let fxhashTrunc = fxhash.slice(2);
+    let regex = new RegExp(".{" + ((fxhashTrunc.length / 4) | 0) + "}", "g");
+    let hashes = fxhashTrunc.match(regex).map(h => b58dec(h));
+    let sfc32 = function(a, b, c, d) { return function() { a|=0;b|=0;c|=0;d|=0; var t=(a+b|0)+d|0; d=d+1|0; a=b^(b>>>9); b=c+(c<<3)|0; c=(c<<21)|(c>>>11); c=c+t|0; return (t>>>0)/4294967296; }; };
+    var fxrand = sfc32(hashes[0], hashes[1], hashes[2], hashes[3]);
+    var isFxpreview = new URLSearchParams(window.location.search).get("preview") === "1";
+    function fxpreview() { window.dispatchEvent(new Event("fxhash-preview")); }
+    window.$fxhashFeatures = {};
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <script src="sketch.js"></script>
+</body>
+</html>

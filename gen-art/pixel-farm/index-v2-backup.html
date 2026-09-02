@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixel Farm</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#1a0e05;
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; overflow:hidden;
+  font-family: monospace;
+}
+canvas { display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
+#lbl {
+  position:fixed; bottom:12px; left:0; right:0; text-align:center;
+  font:9px/1 monospace; letter-spacing:.25em;
+  color:rgba(180,220,100,.38); text-transform:uppercase; pointer-events:none;
+}
+#ui {
+  position:fixed; top:10px; right:10px;
+  display:flex; flex-direction:column; gap:4px; pointer-events:none;
+}
+.stat {
+  background:rgba(0,0,0,0.55); border:1px solid rgba(120,200,80,0.3);
+  padding:3px 7px; color:rgba(160,230,90,0.8);
+  font:8px/1.6 monospace; letter-spacing:.1em;
+  min-width:90px;
+}
+#save-indicator {
+  position:fixed; bottom:28px; right:10px;
+  background:rgba(0,0,0,0.6); border:1px solid rgba(120,200,80,0.4);
+  padding:3px 8px; color:rgba(160,230,90,0.9);
+  font:8px/1.6 monospace; letter-spacing:.1em;
+  opacity:0; transition:opacity 0.4s;
+  pointer-events:none;
+}
+#save-indicator.show { opacity:1; }
+#reset-btn {
+  position:fixed; bottom:28px; left:10px;
+  background:rgba(0,0,0,0.55); border:1px solid rgba(200,80,80,0.35);
+  padding:3px 8px; color:rgba(230,120,90,0.75);
+  font:8px/1.6 monospace; letter-spacing:.1em;
+  cursor:pointer;
+}
+#reset-btn:hover { border-color:rgba(230,80,80,0.7); color:rgba(255,130,100,1); }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="lbl">Pixel Farm · Auto Harvest</div>
+<div id="save-indicator">💾 Saved</div>
+<button id="reset-btn" onclick="resetSave()">🗑 Reset</button>
+<div id="ui">
+  <div class="stat" id="s-gold">💰 Gold: 0</div>
+  <div class="stat" id="s-day">📅 Day: 1</div>
+  <div class="stat" id="s-season">🌱 Spring</div>
+  <div class="stat" id="s-crops">🌾 Crops: 0</div>
+  <div class="stat" id="s-animals">🐄 Animals: 0</div>
+</div>
+<script>
+'use strict';
+
+// ── Canvas & pixel grid ───────────────────────────────────────────────────────
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+// Logical resolution 320×240, scaled up to fill screen
+const LW = 320, LH = 240;
+let SCALE = 1;
+
+function resize(){
+  SCALE = Math.min(
+    Math.floor(window.innerWidth  / LW),
+    Math.floor(window.innerHeight / LH)
+  ) || 1;
+  canvas.width  = LW * SCALE;
+  canvas.height = LH * SCALE;
+  canvas.style.width  = (LW * SCALE) + 'px';
+  canvas.style.height = (LH * SCALE) + 'px';
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── Pixel draw helper ─────────────────────────────────────────────────────────
+function px(x, y, col, w=1, h=1){
+  ctx.fillStyle = col;
+  ctx.fillRect(x*SCALE, y*SCALE, w*SCALE, h*SCALE);
+}
+function rect(x,y,w,h,col,fill=true){
+  if(fill){
+    ctx.fillStyle = col;
+    ctx.fillRect(x*SCALE, y*SCALE, w*SCALE, h*SCALE);
+  } else {
+    for(let i=0;i<w;i++){ px(x+i,y,col); px(x+i,y+h-1,col); }
+    for(let j=1;j<h-1;j++){ px(x,y+j,col); px(x+w-1,y+j,col); }
+  }
+}
+
+// ── Palette ───────────────────────────────────────────────────────────────────
+const C = {
+  sky_dawn:   '#f4a460', sky_day:  '#87ceeb', sky_dusk:  '#ff7043', sky_night: '#1a1a3e',
+  sun:        '#ffee55', sun2:     '#fff59d', moon:      '#e8e8c8',
+  cloud:      '#ffffff', cloud2:   '#e0e8ff',
+  grass:      '#4caf50', grass2:   '#388e3c', grass3:    '#66bb6a',
+  dirt:       '#8d6e63', dirt2:    '#795548', dirt3:     '#a1887f',
+  path:       '#bcaaa4', path2:    '#d7ccc8',
+  water:      '#2196f3', water2:   '#42a5f5', water3:    '#1565c0',
+  soil_dry:   '#6d4c41', soil_wet:  '#4e342e',
+  soil_tilled:'#5d4037',
+  fence:      '#8d6e63', fence2:   '#795548',
+  // Crops
+  seed:       '#c8b400', sprout:   '#81c784', crop_mid:  '#4caf50',
+  crop_ripe:  '#ffc107', crop_gold: '#ff8f00',
+  // Trees
+  tree_trunk: '#795548', tree_trunk2:'#5d4037',
+  tree_leaf:  '#2e7d32', tree_leaf2:'#43a047', tree_leaf3:'#66bb6a', tree_apple:'#e53935',
+  // Flowers
+  flower_w:   '#ffffff', flower_y:  '#ffee55', flower_r:  '#f44336', flower_p:  '#ab47bc',
+  flower_stem:'#66bb6a',
+  // Buildings
+  barn_red:   '#c62828', barn_dark: '#b71c1c', barn_wood: '#8d6e63',
+  barn_roof:  '#4e342e', barn_roof2:'#3e2723', barn_door: '#5d4037', barn_win:  '#ffee55',
+  house_wall: '#ffe0b2', house_wall2:'#ffcc80', house_roof:'#8d6e63', house_roof2:'#6d4c41',
+  house_win:  '#b3e5fc',
+  silo:       '#bdbdbd', silo2:     '#9e9e9e', silo3:     '#e0e0e0',
+  well_stone: '#9e9e9e', well_stone2:'#757575', well_wood: '#795548', well_rope: '#bcaaa4',
+  // Crops by season
+  wheat:      '#f9a825', wheat2:    '#fbc02d',
+  tomato:     '#e53935', tomato2:   '#ef5350',
+  pumpkin:    '#ff6f00', pumpkin2:  '#ff8f00', pumpkin3:  '#ffb74d',
+  // Animals
+  cow_w:      '#f5f5f5', cow_shade: '#e0e0e0', cow_b:     '#212121', cow_pink:  '#f8bbd0',
+  sheep_w:    '#fafafa', sheep_shade:'#e8e8e8', sheep_g:  '#78909c',
+  chicken_w:  '#fff9c4', chicken_shade:'#f0e8a0', chicken_r:'#e53935', chicken_y:'#ffee55',
+  pig_p:      '#f8bbd0', pig_d:     '#f48fb1',
+  // Character
+  char_skin:  '#ffcc80', char_hair: '#5d4037', char_shirt:'#1565c0', char_shirt2:'#0d47a1',
+  char_pants: '#37474f', char_hat:  '#6d4c41', char_tool: '#bdbdbd',
+  // Effects
+  sparkle:    '#ffff88', rain:      '#90caf9', snow:      '#e3f2fd',
+  smoke:      '#b0bec5', fire:      '#ff5722', fire2:     '#ff9800',
+};
+
+// ── LocalStorage persistence ──────────────────────────────────────────────────
+const SAVE_KEY = 'pixel-farm-v1';
+let saveIndicatorTimer = 0;
+
+function saveState(){
+  const data = {
+    gold, day, season, harvestCount, tick, weatherType,
+    plots: ZONES.plots.map(p=>({ state:p.state, growth:p.growth, crop:p.crop })),
+  };
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    const el = document.getElementById('save-indicator');
+    el.classList.add('show');
+    clearTimeout(saveIndicatorTimer);
+    saveIndicatorTimer = setTimeout(()=>el.classList.remove('show'), 1800);
+  } catch(e){}
+}
+
+function loadState(){
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return false;
+    const d = JSON.parse(raw);
+    gold         = d.gold         ?? 50;
+    day          = d.day          ?? 1;
+    season       = d.season       ?? 0;
+    harvestCount = d.harvestCount ?? 0;
+    tick         = d.tick         ?? 0;
+    weatherType  = d.weatherType  ?? 'clear';
+    if(Array.isArray(d.plots)){
+      d.plots.forEach((p,i)=>{
+        if(!ZONES.plots[i]) return;
+        ZONES.plots[i].state  = p.state  || 'empty';
+        ZONES.plots[i].growth = p.growth || 0;
+        ZONES.plots[i].crop   = p.crop   || 'wheat';
+      });
+    }
+    return true;
+  } catch(e){ return false; }
+}
+
+function resetSave(){
+  if(!confirm('Reset farm progress?')) return;
+  localStorage.removeItem(SAVE_KEY);
+  location.reload();
+}
+
+let tick   = 0;       // frames
+let day    = 1;
+let timeOfDay = 0;    // 0-1, 0=dawn, 0.25=noon, 0.5=dusk, 0.75=midnight
+let season = 0;       // 0=spring 1=summer 2=autumn 3=winter
+const SEASONS = ['🌱 Spring','☀️ Summer','🍂 Autumn','❄️ Winter'];
+const DAY_TICKS = 1800; // ticks per day
+
+let gold   = 50;
+let harvestCount = 0;
+
+// Clouds
+const clouds = Array.from({length:7},(_,i)=>({
+  x: i*48+Math.random()*36, y: 14+Math.floor(Math.random()*26),
+  w: 16+Math.floor(Math.random()*18), spd: 0.16+Math.random()*0.12,
+}));
+
+// Rain/snow particles
+const weather = [];
+let weatherType = 'clear'; // clear | rain | snow
+
+// ── Farm Layout ───────────────────────────────────────────────────────────────
+const ZONES = {
+  sky:    { x:0,   y:0,   w:LW, h:76 },
+  ground: { x:0,   y:76,  w:LW, h:LH-76 },
+  plots: [],
+};
+
+// 12 crop plots (4×3 grid), left side of map
+for(let row=0;row<3;row++){
+  for(let col=0;col<4;col++){
+    ZONES.plots.push({
+      x: 8 + col*32, y: 84 + row*40,
+      w: 28, h: 32,
+      state: 'empty',  // empty|tilled|seeded|growing|ripe
+      crop: 'wheat',
+      growth: 0,       // 0-1
+    });
+  }
+}
+
+// ── Animals ───────────────────────────────────────────────────────────────────
+const ANIMALS = [
+  { type:'cow',     x:180, y:130, dx:0.6, dy:0,   facing:1,  anim:0, state:'wander', mood:1 },
+  { type:'cow',     x:200, y:140, dx:-0.4,dy:0,   facing:-1, anim:0, state:'wander', mood:1 },
+  { type:'sheep',   x:176, y:156, dx:0.4, dy:0.2, facing:1,  anim:0, state:'graze',  mood:1 },
+  { type:'sheep',   x:210, y:160, dx:-0.3,dy:0,   facing:-1, anim:0, state:'graze',  mood:1 },
+  { type:'chicken', x:160, y:170, dx:0.8, dy:0,   facing:1,  anim:0, state:'peck',   mood:1 },
+  { type:'chicken', x:190, y:176, dx:-0.6,dy:0,   facing:-1, anim:0, state:'peck',   mood:1 },
+  { type:'pig',     x:224, y:144, dx:0.4, dy:0,   facing:1,  anim:0, state:'wander', mood:1 },
+];
+
+// Animal pen boundaries (right side of map)
+const PEN = { x:152, y:120, w:96, h:80 };
+
+// ── Farmer character ──────────────────────────────────────────────────────────
+const farmer = {
+  x: 72, y: 110,
+  facing: 1,
+  anim: 0,
+  state: 'idle',   // idle|walk|till|water|harvest|feed|sleep
+  actionTimer: 0,
+  tool: 'hoe',     // hoe|can|scythe|bag
+  taskQueue: [],
+  goingHome: false,
+};
+
+function buildTaskQueue(){
+  farmer.taskQueue = [];
+  ZONES.plots.forEach((p,i)=>{
+    if(p.state==='empty') farmer.taskQueue.push({type:'till',   plotIdx:i});
+  });
+  ZONES.plots.forEach((p,i)=>{
+    if(p.state==='tilled') farmer.taskQueue.push({type:'seed',  plotIdx:i});
+  });
+  ZONES.plots.forEach((p,i)=>{
+    if(p.state==='seeded'||p.state==='growing') farmer.taskQueue.push({type:'water',plotIdx:i});
+  });
+  ZONES.plots.forEach((p,i)=>{
+    if(p.state==='ripe') farmer.taskQueue.push({type:'harvest', plotIdx:i});
+  });
+  farmer.taskQueue.push({type:'feed', penX: PEN.x+PEN.w/2, penY: PEN.y+PEN.h/2});
+  if(farmer.taskQueue.length===0){
+    farmer.taskQueue.push({type:'rest', x:280, y:90});
+  }
+}
+
+// ── Floating texts ────────────────────────────────────────────────────────────
+const floats = [];
+function addFloat(x, y, text, col='#ffff88'){
+  floats.push({ x, y, text, col, life:60, vy:-0.6 });
+}
+
+// ── Produce items on ground ───────────────────────────────────────────────────
+const produces = [];
+
+// ── Particle effects ──────────────────────────────────────────────────────────
+const particles = [];
+function addParticles(x, y, col, n=4){
+  for(let i=0;i<n;i++){
+    const a = Math.random()*Math.PI*2;
+    particles.push({ x, y, vx:Math.cos(a)*1.6, vy:Math.sin(a)*1.6-2, col, life:25 });
+  }
+}
+
+// ── Crop sprites ──────────────────────────────────────────────────────────────
+// Each plant occupies a 7×10 cell; (x,y) is its top-left, soil line at y+9.
+function drawCrop(x, y, type, growth){
+  if(growth < 0.15){
+    // Seed / sprout
+    px(x+3, y+8, C.seed); px(x+4, y+8, C.seed);
+    if(growth > 0.05){ px(x+3, y+7, C.sprout); px(x+3, y+6, C.sprout); px(x+4, y+6, C.sprout); }
+    return;
+  }
+  if(type === 'wheat'){
+    const h = Math.floor(growth * 9);   // stalk height, up to 9
+    for(let i=0;i<h;i++) px(x+3, y+9-i, C.crop_mid);
+    // Leaves
+    if(growth > 0.3){ px(x+2, y+8, C.crop_mid); px(x+1, y+7, C.grass2); }
+    if(growth > 0.5){ px(x+4, y+6, C.crop_mid); px(x+5, y+5, C.grass2); }
+    if(growth > 0.7){
+      // Grain head
+      const ty = y+9-h;
+      px(x+2, ty,   C.crop_ripe); px(x+3, ty,   C.crop_gold); px(x+4, ty,   C.crop_ripe);
+      px(x+2, ty-1, C.crop_gold); px(x+3, ty-1, C.crop_ripe); px(x+4, ty-1, C.crop_gold);
+      px(x+3, ty-2, C.crop_gold);
+      // Awns
+      if(growth > 0.85){
+        px(x+1, ty-2, C.wheat); px(x+5, ty-2, C.wheat); px(x+3, ty-3, C.wheat2);
+      }
+    }
+  } else if(type === 'tomato'){
+    // Bush
+    rect(x+1, y+5, 5, 4, C.crop_mid);
+    px(x,   y+6, C.grass2); px(x+6, y+6, C.grass2);
+    rect(x+2, y+3, 3, 2, C.crop_mid);
+    px(x+1, y+4, C.grass2); px(x+5, y+4, C.grass2);
+    px(x+3, y+2, C.grass2);
+    if(growth > 0.7){
+      // Fruits with highlight
+      rect(x+1, y+5, 2, 2, C.tomato);  px(x+1, y+5, C.tomato2);
+      rect(x+4, y+6, 2, 2, C.tomato);  px(x+4, y+6, C.tomato2);
+      px(x+3, y+4, C.tomato2);
+    }
+  } else if(type === 'pumpkin'){
+    // Vine
+    rect(x, y+8, 7, 1, C.crop_mid);
+    px(x+1, y+7, C.grass2); px(x+5, y+7, C.grass2);
+    if(growth > 0.5){
+      // Pumpkin body with ridges & highlight
+      rect(x+1, y+4, 5, 4, C.pumpkin);
+      rect(x+2, y+3, 3, 1, C.pumpkin2);
+      px(x+2, y+4, C.pumpkin3);                 // highlight
+      px(x+3, y+4, C.pumpkin2); px(x+3, y+5, C.pumpkin2);
+      px(x+3, y+6, C.pumpkin2); px(x+3, y+7, C.pumpkin2);   // centre ridge
+      px(x+3, y+2, C.crop_mid);                 // stem
+    }
+  }
+}
+
+// ── Animal sprites ────────────────────────────────────────────────────────────
+function drawAnimal(a){
+  const {type,x,y,facing,anim} = a;
+  const sleep = a.state==='sleep';
+  const ix = Math.floor(x), iy = Math.floor(y) + (sleep?3:0); // lying down when asleep
+  const leg = sleep?0:(Math.floor(anim/6)%2);
+  const s = facing;  // 1=right, -1=left
+
+  if(type==='cow'){
+    // Shadow
+    px(ix-5, iy+5, 'rgba(0,0,0,0.18)', 11, 1);
+    // Body with belly shade
+    rect(ix-6*s, iy-6, 12, 8, C.cow_w);
+    rect(ix-5*s, iy+1, 10, 1, C.cow_shade);
+    // Head
+    rect(ix+6*s, iy-6, 6, 6, C.cow_w);
+    if(!sleep) px(ix+10*s, iy-4, C.cow_b);          // eye (closed when asleep)
+    rect(ix+9*s, iy-2, 3, 2, C.cow_pink);           // muzzle
+    px(ix+10*s, iy-1, '#e091a9');                   // nostril
+    // Ear & horns
+    px(ix+7*s, iy-7, C.cow_w); px(ix+6*s, iy-7, C.cow_shade);
+    px(ix+9*s, iy-7, '#d4a017'); px(ix+10*s, iy-7, '#d4a017');
+    // Spots
+    rect(ix-1*s, iy-5, 3, 3, C.cow_b);
+    rect(ix-5*s, iy-3, 2, 2, C.cow_b);
+    px(ix+3*s, iy-1, C.cow_b);
+    // Legs (tucked under when asleep)
+    if(!sleep){
+      rect(ix-5*s, iy+2, 2, 3, C.cow_w);
+      rect(ix-1*s, iy+2, 2, 3+leg, C.cow_w);
+      rect(ix+3*s, iy+2, 2, 3, C.cow_w);
+      px(ix-5*s, iy+4, '#888'); px(ix+3*s, iy+4, '#888'); // hooves
+    }
+    // Udder
+    rect(ix-2*s, iy+1, 3, 2, C.cow_pink);
+    // Tail
+    px(ix-7*s, iy-6, C.cow_w); px(ix-7*s, iy-5, C.cow_w);
+    px(ix-7*s, iy-4, C.cow_b);
+  } else if(type==='sheep'){
+    // Shadow
+    px(ix-4, iy+4, 'rgba(0,0,0,0.18)', 9, 1);
+    // Wool body (fluffy bumps)
+    rect(ix-5*s, iy-6, 10, 6, C.sheep_w);
+    px(ix-6*s, iy-5, C.sheep_w); px(ix+5*s, iy-5, C.sheep_w);
+    px(ix-4*s, iy-7, C.sheep_w); px(ix-1*s, iy-7, C.sheep_w); px(ix+2*s, iy-7, C.sheep_w);
+    rect(ix-4*s, iy-1, 8, 1, C.sheep_shade);
+    // Face
+    rect(ix+4*s, iy-6, 4, 5, C.sheep_g);
+    if(!sleep) px(ix+6*s, iy-5, '#333');            // eye (closed when asleep)
+    px(ix+7*s, iy-3, '#5a707c');                    // muzzle
+    // Ear
+    px(ix+4*s, iy-7, C.sheep_g); px(ix+3*s, iy-7, '#5a707c');
+    // Legs (tucked under when asleep)
+    if(!sleep){
+      rect(ix-3*s, iy, 1, 3, C.sheep_g);
+      rect(ix-1*s, iy, 1, 3, C.sheep_g);
+      rect(ix+1*s, iy, 1, 3+leg, C.sheep_g);
+      rect(ix+3*s, iy, 1, 3, C.sheep_g);
+    }
+  } else if(type==='chicken'){
+    // Shadow
+    px(ix-2, iy+3, 'rgba(0,0,0,0.15)', 6, 1);
+    // Body
+    rect(ix-3*s, iy-4, 6, 4, C.chicken_w);
+    px(ix-3*s, iy-1, C.chicken_shade); px(ix-2*s, iy-1, C.chicken_shade);
+    // Head
+    rect(ix+2*s, iy-7, 4, 4, C.chicken_w);
+    if(!sleep) px(ix+4*s, iy-6, '#333');            // eye (closed when asleep)
+    // Beak & wattle
+    px(ix+6*s, iy-5, C.chicken_y); px(ix+7*s, iy-5, C.chicken_y);
+    px(ix+5*s, iy-4, C.chicken_r);                  // wattle
+    // Comb
+    px(ix+3*s, iy-8, C.chicken_r); px(ix+4*s, iy-8, C.chicken_r);
+    // Wing
+    rect(ix-2*s, iy-3, 3, 2, '#e0e0d0');
+    // Tail feathers
+    px(ix-4*s, iy-6, C.chicken_w); px(ix-5*s, iy-5, '#e0e0d0');
+    px(ix-4*s, iy-5, C.chicken_w); px(ix-4*s, iy-4, '#e0e0d0');
+    // Legs (tucked under when asleep)
+    if(!sleep){
+      rect(ix-1*s, iy, 1, 2, C.chicken_y);
+      rect(ix+1*s, iy, 1, 2+leg, C.chicken_y);
+      px(ix-2*s, iy+1, C.chicken_y); px(ix+2*s, iy+1+leg, C.chicken_y); // feet
+    }
+  } else if(type==='pig'){
+    // Shadow
+    px(ix-4, iy+4, 'rgba(0,0,0,0.18)', 9, 1);
+    // Body
+    rect(ix-5*s, iy-5, 10, 6, C.pig_p);
+    rect(ix-4*s, iy, 8, 1, C.pig_d);
+    // Snout
+    rect(ix+5*s, iy-4, 3, 3, C.pig_d);
+    px(ix+6*s, iy-3, '#c77'); px(ix+7*s, iy-3, '#c77'); // nostrils
+    // Eye (closed when asleep)
+    if(!sleep) px(ix+3*s, iy-5, '#333');
+    // Ears
+    px(ix+2*s, iy-6, C.pig_p); px(ix+4*s, iy-6, C.pig_d);
+    // Legs (tucked under when asleep)
+    if(!sleep){
+      rect(ix-4*s, iy+1, 2, 3, C.pig_d);
+      rect(ix+2*s, iy+1, 2, 3+leg, C.pig_d);
+    }
+    // Curly tail
+    px(ix-6*s, iy-4, C.pig_d); px(ix-7*s, iy-3, C.pig_p); px(ix-6*s, iy-2, C.pig_d);
+  }
+}
+
+// ── Farmer sprite ─────────────────────────────────────────────────────────────
+function drawFarmer(){
+  if(farmer.state==='sleep') return; // inside the house
+  const ix = Math.floor(farmer.x), iy = Math.floor(farmer.y);
+  const s = farmer.facing;
+  const leg = (Math.floor(farmer.anim/5)%2);
+  const arm = farmer.state==='till'||farmer.state==='harvest'||farmer.state==='water'?1:0;
+  const toolUp = farmer.state==='till'&&farmer.actionTimer%14<7;
+
+  // Shadow
+  px(ix-3, iy+7, 'rgba(0,0,0,0.25)', 7, 1);
+
+  // Straw hat
+  rect(ix-2, iy-14, 5, 2, C.char_hat);
+  rect(ix-4, iy-12, 9, 1, C.char_hat);
+  px(ix-1, iy-13, '#8d6e63');                       // hat band
+
+  // Head
+  rect(ix-2, iy-11, 5, 5, C.char_skin);
+  px(ix-1+s, iy-9, '#444'); px(ix+1+s, iy-9, '#444');  // eyes
+  // Hair at sides
+  px(ix-2, iy-11, C.char_hair); px(ix+2, iy-11, C.char_hair);
+  px(ix-2, iy-10, C.char_hair); px(ix+2, iy-10, C.char_hair);
+
+  // Body / shirt with shading
+  rect(ix-2, iy-6, 5, 5, C.char_shirt);
+  rect(ix+2, iy-6, 1, 5, C.char_shirt2);
+  // Belt
+  rect(ix-2, iy-1, 5, 1, '#3e2723');
+
+  // Pants
+  rect(ix-2, iy, 5, 3, C.char_pants);
+
+  // Legs
+  if(farmer.state==='walk'||farmer.state==='till'){
+    rect(ix-2, iy+3, 2, 3+leg,   C.char_pants);
+    rect(ix+1, iy+3, 2, 3+1-leg, C.char_pants);
+    px(ix-2, iy+5+leg, '#5d4037'); px(ix+1, iy+5+1-leg, '#5d4037'); // boots
+  } else {
+    rect(ix-2, iy+3, 2, 3, C.char_pants);
+    rect(ix+1, iy+3, 2, 3, C.char_pants);
+    px(ix-2, iy+5, '#5d4037'); px(ix+1, iy+5, '#5d4037');
+  }
+
+  // Arms & tools
+  if(arm && toolUp){
+    rect(ix+3*s, iy-8, 1, 3, C.char_skin);          // arm raised
+    if(farmer.tool==='hoe'){
+      rect(ix+4*s, iy-11, 1, 4, '#8d6e63');         // handle
+      px(ix+5*s, iy-11, C.char_tool); px(ix+5*s, iy-10, C.char_tool); // blade
+    } else if(farmer.tool==='can'){
+      rect(ix+4*s, iy-9, 3, 2, C.char_tool);        // watering can
+      px(ix+4*s, iy-10, '#90caf9');
+      if(farmer.state==='water' && tick%4<2){
+        px(ix+7*s, iy-7, C.water2); px(ix+8*s, iy-5, C.water);
+        px(ix+7*s, iy-4, C.water2);
+      }
+    } else if(farmer.tool==='scythe'){
+      rect(ix+4*s, iy-11, 1, 4, '#8d6e63');         // handle
+      px(ix+5*s, iy-11, C.char_tool); px(ix+6*s, iy-11, C.char_tool);
+      px(ix+7*s, iy-10, C.char_tool);               // curved blade
+    }
+  } else if(arm){
+    rect(ix+3*s, iy-5, 1, 3, C.char_skin);          // arm lowered (mid-swing)
+    if(farmer.tool==='can'){
+      rect(ix+4*s, iy-4, 3, 2, C.char_tool);
+      px(ix+4*s, iy-5, '#90caf9');
+      if(farmer.state==='water' && tick%4<2){
+        px(ix+7*s, iy-2, C.water2); px(ix+8*s, iy, C.water);
+      }
+    }
+  } else {
+    rect(ix+3*s, iy-5, 1, 3, C.char_skin);
+    rect(ix-3*s, iy-5, 1, 3, C.char_skin);
+  }
+}
+
+// ── Building sprites ──────────────────────────────────────────────────────────
+function drawBarn(x, y){
+  // Foundation
+  rect(x, y+36, 44, 6, C.barn_dark);
+  rect(x, y+36, 44, 1, '#9e1515');
+  // Walls
+  rect(x+2, y+12, 40, 26, C.barn_red);
+  // Wood beams
+  for(let i=0;i<4;i++) rect(x+4+i*11, y+12, 2, 26, C.barn_dark);
+  // Roof (gambrel)
+  for(let i=0;i<16;i++){
+    rect(x+i, y+12-i, 44-i*2, 1, i%4===3?C.barn_roof2:C.barn_roof);
+  }
+  rect(x+14, y-5, 16, 2, C.barn_dark); // roof peak
+  // Hayloft window
+  rect(x+18, y+2, 8, 6, C.barn_door);
+  px(x+20, y+3, '#fbc02d'); px(x+22, y+4, '#fbc02d'); px(x+21, y+5, '#f9a825'); // hay
+  // Big door with cross braces
+  rect(x+16, y+24, 12, 14, C.barn_door);
+  rect(x+17, y+25, 10, 12, '#4e342e');
+  px(x+18, y+26, '#3e2723'); px(x+25, y+26, '#3e2723');
+  px(x+21, y+30, '#3e2723'); px(x+22, y+30, '#3e2723');
+  px(x+18, y+35, '#3e2723'); px(x+25, y+35, '#3e2723');
+  // Windows with frames
+  rect(x+4,  y+16, 8, 8, C.barn_win);
+  rect(x+32, y+16, 8, 8, C.barn_win);
+  rect(x+7,  y+16, 1, 8, C.barn_dark); rect(x+4,  y+19, 8, 1, C.barn_dark);
+  rect(x+35, y+16, 1, 8, C.barn_dark); rect(x+32, y+19, 8, 1, C.barn_dark);
+  // Silo (right of barn)
+  rect(x+46, y+4, 16, 38, C.silo);
+  rect(x+47, y+4, 3, 38, C.silo3);                 // highlight strip
+  rect(x+46, y,   16, 5, C.silo2);
+  rect(x+48, y-2, 12, 3, C.silo2);                 // dome
+  rect(x+49, y-2, 4, 1, C.silo3);
+  for(let j=0;j<6;j++) rect(x+46, y+9+j*6, 16, 1, C.silo2);  // bands
+}
+
+function drawHouse(x, y){
+  // Foundation
+  rect(x, y+32, 36, 4, '#bcaaa4');
+  rect(x, y+32, 36, 1, '#a1887f');
+  // Walls
+  rect(x+2, y+8, 32, 26, C.house_wall);
+  rect(x+2, y+30, 32, 4, C.house_wall2);           // lower wall shade
+  // Window shutters (warm lamplight at night — the farmer is home)
+  const night = timeOfDay > 0.58;
+  const winCol = night && farmer.state==='sleep' ? '#ffd54f' : C.house_win;
+  rect(x+4,  y+12, 10, 10, winCol);
+  rect(x+22, y+12, 10, 10, winCol);
+  // Window cross frames
+  rect(x+8,  y+12, 1, 10, '#5d4037'); rect(x+4,  y+16, 10, 1, '#5d4037');
+  rect(x+26, y+12, 1, 10, '#5d4037'); rect(x+22, y+16, 10, 1, '#5d4037');
+  rect(x+4,  y+12, 10, 10, '#5d4037', false);
+  rect(x+22, y+12, 10, 10, '#5d4037', false);
+  // Light spilling onto the ground from the windows
+  if(night && farmer.state==='sleep'){
+    ctx.globalAlpha = 0.30;
+    rect(x+3,  y+36, 12, 5, '#ffd54f');
+    rect(x+21, y+36, 12, 5, '#ffd54f');
+    ctx.globalAlpha = 1;
+  }
+  // Door with awning
+  rect(x+14, y+20, 8, 14, '#a1887f');
+  rect(x+15, y+21, 6, 13, '#8d6e63');
+  px(x+19, y+26, '#d4a017'); px(x+19, y+27, '#d4a017'); // doorknob
+  rect(x+13, y+19, 10, 1, C.house_roof2);          // awning
+  // Roof with shingle lines
+  for(let i=0;i<12;i++){
+    rect(x+i, y+8-i, 36-i*2, 1, i%3===2?C.house_roof2:C.house_roof);
+  }
+  rect(x+10, y-5, 16, 2, '#6d4c41'); // peak
+  // Chimney
+  rect(x+26, y-8, 6, 10, '#9e9e9e');
+  rect(x+25, y-9, 8, 2, '#757575');
+  if(tick%30<15){
+    px(x+28, y-11, C.smoke); px(x+29, y-13, C.smoke); px(x+27, y-12, C.smoke);
+  } else {
+    px(x+28, y-12, C.smoke); px(x+27, y-14, C.smoke);
+  }
+  // Flowers by door
+  px(x+12, y+30, C.flower_r); px(x+12, y+31, C.flower_stem); px(x+12, y+32, C.flower_stem);
+  px(x+10, y+31, C.flower_p); px(x+10, y+32, C.flower_stem);
+  px(x+24, y+30, C.flower_y); px(x+24, y+31, C.flower_stem); px(x+24, y+32, C.flower_stem);
+}
+
+function drawWell(x, y){
+  // Stone base with mortar texture
+  rect(x, y+8, 14, 8, C.well_stone);
+  rect(x+2, y+6, 10, 3, C.well_stone);
+  px(x+3, y+9, C.well_stone2); px(x+8, y+11, C.well_stone2);
+  px(x+5, y+13, C.well_stone2); px(x+11, y+10, C.well_stone2);
+  px(x+2, y+12, C.well_stone2);
+  // Dark opening
+  rect(x+4, y+7, 6, 2, '#37474f');
+  // Posts
+  rect(x+2, y-2, 2, 8, C.well_wood);
+  rect(x+10, y-2, 2, 8, C.well_wood);
+  // Little roof
+  rect(x, y-4, 14, 2, C.well_wood);
+  rect(x+2, y-5, 10, 1, C.barn_roof);
+  // Rope & bucket
+  rect(x+6, y-2, 1, 5, C.well_rope);
+  rect(x+5, y+3, 4, 3, C.silo2);
+  rect(x+5, y+3, 4, 1, C.silo3);
+}
+
+function drawTree(x, y, hasApple=false){
+  // Trunk with shaded side
+  rect(x+4, y+8, 4, 8, C.tree_trunk);
+  rect(x+6, y+8, 2, 8, C.tree_trunk2);
+  px(x+3, y+15, C.tree_trunk); px(x+8, y+15, C.tree_trunk2);  // root flare
+  // Canopy (layered)
+  rect(x+2, y+2, 8, 8, C.tree_leaf);
+  rect(x,   y+4, 12, 6, C.tree_leaf2);
+  rect(x+3, y,   6, 3, C.tree_leaf2);
+  // Highlights
+  px(x+3, y+1, C.tree_leaf3); px(x+4, y+1, C.tree_leaf3);
+  px(x+1, y+4, C.tree_leaf3); px(x+9, y+5, C.tree_leaf3);
+  if(hasApple){
+    px(x+2, y+6, C.tree_apple); px(x+8, y+4, C.tree_apple); px(x+5, y+7, C.tree_apple);
+  }
+}
+
+function drawFlower(x, y, type){
+  px(x, y+2, C.flower_stem); px(x, y+3, C.flower_stem);
+  if(type===0){
+    px(x,y,C.flower_w); px(x-1,y,C.flower_y); px(x+1,y,C.flower_y); px(x,y-1,C.flower_y); px(x,y+1,C.flower_y);
+  } else if(type===1){
+    px(x,y,C.flower_y); px(x-1,y,C.flower_r); px(x+1,y,C.flower_r); px(x,y-1,C.flower_r);
+  } else {
+    px(x,y,C.flower_p); px(x+1,y,C.flower_w); px(x-1,y,C.flower_p); px(x,y-1,C.flower_w);
+  }
+}
+
+function drawFence(x, y, w, h){
+  // Horizontal rails
+  rect(x, y+2, w, 2, C.fence);
+  rect(x, y+6, w, 2, C.fence);
+  // Vertical posts
+  for(let i=0;i<=w-2;i+=8){
+    rect(x+i, y, 2, 10, C.fence2);
+    px(x+i, y, '#6d4c41');           // post cap
+  }
+}
+
+// ── Water pond ────────────────────────────────────────────────────────────────
+function drawPond(x, y, w, h){
+  rect(x,   y,   w,   h,   C.water);
+  rect(x+1, y+1, w-2, h-2, C.water2);
+  // Ripple animation
+  const r = Math.floor(tick/20)%5;
+  rect(x+4+r,   y+4,   4, 1, C.water3);
+  rect(x+w-8-r, y+h-6, 4, 1, C.water3);
+  rect(x+6,     y+h-4+((r>2)?1:0)-1, 3, 1, C.water);
+  px(x+w-6, y+3, '#bbdefb'); px(x+5, y+h-3, '#bbdefb');     // sparkles
+  // Lily pads with blossom
+  rect(x+5, y+3, 3, 2, C.tree_leaf); px(x+6, y+2, C.flower_p);
+  rect(x+w-8, y+h-5, 3, 2, C.tree_leaf);
+}
+
+// ── Draw sky ──────────────────────────────────────────────────────────────────
+function drawSky(){
+  let skyCol;
+  const t = timeOfDay;
+  if(t < 0.15)      skyCol = C.sky_dawn;
+  else if(t < 0.45) skyCol = C.sky_day;
+  else if(t < 0.60) skyCol = C.sky_dusk;
+  else               skyCol = C.sky_night;
+  rect(0, 0, LW, ZONES.sky.h, skyCol);
+
+  // Sun or Moon
+  if(t < 0.50){
+    const sx = Math.floor(16 + t/0.5*(LW-32));
+    const sy = t<0.25 ? Math.floor(64 - t/0.25*52) : Math.floor(12 + (t-0.25)/0.25*52);
+    rect(sx-4, sy-4, 9, 9, C.sun);
+    rect(sx-2, sy-2, 5, 5, C.sun2);                // bright core
+    // Rays
+    rect(sx-2, sy-6, 5, 1, C.sun); rect(sx-2, sy+6, 5, 1, C.sun);
+    rect(sx-6, sy-2, 1, 5, C.sun); rect(sx+6, sy-2, 1, 5, C.sun);
+    px(sx-5, sy-5, C.sun); px(sx+5, sy-5, C.sun);
+    px(sx-5, sy+5, C.sun); px(sx+5, sy+5, C.sun);
+  } else {
+    const mx = Math.floor(16 + (t-0.5)/0.5*(LW-32));
+    const my = t<0.75 ? Math.floor(64 - (t-0.5)/0.25*52) : Math.floor(12 + (t-0.75)/0.25*52);
+    rect(mx-4, my-4, 9, 9, C.moon);
+    rect(mx-3, my-4, 2, 1, '#f5f5dc'); rect(mx-4, my-3, 1, 2, '#f5f5dc'); // bright edge
+    px(mx-1, my-1, '#ccc'); px(mx+2, my+2, '#ccc'); px(mx, my+3, '#d8d8b8'); // craters
+    // Stars
+    const starSeed = [3,17,31,47,61,79,97,113,131,149,167,181,193,211,229,241];
+    if(t>0.60){
+      const alpha = Math.min(1, (t-0.60)/0.10);
+      for(let i=0;i<starSeed.length;i++){
+        const sx2 = (starSeed[i]*13+7)%LW;
+        const sy2 = (starSeed[i]*7+3)%60;
+        if(tick%40 < 20+i%8) ctx.fillStyle=`rgba(255,255,200,${0.5*alpha})`;
+        else                  ctx.fillStyle=`rgba(255,255,200,${0.9*alpha})`;
+        ctx.fillRect(sx2*SCALE, sy2*SCALE, SCALE, SCALE);
+      }
+    }
+  }
+
+  // Clouds
+  for(const cl of clouds){
+    const alpha = t>0.55&&t<0.70 ? 1-(t-0.55)/0.15 : (t>0.70?0:1);
+    if(alpha<=0) continue;
+    ctx.globalAlpha = alpha*0.88;
+    rect(Math.floor(cl.x),   cl.y,   cl.w,   5, C.cloud);
+    rect(Math.floor(cl.x)+2, cl.y-2, cl.w-4, 2, C.cloud);
+    rect(Math.floor(cl.x)+4, cl.y+5, cl.w-6, 2, C.cloud2);
+    ctx.globalAlpha = 1;
+  }
+}
+
+// ── Draw ground layer ─────────────────────────────────────────────────────────
+function drawGround(){
+  const gy = ZONES.ground.y;
+  // Base grass
+  rect(0, gy, LW, LH-gy, C.grass);
+  // Darker grass patches (variation)
+  for(let gx=0;gx<LW;gx+=4){
+    if((gx*7+13)%5===0) rect(gx, gy+(gx*3)%9, 2, 2, C.grass2);
+    if((gx*11+5)%7===0) rect(gx, gy+40+(gx*5)%80, 2, 2, C.grass2);
+  }
+  // Grass tufts (scattered)
+  const tufts = [10,24,40,70,110,136,170,200,230,250,290,316];
+  for(const tx of tufts){
+    const ty2 = gy + (tx*3+7)%16;
+    px(tx, ty2, C.grass3); px(tx+1, ty2-1, C.grass3); px(tx+2, ty2, C.grass3);
+  }
+  // Horizontal path
+  rect(0, 112, LW, 6, C.path);
+  rect(0, 114, LW, 2, C.path2);
+  // Vertical path (to barn/house)
+  rect(148, gy, 8, LH-gy, C.path);
+  rect(150, gy, 4, LH-gy, C.path2);
+  // Path pebbles
+  for(let gx=6;gx<LW;gx+=22) px(gx, 115, '#a1887f');
+  for(let gyy=gy+8;gyy<LH;gyy+=20) px(151+(gyy%3), gyy, '#a1887f');
+
+  // Pond (lower left)
+  drawPond(4, 180, 36, 20);
+
+  // Decorative flowers (right-field edge)
+  const flowerSpots = [[138,84],[138,100],[138,116],[138,136],[138,164],[138,180]];
+  for(let i=0;i<flowerSpots.length;i++){
+    if(timeOfDay>0.60&&timeOfDay<0.70) continue; // night: closed
+    drawFlower(flowerSpots[i][0], flowerSpots[i][1], i%3);
+  }
+  // More flowers around pond
+  drawFlower(0, 174, 0); drawFlower(42, 176, 1); drawFlower(2, 206, 2);
+
+  // Trees (left/bottom area)
+  drawTree(8, 200, season===3);
+  drawTree(28, 204, season===1||season===2);
+  drawTree(48, 198);
+  // Fruit trees right side
+  drawTree(252, 136, season===1||season===2);
+  drawTree(276, 136, season===1||season===2);
+  drawTree(300, 136);
+
+  // ── Crop plots ──
+  for(const plot of ZONES.plots){
+    // Soil
+    const soilCol = plot.state==='empty'?C.grass : plot.state==='tilled'?C.soil_tilled : C.soil_wet;
+    rect(plot.x, plot.y, plot.w, plot.h, soilCol);
+    // Soil texture: furrow rows
+    if(plot.state!=='empty'){
+      for(let j=2;j<plot.h;j+=4) rect(plot.x+1, plot.y+j, plot.w-2, 1, C.dirt3);
+      for(let i=3;i<plot.w;i+=5) px(plot.x+i, plot.y+(i*3)%plot.h, C.dirt2);
+    }
+    // Plants (3 cols × 2 rows)
+    if(plot.state==='seeded'||plot.state==='growing'||plot.state==='ripe'){
+      const type = plot.crop || 'wheat';
+      for(let row=0;row<2;row++){
+        for(let col=0;col<3;col++){
+          drawCrop(plot.x+2+col*9, plot.y+3+row*14, type, plot.growth);
+        }
+      }
+    }
+    // Harvest sparkle
+    if(plot.state==='ripe'){
+      if(tick%20<10){
+        px(plot.x+plot.w-3, plot.y+2, C.sparkle);
+        px(plot.x+3, plot.y+2, C.sparkle);
+        px(plot.x+plot.w/2, plot.y+plot.h-3, C.sparkle);
+      }
+    }
+    // Plot border
+    rect(plot.x, plot.y, plot.w, plot.h, C.dirt2, false);
+  }
+
+  // ── Animal pen ──
+  drawFence(PEN.x, PEN.y, PEN.w, 10);
+  drawFence(PEN.x, PEN.y+PEN.h-8, PEN.w, 10);
+  drawFence(PEN.x, PEN.y+10, 10, PEN.h-8);
+  drawFence(PEN.x+PEN.w-2, PEN.y+10, 10, PEN.h-8);
+  // Pen ground details
+  for(let gx=PEN.x+4;gx<PEN.x+PEN.w-4;gx+=8) px(gx, PEN.y+PEN.h-4, C.grass2);
+  rect(PEN.x+8, PEN.y+14, 6, 3, C.dirt3);   // mud patch
+  rect(PEN.x+70, PEN.y+60, 8, 3, C.dirt3);
+  // Water trough
+  rect(PEN.x+40, PEN.y+12, 12, 4, C.fence2);
+  rect(PEN.x+41, PEN.y+13, 10, 2, C.water2);
+
+  // ── Buildings ──
+  drawBarn(156, 76);
+  drawHouse(256, 76);
+  drawWell(300, 112);
+}
+
+// ── Draw animals ──────────────────────────────────────────────────────────────
+function drawAnimals(){
+  for(const a of ANIMALS) drawAnimal(a);
+}
+
+// ── Draw weather effects ───────────────────────────────────────────────────────
+function drawWeather(){
+  for(const w of weather){
+    if(weatherType==='rain'){
+      ctx.fillStyle = `rgba(144,202,249,${0.5+w.alpha*0.4})`;
+      ctx.fillRect(Math.floor(w.x)*SCALE, Math.floor(w.y)*SCALE, SCALE, SCALE*3);
+    } else if(weatherType==='snow'){
+      ctx.fillStyle = `rgba(227,242,253,${0.6+w.alpha*0.4})`;
+      ctx.fillRect(Math.floor(w.x)*SCALE, Math.floor(w.y)*SCALE, SCALE, SCALE);
+    }
+  }
+}
+
+// ── Draw produces / floats / particles ────────────────────────────────────────
+function drawExtras(){
+  // Ground produce
+  for(const p of produces){
+    const ix = Math.floor(p.x), iy = Math.floor(p.y);
+    if(p.type==='wheat'){
+      px(ix,iy,C.wheat); px(ix+1,iy,C.wheat2); px(ix,iy+1,C.wheat2); px(ix+1,iy+1,C.wheat);
+    } else if(p.type==='tomato'){
+      px(ix,iy,C.tomato2); px(ix+1,iy,C.tomato); px(ix,iy+1,C.tomato); px(ix+1,iy+1,C.tomato);
+    } else if(p.type==='pumpkin'){
+      px(ix,iy,C.pumpkin2); px(ix+1,iy,C.pumpkin); px(ix,iy+1,C.pumpkin); px(ix+1,iy+1,C.pumpkin2);
+    }
+  }
+  // Particles
+  for(const p of particles){
+    ctx.globalAlpha = p.life/25;
+    ctx.fillStyle = p.col;
+    ctx.fillRect(Math.floor(p.x)*SCALE, Math.floor(p.y)*SCALE, SCALE, SCALE);
+  }
+  ctx.globalAlpha = 1;
+  // Floating text
+  for(const f of floats){
+    ctx.globalAlpha = f.life/60;
+    ctx.fillStyle = f.col;
+    ctx.font = `${SCALE*7}px monospace`;
+    ctx.fillText(f.text, Math.floor(f.x)*SCALE, Math.floor(f.y)*SCALE);
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ── Draw HUD (in-world day/time bar) ──────────────────────────────────────────
+function drawHUD(){
+  const barW = 120, barX = LW/2-60, barY = LH-9;
+  rect(barX, barY, barW, 6, '#000');
+  const filled = Math.floor(timeOfDay*barW);
+  const barCol = timeOfDay<0.5?'#ffee55':'#3a3a6a';
+  rect(barX, barY, filled, 6, barCol);
+  rect(barX, barY, barW, 6, '#555', false);
+}
+
+// ── Logic update ──────────────────────────────────────────────────────────────
+function updateWorld(){
+  tick++;
+  timeOfDay = (tick % DAY_TICKS) / DAY_TICKS;
+
+  // Auto-save every 600 ticks (~20 s) and every new day
+  if(tick % 600 === 0 && tick > 0) saveState();
+
+  if(tick % DAY_TICKS === 0){
+    day++;
+    saveState();
+    const prevSeason = season;
+    season = Math.floor(day/10) % 4;
+    if(season !== prevSeason){
+      ZONES.plots.forEach(p=>{ p.state='empty'; p.growth=0; });
+    }
+    if(season===3)      weatherType = Math.random()<0.5?'snow':'clear';
+    else if(season===1) weatherType = Math.random()<0.3?'rain':'clear';
+    else                weatherType = Math.random()<0.2?'rain':'clear';
+  }
+
+  // Cloud movement
+  for(const cl of clouds){
+    cl.x += cl.spd;
+    if(cl.x > LW+8) cl.x = -cl.w - 4;
+  }
+
+  // Weather particles
+  if(weatherType!=='clear' && weather.length<160){
+    for(let n=0;n<2;n++){
+      weather.push({
+        x: Math.random()*LW, y: -3,
+        vx: weatherType==='snow'?(Math.random()-0.5)*0.6:0,
+        vy: weatherType==='rain'?5:1.2,
+        alpha: 0.7+Math.random()*0.3,
+      });
+    }
+  }
+  for(let i=weather.length-1;i>=0;i--){
+    weather[i].x += weather[i].vx;
+    weather[i].y += weather[i].vy;
+    if(weather[i].y>LH) weather.splice(i,1);
+  }
+
+  // Crop growth (faster in good weather & season)
+  const growRate = weatherType==='rain'?0.0008:
+                   season===1?0.0006:0.0005;
+  for(const plot of ZONES.plots){
+    if(plot.state==='growing'){
+      plot.growth = Math.min(1, plot.growth + growRate);
+      if(plot.growth >= 1){ plot.state = 'ripe'; }
+    }
+  }
+
+  // Animal movement
+  for(const a of ANIMALS){
+    if(timeOfDay>0.62){ // night: sleep
+      a.state='sleep';
+      if(Math.random()<0.003) addFloat(a.x-1, a.y-9, 'z', '#cfe0ff');
+      continue;
+    }
+    // morning: wake back up
+    if(a.state==='sleep') a.state = a.type==='sheep'?'graze':a.type==='chicken'?'peck':'wander';
+    a.anim++;
+    if(Math.random()<0.005) a.dx = (Math.random()-0.5)*1.0;
+    if(Math.random()<0.005) a.dy = (Math.random()-0.5)*0.6;
+    a.x += a.dx; a.y += a.dy;
+    a.facing = a.dx>=0?1:-1;
+    // Constrain to pen
+    a.x = Math.max(PEN.x+8, Math.min(PEN.x+PEN.w-10, a.x));
+    a.y = Math.max(PEN.y+12, Math.min(PEN.y+PEN.h-10, a.y));
+    // Bounce
+    if(a.x<=PEN.x+8||a.x>=PEN.x+PEN.w-10) a.dx *= -1;
+    if(a.y<=PEN.y+12||a.y>=PEN.y+PEN.h-10) a.dy *= -1;
+    // Mood hearts on occasion
+    if(Math.random()<0.001 && a.state!=='sleep'){
+      addFloat(a.x-3, a.y-12, '♥', '#ff8888');
+    }
+  }
+
+  // Particles
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.life--;
+    if(p.life<=0) particles.splice(i,1);
+  }
+  // Floats
+  for(let i=floats.length-1;i>=0;i--){
+    floats[i].y+=floats[i].vy; floats[i].life--;
+    if(floats[i].life<=0) floats.splice(i,1);
+  }
+  // Produces
+  for(let i=produces.length-1;i>=0;i--){
+    produces[i].life--;
+    if(produces[i].life<=0){ gold+=produces[i].value; produces.splice(i,1); }
+  }
+
+  // Update UI
+  document.getElementById('s-gold').textContent   = `💰 Gold: ${gold}`;
+  document.getElementById('s-day').textContent    = `📅 Day: ${day}`;
+  document.getElementById('s-season').textContent = SEASONS[season];
+  document.getElementById('s-crops').textContent  = `🌾 Harvests: ${harvestCount}`;
+  document.getElementById('s-animals').textContent= `🐄 Animals: ${ANIMALS.length}`;
+
+  // ── Farmer AI ──
+  farmer.anim++;
+
+  // Dusk: drop everything and head home to rest
+  const HOME = { x:274, y:114 };  // house doorstep
+  if(timeOfDay > 0.58){
+    if(farmer.state !== 'sleep'){
+      if(!farmer.goingHome){
+        farmer.goingHome = true;
+        addFloat(farmer.x-5, farmer.y-18, '🏠', '#ffcc88');
+      }
+      const hdx = HOME.x - farmer.x, hdy = HOME.y - farmer.y;
+      const hdist = Math.hypot(hdx, hdy);
+      if(hdist > 3){
+        farmer.state = 'walk';
+        farmer.x += hdx/hdist * 1.4;
+        farmer.y += hdy/hdist * 1.4;
+        farmer.facing = hdx>0?1:-1;
+      } else {
+        farmer.state = 'sleep';   // steps inside the house
+        farmer.actionTimer = 0;
+        farmer.taskQueue = [];
+      }
+    } else if(tick % 240 === 0){
+      addFloat(HOME.x+4, HOME.y-34, '💤', '#aaccff');
+    }
+    return;
+  }
+  // Dawn: wake up, step outside and start the day's work
+  if(farmer.state === 'sleep'){
+    farmer.state = 'idle';
+    farmer.goingHome = false;
+    farmer.x = HOME.x; farmer.y = HOME.y + 2;
+    addFloat(HOME.x-8, HOME.y-24, '🌅', '#ffdd88');
+    buildTaskQueue();
+  }
+  farmer.goingHome = false;
+
+  if(farmer.taskQueue.length===0) buildTaskQueue();
+  const task = farmer.taskQueue[0];
+  if(!task){ return; }
+
+  let destX, destY;
+  if(task.type==='till'||task.type==='seed'||task.type==='water'||task.type==='harvest'){
+    const plot = ZONES.plots[task.plotIdx];
+    destX = plot.x + plot.w/2;
+    destY = plot.y + plot.h/2;
+  } else if(task.type==='feed'){
+    destX = task.penX; destY = task.penY;
+  } else {
+    destX = task.x; destY = task.y;
+  }
+
+  const dx = destX - farmer.x, dy = destY - farmer.y;
+  const dist = Math.hypot(dx, dy);
+
+  if(dist > 3){
+    // Walk toward target
+    farmer.state = 'walk';
+    farmer.x += dx/dist * 1.2;
+    farmer.y += dy/dist * 1.2;
+    farmer.facing = dx>0?1:-1;
+  } else {
+    // Do the action
+    farmer.actionTimer++;
+    if(task.type==='till'){
+      farmer.state = 'till'; farmer.tool = 'hoe';
+      const plot = ZONES.plots[task.plotIdx];
+      if(farmer.actionTimer > 40){
+        if(plot.state==='empty'){ plot.state='tilled'; addParticles(destX,destY,C.dirt,4); }
+        farmer.actionTimer=0; farmer.taskQueue.shift(); buildTaskQueue();
+      }
+    } else if(task.type==='seed'){
+      farmer.state = 'till'; farmer.tool = 'bag';
+      const plot = ZONES.plots[task.plotIdx];
+      if(farmer.actionTimer > 30){
+        if(plot.state==='tilled'){
+          plot.state='seeded'; plot.growth=0.02;
+          const seasonCrop = season===0?'wheat':season===1?'tomato':season===2?'pumpkin':'wheat';
+          plot.crop = seasonCrop;
+          addFloat(destX-4, destY-8, '🌱', '#88ff88');
+          addParticles(destX,destY,C.seed,4);
+        }
+        farmer.actionTimer=0; farmer.taskQueue.shift();
+      }
+    } else if(task.type==='water'){
+      farmer.state = 'water'; farmer.tool = 'can';
+      const plot = ZONES.plots[task.plotIdx];
+      if(farmer.actionTimer > 35){
+        if(plot.state==='seeded'){ plot.state='growing'; }
+        if(plot.state==='growing') plot.growth = Math.min(1, plot.growth+0.05);
+        farmer.actionTimer=0; farmer.taskQueue.shift();
+        if(Math.random()<0.4) buildTaskQueue();
+      }
+    } else if(task.type==='harvest'){
+      farmer.state = 'harvest'; farmer.tool = 'scythe';
+      const plot = ZONES.plots[task.plotIdx];
+      if(farmer.actionTimer > 45){
+        if(plot.state==='ripe'){
+          plot.state='empty'; plot.growth=0;
+          harvestCount++;
+          const val = plot.crop==='pumpkin'?15:plot.crop==='tomato'?10:8;
+          produces.push({ x:destX, y:destY-4, type:plot.crop, value:val, life:90 });
+          addFloat(destX-8, destY-12, `+${val}G`, '#ffff44');
+          addParticles(destX, destY-4, plot.crop==='wheat'?C.wheat:plot.crop==='tomato'?C.tomato:C.pumpkin, 8);
+        }
+        farmer.actionTimer=0; farmer.taskQueue.shift(); buildTaskQueue();
+      }
+    } else if(task.type==='feed'){
+      farmer.state = 'idle'; farmer.tool = 'bag';
+      if(farmer.actionTimer > 50){
+        addFloat(task.penX-12, task.penY-16, '🐄♥', '#ffaaaa');
+        gold += 5;
+        farmer.actionTimer=0; farmer.taskQueue.shift();
+      }
+    } else {
+      farmer.state = 'idle';
+      if(farmer.actionTimer > 60){ farmer.actionTimer=0; farmer.taskQueue.shift(); buildTaskQueue(); }
+    }
+  }
+}
+
+// ── Seasonal tint overlay ─────────────────────────────────────────────────────
+function drawSeasonOverlay(){
+  if(season===3&&weatherType==='snow'){
+    ctx.fillStyle='rgba(230,240,255,0.06)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+  if(season===2){
+    ctx.fillStyle='rgba(255,140,0,0.04)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+  if(timeOfDay>0.65){
+    const nightAlpha = Math.min(0.55, (timeOfDay-0.65)/0.10*0.55);
+    ctx.fillStyle=`rgba(10,10,40,${nightAlpha})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+}
+
+// ── Main draw loop ────────────────────────────────────────────────────────────
+function draw(){
+  requestAnimationFrame(draw);
+  updateWorld();
+
+  ctx.fillStyle = C.sky_day;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  drawSky();
+  drawGround();
+  drawAnimals();
+  drawFarmer();
+  drawWeather();
+  drawExtras();
+  drawSeasonOverlay();
+  drawHUD();
+}
+
+// Load save before starting
+const hadSave = loadState();
+buildTaskQueue();
+if(hadSave){
+  const el = document.getElementById('save-indicator');
+  el.textContent = '📂 Loaded';
+  el.classList.add('show');
+  saveIndicatorTimer = setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=>{ el.textContent='💾 Saved'; }, 500);
+  }, 2000);
+}
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Dorm Life 宿舍人生 - Generative Art</title>
+  <meta name="description" content="Gather Town 風格的像素宿舍自動人生：六位角色在大學宿舍上課、生活、睡覺、對話，所有人看到同一個確定性世界。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#1a1526">
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      background: radial-gradient(circle at 50% 40%, #241d33, transparent 55rem), #14101c;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      font-family: -apple-system, "Noto Sans TC", sans-serif;
+    }
+    #wrap { display: flex; gap: 14px; align-items: stretch; max-width: 96vw; max-height: 94vh; }
+    #stage { position: relative; display: flex; }
+    #game {
+      display: block; image-rendering: pixelated;
+      border: 4px solid #3a3050; border-radius: 6px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.7); cursor: default;
+      width: auto; height: 100%; max-width: 100%; object-fit: contain;
+    }
+    #clock {
+      position: absolute; top: 8px; left: 10px;
+      font: 13px/1.4 monospace; color: #ffe4a0;
+      text-shadow: 0 1px 3px #000; pointer-events: none;
+    }
+    #side {
+      width: 268px; display: flex; flex-direction: column; gap: 10px;
+      color: #d8d0e8; min-height: 0;
+    }
+    #roster {
+      background: rgba(30,24,46,.85); border: 1px solid #3a3050;
+      border-radius: 6px; padding: 10px 12px; font-size: 12px;
+    }
+    #roster h3, #log h3 { margin: 0 0 6px; font-size: 12px; color: #b9a8e0; letter-spacing:.1em; }
+    .who { display: flex; align-items: center; gap: 7px; margin: 3px 0; }
+    .dot { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+    .who .act { color: #8a82a0; margin-left: auto; font-size: 11px; }
+    #log {
+      flex: 1; min-height: 0; background: rgba(30,24,46,.85);
+      border: 1px solid #3a3050; border-radius: 6px; padding: 10px 12px;
+      display: flex; flex-direction: column;
+    }
+    #logbody { flex: 1; overflow-y: auto; font-size: 12px; line-height: 1.55; }
+    #chatbar { display: flex; gap: 6px; margin-top: 8px; }
+    #chatinput {
+      flex: 1; min-width: 0; background: rgba(20,16,32,.9); color: #e8e2f4;
+      border: 1px solid #4a3f66; border-radius: 5px; padding: 6px 8px;
+      font: 12px/1.4 -apple-system, "Noto Sans TC", sans-serif; outline: none;
+    }
+    #chatinput:focus { border-color: #7a6aa8; }
+    #chatinput::placeholder { color: #6a6284; }
+    #chatsend {
+      flex: none; background: #5a4a86; color: #f4f0ff; border: none;
+      border-radius: 5px; padding: 6px 12px; font-size: 12px; cursor: pointer;
+    }
+    #chatsend:hover { background: #6a5a9c; }
+    #logbody .line { margin: 3px 0; }
+    #logbody .t { color: #7a7290; }
+    #logbody .nm { font-weight: 700; }
+    #hint {
+      position: fixed; bottom: 10px; left: 0; right: 0; text-align: center;
+      font: 11px/1.5 monospace; letter-spacing: .16em; color: rgba(190,170,230,.4);
+      pointer-events: none; user-select: none;
+    }
+    #charcard {
+      position: fixed; z-index: 20; width: 260px;
+      background: rgba(24,20,38,.97); border: 2px solid #5a4a78; border-radius: 8px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.6); color: #e8e2f4; display: none;
+      font-size: 12px; overflow: hidden;
+    }
+    #charcard .cc-head { padding: 10px 12px; display: flex; align-items: center; gap: 8px; }
+    #charcard .cc-av { width: 22px; height: 22px; border-radius: 4px; flex: none; }
+    #charcard .cc-name { font-size: 15px; font-weight: 700; }
+    #charcard .cc-tag { font-size: 11px; color: #b9a8e0; }
+    #charcard .cc-close { margin-left: auto; cursor: pointer; color: #9a8ac0; font-size: 16px; }
+    #charcard .cc-body { padding: 0 12px 12px; }
+    #charcard .cc-desc { color: #c8c0e0; line-height: 1.6; margin-bottom: 6px; }
+    #charcard .cc-traits span { display: inline-block; background: #3a3056; border-radius: 10px; padding: 1px 9px; margin: 2px 3px 6px 0; font-size: 11px; }
+    #charcard h4 { margin: 8px 0 5px; font-size: 11px; color: #b9a8e0; letter-spacing: .08em; }
+    #charcard .cc-affs { margin-bottom: 4px; }
+    #charcard .cc-aff { display: flex; align-items: center; gap: 6px; margin: 3px 0; font-size: 11px; }
+    #charcard .cc-aff > span:first-child { width: 30px; flex: none; }
+    #charcard .cc-bar { flex: 1; height: 7px; background: #2c2440; border-radius: 4px; overflow: hidden; }
+    #charcard .cc-bar > span { display: block; height: 100%; border-radius: 4px; }
+    #charcard .cc-lv { flex: none; width: 74px; text-align: right; color: #b9a8e0; }
+    #charcard .cc-log { max-height: 120px; overflow-y: auto; }
+    #charcard .cc-line { margin: 3px 0; line-height: 1.5; }
+    #charcard .cc-t { color: #7a7290; }
+    #charcard .cc-with { color: #a8e0b8; }
+    @media (max-width: 860px) { #side { width: 200px; } }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <div id="stage">
+      <canvas id="game"></canvas>
+      <div id="clock"></div>
+    </div>
+    <div id="side">
+      <div id="roster"><h3>住戶</h3><div id="rosterbody"></div></div>
+      <div id="log">
+        <h3>對話記錄</h3>
+        <div id="logbody"></div>
+        <div id="chatbar">
+          <input id="chatinput" type="text" maxlength="40" placeholder="對宿舍的人說句話…" autocomplete="off" spellcheck="false">
+          <button id="chatsend">送出</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="charcard"></div>
+  <div id="hint">點擊人像看個性 ─ 下方輸入框可對小人說話，他們會即時回應 ─ 確定性世界：所有人看到相同畫面</div>
+  <script>
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'sketch.js?v=' + Date.now();
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

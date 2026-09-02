@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixel Farm</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#100c20;
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; overflow:hidden;
+  font-family: monospace;
+}
+canvas { display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
+#lbl {
+  position:fixed; bottom:12px; left:0; right:0; text-align:center;
+  font:9px/1 monospace; letter-spacing:.25em;
+  color:rgba(232,216,168,.45); text-transform:uppercase; pointer-events:none;
+}
+/* FF6-style blue gradient windows */
+#ui {
+  position:fixed; top:10px; right:10px;
+  display:flex; flex-direction:column; gap:5px; pointer-events:none;
+}
+.stat {
+  background:linear-gradient(180deg,#4060d8 0%,#2030a8 45%,#101870 100%);
+  border:2px solid #e8e8e8; outline:2px solid #181830;
+  border-radius:5px;
+  padding:3px 8px; color:#fff;
+  text-shadow:1px 1px 0 rgba(0,0,40,.8);
+  font:9px/1.7 monospace; letter-spacing:.1em;
+  min-width:96px;
+}
+#save-indicator {
+  position:fixed; bottom:28px; right:10px;
+  background:linear-gradient(180deg,#4060d8 0%,#2030a8 45%,#101870 100%);
+  border:2px solid #e8e8e8; outline:2px solid #181830;
+  border-radius:5px;
+  padding:3px 9px; color:#fff;
+  text-shadow:1px 1px 0 rgba(0,0,40,.8);
+  font:9px/1.7 monospace; letter-spacing:.1em;
+  opacity:0; transition:opacity 0.4s;
+  pointer-events:none;
+}
+#save-indicator.show { opacity:1; }
+#reset-btn {
+  position:fixed; bottom:28px; left:10px;
+  background:linear-gradient(180deg,#4060d8 0%,#2030a8 45%,#101870 100%);
+  border:2px solid #e8e8e8; outline:2px solid #181830;
+  border-radius:5px;
+  padding:3px 9px; color:#ffd0c0;
+  text-shadow:1px 1px 0 rgba(0,0,40,.8);
+  font:9px/1.7 monospace; letter-spacing:.1em;
+  cursor:pointer;
+}
+#reset-btn:hover { color:#ff9880; border-color:#fff; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="lbl">Pixel Farm · Auto Harvest</div>
+<div id="save-indicator">💾 Saved</div>
+<button id="reset-btn" onclick="resetSave()">🗑 Reset</button>
+<div id="ui">
+  <div class="stat" id="s-gold">💰 Gold: 0</div>
+  <div class="stat" id="s-day">📅 Day: 1</div>
+  <div class="stat" id="s-season">🌱 Spring</div>
+  <div class="stat" id="s-crops">🌾 Crops: 0</div>
+  <div class="stat" id="s-animals">🐄 Animals: 0</div>
+</div>
+<script>
+'use strict';
+
+// ── Canvas & pixel grid ───────────────────────────────────────────────────────
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+// Logical resolution 320×240 (SNES-like), scaled up to fill screen
+const LW = 320, LH = 240;
+let SCALE = 1;
+
+function resize(){
+  SCALE = Math.min(
+    Math.floor(window.innerWidth  / LW),
+    Math.floor(window.innerHeight / LH)
+  ) || 1;
+  canvas.width  = LW * SCALE;
+  canvas.height = LH * SCALE;
+  canvas.style.width  = (LW * SCALE) + 'px';
+  canvas.style.height = (LH * SCALE) + 'px';
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── Pixel draw helpers ────────────────────────────────────────────────────────
+function px(x, y, col, w=1, h=1){
+  ctx.fillStyle = col;
+  ctx.fillRect(x*SCALE, y*SCALE, w*SCALE, h*SCALE);
+}
+function rect(x,y,w,h,col,fill=true){
+  if(fill){
+    ctx.fillStyle = col;
+    ctx.fillRect(x*SCALE, y*SCALE, w*SCALE, h*SCALE);
+  } else {
+    for(let i=0;i<w;i++){ px(x+i,y,col); px(x+i,y+h-1,col); }
+    for(let j=1;j<h-1;j++){ px(x,y+j,col); px(x+w-1,y+j,col); }
+  }
+}
+// Outlined rect — the FF6 look: every shape gets a dark 1px outline
+function orect(x,y,w,h,col){
+  rect(x-1, y-1, w+2, h+2, C.out);
+  rect(x, y, w, h, col);
+}
+
+// ── Palette (SNES-style ramps, dark outline) ──────────────────────────────────
+const C = {
+  out:        '#1c1410',                                            // sprite outline
+  // Grass ramps (per-season via grassPal)
+  grass:      '#4a7c32', grass_d:  '#3a6428', grass_l:  '#5e9440', grass_h: '#74ac52',
+  // Forest treeline
+  forest_d:   '#1e3c1a', forest:   '#2a5424', forest_l: '#3a7030', forest_h:'#4c8c40',
+  // Paths & dirt
+  path:       '#8d6f48', path_d:   '#6e5536', path_l:   '#a98a5c', path_h:  '#c2a474',
+  dirt:       '#6e5536', dirt2:    '#54402c', dirt3:    '#8a6c46',
+  // Water
+  water:      '#2858a8', water_d:  '#1c3c78', water_l:  '#4080d0', foam:    '#a8d8f0',
+  // Soil
+  soil_tilled:'#54402c', soil_wet: '#3c2c1e',
+  // Fence
+  fence:      '#7a5c3a', fence2:   '#5e4426',
+  // Crops
+  seed:       '#c8a820', sprout:   '#6cc060', crop_mid:  '#3e8030',
+  crop_ripe:  '#e8a820', crop_gold: '#c87818',
+  wheat:      '#d8a030', wheat2:    '#ecbc48',
+  tomato:     '#c83028', tomato2:   '#e85048',
+  pumpkin:    '#d06010', pumpkin2:  '#e88030', pumpkin3:  '#f8a858',
+  // Trees
+  tree_trunk: '#5e4426', tree_trunk2:'#46321c',
+  tree_leaf:  '#2e5424', tree_leaf2:'#3e7030', tree_leaf3:'#529444', tree_apple:'#d03028',
+  // Flowers
+  flower_w:   '#f0f0f0', flower_y:  '#f0d048', flower_r:  '#d04038', flower_p:  '#a858c0',
+  flower_stem:'#4e8c3e',
+  // Buildings — FF6 town: plaster walls, timber beams, teal roofs
+  barn_red:   '#9a2828', barn_red_l:'#b84444', barn_red_d:'#6e1a1a',
+  barn_roof:  '#4a3424', barn_roof2:'#3a2818', barn_door: '#46321c',
+  barn_win:   '#f0d048', beam:      '#3a2414',
+  house_wall: '#e8dcc0', house_wall2:'#d0c0a0', house_wall3:'#f4ecd4',
+  house_roof: '#3c80a8', house_roof2:'#2c6080', house_roof3:'#54a0c8',
+  house_win:  '#9cc8e8',
+  stone:      '#8a8a92', stone_d:   '#6a6a72', stone_l:   '#a8a8b0',
+  silo:       '#a8a8b0', silo2:     '#888890', silo3:     '#c8c8d0',
+  well_wood:  '#5e4426', well_rope: '#c2a474',
+  // Animals
+  cow_w:      '#ece8e0', cow_shade: '#c8c4b8', cow_b:     '#282420', cow_pink:  '#e8a8b8',
+  sheep_w:    '#f0ece4', sheep_shade:'#d0ccc0', sheep_g:  '#687888',
+  chicken_w:  '#f0e8b8', chicken_shade:'#d4cc94', chicken_r:'#c83028', chicken_y:'#e8b830',
+  pig_p:      '#e8a8b8', pig_d:     '#d08498',
+  // Character (FF6 proportions: big head, small body)
+  char_skin:  '#f0c890', char_hair: '#6a4420', char_shirt:'#2858a8', char_shirt2:'#1c3c78',
+  char_pants: '#384858', char_hat:  '#b89048', char_hat2: '#96702c', char_tool: '#b8b8c0',
+  // Effects
+  sparkle:    '#fff0a0', smoke:     '#a8b0b8', firefly:   '#ffe97a',
+};
+
+function grassPal(){
+  if(season===3) return { d:'#9fb4c8', b:'#c4d4e4', l:'#d8e6f2', h:'#eef6fc' };  // snow
+  if(season===2) return { d:'#5e7030', b:'#75883c', l:'#8ca04c', h:'#a4b860' };  // autumn
+  return { d:C.grass_d, b:C.grass, l:C.grass_l, h:C.grass_h };
+}
+
+// ── LocalStorage persistence ──────────────────────────────────────────────────
+const SAVE_KEY = 'pixel-farm-v1';
+let saveIndicatorTimer = 0;
+
+function saveState(){
+  const data = {
+    gold, day, season, harvestCount, tick, weatherType,
+    plots: ZONES.plots.map(p=>({ state:p.state, growth:p.growth, crop:p.crop })),
+  };
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    const el = document.getElementById('save-indicator');
+    el.classList.add('show');
+    clearTimeout(saveIndicatorTimer);
+    saveIndicatorTimer = setTimeout(()=>el.classList.remove('show'), 1800);
+  } catch(e){}
+}
+
+function loadState(){
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return false;
+    const d = JSON.parse(raw);
+    gold         = d.gold         ?? 50;
+    day          = d.day          ?? 1;
+    season       = d.season       ?? 0;
+    harvestCount = d.harvestCount ?? 0;
+    tick         = d.tick         ?? 0;
+    weatherType  = d.weatherType  ?? 'clear';
+    if(Array.isArray(d.plots)){
+      d.plots.forEach((p,i)=>{
+        if(!ZONES.plots[i]) return;
+        ZONES.plots[i].state  = p.state  || 'empty';
+        ZONES.plots[i].growth = p.growth || 0;
+        ZONES.plots[i].crop   = p.crop   || 'wheat';
+      });
+    }
+    return true;
+  } catch(e){ return false; }
+}
+
+function resetSave(){
+  if(!confirm('Reset farm progress?')) return;
+  localStorage.removeItem(SAVE_KEY);
+  location.reload();
+}
+
+let tick   = 0;       // frames
+let day    = 1;
+let timeOfDay = 0;    // 0-1, 0=dawn, 0.25=noon, 0.5=dusk, 0.75=midnight
+let season = 0;       // 0=spring 1=summer 2=autumn 3=winter
+const SEASONS = ['🌱 Spring','☀️ Summer','🍂 Autumn','❄️ Winter'];
+const DAY_TICKS = 1800; // ticks per day
+
+let gold   = 50;
+let harvestCount = 0;
+
+// Drifting cloud shadows (FF6 overworld style — no sky band, only shadows)
+const clouds = Array.from({length:6},(_,i)=>({
+  x: i*56+Math.random()*36, y: 30+Math.floor(Math.random()*180),
+  w: 22+Math.floor(Math.random()*22), spd: 0.16+Math.random()*0.12,
+}));
+
+// Rain/snow particles
+const weather = [];
+let weatherType = 'clear'; // clear | rain | snow
+
+// Fireflies at night
+const FIREFLIES = Array.from({length:8},(_,i)=>({
+  bx: 24+i*38, by: 140+(i*53)%80, ph: i*1.7,
+}));
+
+// ── Farm Layout ───────────────────────────────────────────────────────────────
+const ZONES = {
+  backdrop: { x:0, y:0,  w:LW, h:76 },   // forest treeline + meadow behind farmstead
+  ground:   { x:0, y:76, w:LW, h:LH-76 },
+  plots: [],
+};
+
+// 12 crop plots (4×3 grid), left side of map
+for(let row=0;row<3;row++){
+  for(let col=0;col<4;col++){
+    ZONES.plots.push({
+      x: 8 + col*32, y: 84 + row*40,
+      w: 28, h: 32,
+      state: 'empty',  // empty|tilled|seeded|growing|ripe
+      crop: 'wheat',
+      growth: 0,       // 0-1
+    });
+  }
+}
+
+// ── Animals ───────────────────────────────────────────────────────────────────
+const ANIMALS = [
+  { type:'cow',     x:180, y:130, dx:0.6, dy:0,   facing:1,  anim:0, state:'wander', mood:1 },
+  { type:'cow',     x:200, y:140, dx:-0.4,dy:0,   facing:-1, anim:0, state:'wander', mood:1 },
+  { type:'sheep',   x:176, y:156, dx:0.4, dy:0.2, facing:1,  anim:0, state:'graze',  mood:1 },
+  { type:'sheep',   x:210, y:160, dx:-0.3,dy:0,   facing:-1, anim:0, state:'graze',  mood:1 },
+  { type:'chicken', x:160, y:170, dx:0.8, dy:0,   facing:1,  anim:0, state:'peck',   mood:1 },
+  { type:'chicken', x:190, y:176, dx:-0.6,dy:0,   facing:-1, anim:0, state:'peck',   mood:1 },
+  { type:'pig',     x:224, y:144, dx:0.4, dy:0,   facing:1,  anim:0, state:'wander', mood:1 },
+];
+
+// Animal pen boundaries (right side of map)
+const PEN = { x:152, y:120, w:96, h:80 };
+
+// ── Farmer character ──────────────────────────────────────────────────────────
+const farmer = {
+  x: 72, y: 110,
+  facing: 1,
+  anim: 0,
+  state: 'idle',   // idle|walk|till|water|harvest|feed|sleep
+  actionTimer: 0,
+  tool: 'hoe',     // hoe|can|scythe|bag
+  taskQueue: [],
+  goingHome: false,
+};
+
+function buildTaskQueue(){
+  farmer.taskQueue = [];
+  ZONES.plots.forEach((p,i)=>{
+    if(p.state==='empty') farmer.taskQueue.push({type:'till',   plotIdx:i});
+  });
+  ZONES.plots.forEach((p,i)=>{
+    if(p.state==='tilled') farmer.taskQueue.push({type:'seed',  plotIdx:i});
+  });
+  ZONES.plots.forEach((p,i)=>{
+    if(p.state==='seeded'||p.state==='growing') farmer.taskQueue.push({type:'water',plotIdx:i});
+  });
+  ZONES.plots.forEach((p,i)=>{
+    if(p.state==='ripe') farmer.taskQueue.push({type:'harvest', plotIdx:i});
+  });
+  farmer.taskQueue.push({type:'feed', penX: PEN.x+PEN.w/2, penY: PEN.y+PEN.h/2});
+  if(farmer.taskQueue.length===0){
+    farmer.taskQueue.push({type:'rest', x:280, y:90});
+  }
+}
+
+// ── Floating texts ────────────────────────────────────────────────────────────
+const floats = [];
+function addFloat(x, y, text, col='#fff0a0'){
+  floats.push({ x, y, text, col, life:60, vy:-0.6 });
+}
+
+// ── Produce items on ground ───────────────────────────────────────────────────
+const produces = [];
+
+// ── Particle effects ──────────────────────────────────────────────────────────
+const particles = [];
+function addParticles(x, y, col, n=4){
+  for(let i=0;i<n;i++){
+    const a = Math.random()*Math.PI*2;
+    particles.push({ x, y, vx:Math.cos(a)*1.6, vy:Math.sin(a)*1.6-2, col, life:25 });
+  }
+}
+
+// ── Crop sprites ──────────────────────────────────────────────────────────────
+// Each plant occupies a 7×10 cell; (x,y) is its top-left, soil line at y+9.
+function drawCrop(x, y, type, growth){
+  if(growth < 0.15){
+    px(x+3, y+8, C.seed); px(x+4, y+8, C.seed);
+    if(growth > 0.05){ px(x+3, y+7, C.sprout); px(x+3, y+6, C.sprout); px(x+4, y+6, C.sprout); }
+    return;
+  }
+  if(type === 'wheat'){
+    const h = Math.floor(growth * 9);
+    for(let i=0;i<h;i++) px(x+3, y+9-i, C.crop_mid);
+    if(growth > 0.3){ px(x+2, y+8, C.crop_mid); px(x+1, y+7, C.tree_leaf2); }
+    if(growth > 0.5){ px(x+4, y+6, C.crop_mid); px(x+5, y+5, C.tree_leaf2); }
+    if(growth > 0.7){
+      const ty = y+9-h;
+      px(x+2, ty,   C.crop_ripe); px(x+3, ty,   C.crop_gold); px(x+4, ty,   C.crop_ripe);
+      px(x+2, ty-1, C.crop_gold); px(x+3, ty-1, C.crop_ripe); px(x+4, ty-1, C.crop_gold);
+      px(x+3, ty-2, C.crop_gold);
+      if(growth > 0.85){
+        px(x+1, ty-2, C.wheat); px(x+5, ty-2, C.wheat); px(x+3, ty-3, C.wheat2);
+      }
+    }
+  } else if(type === 'tomato'){
+    rect(x+1, y+5, 5, 4, C.crop_mid);
+    px(x,   y+6, C.tree_leaf2); px(x+6, y+6, C.tree_leaf2);
+    rect(x+2, y+3, 3, 2, C.crop_mid);
+    px(x+1, y+4, C.tree_leaf2); px(x+5, y+4, C.tree_leaf2);
+    px(x+3, y+2, C.tree_leaf2);
+    if(growth > 0.7){
+      rect(x+1, y+5, 2, 2, C.tomato);  px(x+1, y+5, C.tomato2);
+      rect(x+4, y+6, 2, 2, C.tomato);  px(x+4, y+6, C.tomato2);
+      px(x+3, y+4, C.tomato2);
+    }
+  } else if(type === 'pumpkin'){
+    rect(x, y+8, 7, 1, C.crop_mid);
+    px(x+1, y+7, C.tree_leaf2); px(x+5, y+7, C.tree_leaf2);
+    if(growth > 0.5){
+      rect(x+1, y+4, 5, 4, C.pumpkin);
+      rect(x+2, y+3, 3, 1, C.pumpkin2);
+      px(x+2, y+4, C.pumpkin3);
+      px(x+3, y+4, C.pumpkin2); px(x+3, y+5, C.pumpkin2);
+      px(x+3, y+6, C.pumpkin2); px(x+3, y+7, C.pumpkin2);
+      px(x+3, y+2, C.crop_mid);
+    }
+  }
+}
+
+// ── Animal sprites (dark outlines, SNES shading) ──────────────────────────────
+function drawAnimal(a){
+  const {type,x,y,facing,anim} = a;
+  const sleep = a.state==='sleep';
+  const ix = Math.floor(x), iy = Math.floor(y) + (sleep?3:0); // lying down when asleep
+  const leg = sleep?0:(Math.floor(anim/6)%2);
+  const s = facing;  // 1=right, -1=left
+
+  if(type==='cow'){
+    px(ix-5, iy+5, 'rgba(0,0,0,0.22)', 11, 1);
+    // Legs first (so body outline overlaps their tops)
+    if(!sleep){
+      orect(ix-5*s, iy+2, 2, 3, C.cow_w);
+      orect(ix-1*s, iy+2, 2, 3+leg, C.cow_w);
+      orect(ix+3*s, iy+2, 2, 3, C.cow_w);
+      px(ix-5*s, iy+4, C.out); px(ix+3*s, iy+4, C.out);   // hooves
+    }
+    // Body with belly shade
+    orect(ix-6*s, iy-6, 12, 8, C.cow_w);
+    rect(ix-5*s, iy, 10, 2, C.cow_shade);
+    // Head
+    orect(ix+6*s, iy-6, 6, 6, C.cow_w);
+    if(!sleep) px(ix+10*s, iy-4, C.out);                 // eye (closed when asleep)
+    rect(ix+9*s, iy-2, 3, 2, C.cow_pink);                // muzzle
+    px(ix+10*s, iy-1, '#c87890');
+    // Ear & horns
+    px(ix+7*s, iy-7, C.cow_shade);
+    px(ix+9*s, iy-8, '#c89838'); px(ix+10*s, iy-8, '#c89838');
+    // Spots
+    rect(ix-1*s, iy-5, 3, 3, C.cow_b);
+    rect(ix-5*s, iy-3, 2, 2, C.cow_b);
+    px(ix+3*s, iy-1, C.cow_b);
+    // Udder & tail
+    rect(ix-2*s, iy+1, 3, 2, C.cow_pink);
+    px(ix-7*s, iy-6, C.cow_w); px(ix-7*s, iy-5, C.cow_w); px(ix-7*s, iy-4, C.cow_b);
+  } else if(type==='sheep'){
+    px(ix-4, iy+4, 'rgba(0,0,0,0.22)', 9, 1);
+    if(!sleep){
+      orect(ix-3*s, iy, 1, 3, C.sheep_g);
+      orect(ix-1*s, iy, 1, 3, C.sheep_g);
+      orect(ix+1*s, iy, 1, 3+leg, C.sheep_g);
+      orect(ix+3*s, iy, 1, 3, C.sheep_g);
+    }
+    // Wool body (fluffy bumps)
+    orect(ix-5*s, iy-6, 10, 6, C.sheep_w);
+    px(ix-6*s, iy-5, C.sheep_w); px(ix+5*s, iy-5, C.sheep_w);
+    px(ix-4*s, iy-7, C.sheep_w); px(ix-1*s, iy-7, C.sheep_w); px(ix+2*s, iy-7, C.sheep_w);
+    rect(ix-4*s, iy-1, 8, 1, C.sheep_shade);
+    // Face
+    orect(ix+4*s, iy-6, 4, 5, C.sheep_g);
+    if(!sleep) px(ix+6*s, iy-5, C.out);
+    px(ix+7*s, iy-3, '#586878');
+    px(ix+4*s, iy-7, C.sheep_g); px(ix+3*s, iy-7, '#586878');  // ear
+  } else if(type==='chicken'){
+    px(ix-2, iy+3, 'rgba(0,0,0,0.18)', 6, 1);
+    if(!sleep){
+      rect(ix-1*s, iy, 1, 2, C.chicken_y);
+      rect(ix+1*s, iy, 1, 2+leg, C.chicken_y);
+      px(ix-2*s, iy+1, C.chicken_y); px(ix+2*s, iy+1+leg, C.chicken_y);
+    }
+    // Body
+    orect(ix-3*s, iy-4, 6, 4, C.chicken_w);
+    px(ix-3*s, iy-1, C.chicken_shade); px(ix-2*s, iy-1, C.chicken_shade);
+    // Head
+    orect(ix+2*s, iy-7, 4, 4, C.chicken_w);
+    if(!sleep) px(ix+4*s, iy-6, C.out);
+    // Beak & wattle
+    px(ix+6*s, iy-5, C.chicken_y); px(ix+7*s, iy-5, C.chicken_y);
+    px(ix+5*s, iy-4, C.chicken_r);
+    // Comb
+    px(ix+3*s, iy-8, C.chicken_r); px(ix+4*s, iy-8, C.chicken_r);
+    // Wing & tail
+    rect(ix-2*s, iy-3, 3, 2, C.chicken_shade);
+    px(ix-4*s, iy-6, C.chicken_w); px(ix-5*s, iy-5, C.chicken_shade);
+    px(ix-4*s, iy-5, C.chicken_w); px(ix-4*s, iy-4, C.chicken_shade);
+  } else if(type==='pig'){
+    px(ix-4, iy+4, 'rgba(0,0,0,0.22)', 9, 1);
+    if(!sleep){
+      orect(ix-4*s, iy+1, 2, 3, C.pig_d);
+      orect(ix+2*s, iy+1, 2, 3+leg, C.pig_d);
+    }
+    // Body
+    orect(ix-5*s, iy-5, 10, 6, C.pig_p);
+    rect(ix-4*s, iy, 8, 1, C.pig_d);
+    // Snout
+    orect(ix+5*s, iy-4, 3, 3, C.pig_d);
+    px(ix+6*s, iy-3, '#a85870'); px(ix+7*s, iy-3, '#a85870');
+    if(!sleep) px(ix+3*s, iy-5, C.out);
+    // Ears
+    px(ix+2*s, iy-6, C.pig_p); px(ix+4*s, iy-6, C.pig_d);
+    // Curly tail
+    px(ix-6*s, iy-4, C.pig_d); px(ix-7*s, iy-3, C.pig_p); px(ix-6*s, iy-2, C.pig_d);
+  }
+}
+
+// ── Farmer sprite (FF6 proportions: big head, small body, dark outline) ───────
+function drawFarmer(){
+  if(farmer.state==='sleep') return; // inside the house
+  const ix = Math.floor(farmer.x), iy = Math.floor(farmer.y);
+  const s = farmer.facing;
+  const leg = (Math.floor(farmer.anim/5)%2);
+  const arm = farmer.state==='till'||farmer.state==='harvest'||farmer.state==='water'?1:0;
+  const toolUp = farmer.state==='till'&&farmer.actionTimer%14<7;
+
+  // Shadow
+  px(ix-3, iy+7, 'rgba(0,0,0,0.28)', 7, 1);
+
+  // Legs
+  if(farmer.state==='walk'||farmer.state==='till'){
+    orect(ix-2, iy+2, 2, 4+leg,   C.char_pants);
+    orect(ix+1, iy+2, 2, 4+1-leg, C.char_pants);
+    px(ix-2, iy+5+leg, '#5a3c20'); px(ix-1, iy+5+leg, '#5a3c20');
+    px(ix+1, iy+5+1-leg, '#5a3c20'); px(ix+2, iy+5+1-leg, '#5a3c20'); // boots
+  } else {
+    orect(ix-2, iy+2, 2, 4, C.char_pants);
+    orect(ix+1, iy+2, 2, 4, C.char_pants);
+    px(ix-2, iy+5, '#5a3c20'); px(ix-1, iy+5, '#5a3c20');
+    px(ix+1, iy+5, '#5a3c20'); px(ix+2, iy+5, '#5a3c20');
+  }
+
+  // Body / tunic
+  orect(ix-2, iy-3, 5, 5, C.char_shirt);
+  rect(ix+1, iy-3, 2, 5, C.char_shirt2);          // shading
+  rect(ix-2, iy+1, 5, 1, '#2a1c10');              // belt
+
+  // Arms & tools
+  if(arm && toolUp){
+    orect(ix+3*s, iy-6, 2, 4, C.char_shirt);
+    px(ix+3*s, iy-2, C.char_skin);                // hand
+    if(farmer.tool==='hoe'){
+      rect(ix+5*s, iy-9, 1, 5, '#6a4420');
+      px(ix+6*s, iy-9, C.char_tool); px(ix+6*s, iy-8, C.char_tool);
+    } else if(farmer.tool==='can'){
+      orect(ix+5*s, iy-7, 3, 2, C.char_tool);
+      px(ix+5*s, iy-8, C.water_l);
+      if(farmer.state==='water' && tick%4<2){
+        px(ix+8*s, iy-5, C.water_l); px(ix+9*s, iy-3, C.water);
+        px(ix+8*s, iy-2, C.water_l);
+      }
+    } else if(farmer.tool==='scythe'){
+      rect(ix+5*s, iy-9, 1, 5, '#6a4420');
+      px(ix+6*s, iy-9, C.char_tool); px(ix+7*s, iy-9, C.char_tool);
+      px(ix+8*s, iy-8, C.char_tool);
+    }
+  } else if(arm){
+    orect(ix+3*s, iy-3, 2, 4, C.char_shirt);
+    px(ix+3*s, iy+1, C.char_skin);
+    if(farmer.tool==='can'){
+      orect(ix+5*s, iy-1, 3, 2, C.char_tool);
+      px(ix+5*s, iy-2, C.water_l);
+      if(farmer.state==='water' && tick%4<2){
+        px(ix+8*s, iy+1, C.water_l); px(ix+9*s, iy+3, C.water);
+      }
+    }
+  } else {
+    orect(ix+3*s, iy-3, 1, 4, C.char_skin);
+    orect(ix-3*s, iy-3, 1, 4, C.char_skin);
+  }
+
+  // Big FF6 head (drawn last so it overlaps body)
+  orect(ix-3, iy-11, 7, 8, C.char_skin);
+  // Hair fringe under hat
+  rect(ix-3, iy-11, 7, 2, C.char_hair);
+  px(ix-3, iy-9, C.char_hair); px(ix+3, iy-9, C.char_hair);
+  // Eyes (big, FF6-style 2px tall)
+  px(ix-1+s, iy-8, C.out); px(ix+1+s, iy-8, C.out);
+  px(ix-1+s, iy-7, '#4868a8'); px(ix+1+s, iy-7, '#4868a8');
+  // Blush & mouth
+  px(ix-2+s, iy-6, '#e0a878');
+  // Straw hat
+  orect(ix-2, iy-14, 5, 2, C.char_hat);
+  rect(ix-4, iy-12, 9, 1, C.char_hat);
+  rect(ix-4, iy-12, 9, 1, C.char_hat);
+  px(ix-5, iy-12, C.out); px(ix+4, iy-12, C.out);     // brim outline ends
+  rect(ix-2, iy-13, 5, 1, C.char_hat2);               // hat band
+}
+
+// ── Building sprites (FF6 town style) ─────────────────────────────────────────
+function drawBarn(x, y){
+  // Foundation (stone)
+  orect(x, y+36, 44, 6, C.stone);
+  rect(x, y+36, 44, 1, C.stone_l);
+  // Walls
+  orect(x+2, y+12, 40, 26, C.barn_red);
+  rect(x+3, y+12, 2, 26, C.barn_red_l);               // left light
+  rect(x+2, y+35, 40, 3, C.barn_red_d);               // bottom shade
+  // Timber beams
+  for(let i=0;i<4;i++) rect(x+4+i*11, y+12, 2, 26, C.beam);
+  // Roof (dark shingles, outlined)
+  for(let i=0;i<16;i++){
+    rect(x+i, y+12-i, 44-i*2, 1, i%4===3?C.barn_roof2:C.barn_roof);
+  }
+  rect(x, y+12, 44, 1, C.out);                        // eave outline
+  rect(x+14, y-5, 16, 2, C.out);                      // peak
+  // Hayloft window
+  orect(x+18, y+2, 8, 6, C.barn_door);
+  px(x+20, y+3, C.wheat2); px(x+22, y+4, C.wheat2); px(x+21, y+5, C.wheat);
+  // Big door
+  orect(x+16, y+24, 12, 14, C.barn_door);
+  rect(x+17, y+25, 10, 12, '#3a2818');
+  px(x+18, y+26, C.out); px(x+25, y+26, C.out);
+  px(x+21, y+30, C.out); px(x+22, y+30, C.out);
+  px(x+18, y+35, C.out); px(x+25, y+35, C.out);
+  // Windows
+  orect(x+4,  y+16, 8, 8, C.barn_win);
+  orect(x+32, y+16, 8, 8, C.barn_win);
+  rect(x+7,  y+16, 1, 8, C.beam); rect(x+4,  y+19, 8, 1, C.beam);
+  rect(x+35, y+16, 1, 8, C.beam); rect(x+32, y+19, 8, 1, C.beam);
+  // Silo
+  orect(x+46, y+4, 16, 38, C.silo);
+  rect(x+47, y+4, 3, 38, C.silo3);
+  orect(x+46, y, 16, 5, C.silo2);
+  orect(x+48, y-3, 12, 3, C.silo2);
+  rect(x+49, y-3, 4, 1, C.silo3);
+  for(let j=0;j<6;j++) rect(x+46, y+9+j*6, 16, 1, C.silo2);
+}
+
+function drawHouse(x, y){
+  // Foundation (stone)
+  orect(x, y+32, 36, 4, C.stone);
+  rect(x, y+32, 36, 1, C.stone_l);
+  // Plaster walls with timber framing
+  orect(x+2, y+8, 32, 26, C.house_wall);
+  rect(x+3, y+8, 2, 26, C.house_wall3);               // left light
+  rect(x+2, y+31, 32, 3, C.house_wall2);              // bottom shade
+  rect(x+2, y+8, 32, 1, C.beam);                      // top beam
+  rect(x+2, y+22, 12, 1, C.beam);                     // mid beams
+  rect(x+22, y+22, 12, 1, C.beam);
+  px(x+9, y+9, C.beam); px(x+9, y+10, C.beam);        // beam studs
+  px(x+27, y+9, C.beam); px(x+27, y+10, C.beam);
+  // Window shutters (warm lamplight at night — the farmer is home)
+  const night = timeOfDay > 0.58;
+  const winCol = night && farmer.state==='sleep' ? '#f8d058' : C.house_win;
+  orect(x+4,  y+12, 10, 10, winCol);
+  orect(x+22, y+12, 10, 10, winCol);
+  rect(x+8,  y+12, 1, 10, C.beam); rect(x+4,  y+16, 10, 1, C.beam);
+  rect(x+26, y+12, 1, 10, C.beam); rect(x+22, y+16, 10, 1, C.beam);
+  // Light spilling onto the ground from the windows
+  if(night && farmer.state==='sleep'){
+    ctx.globalAlpha = 0.30;
+    rect(x+3,  y+36, 12, 5, '#f8d058');
+    rect(x+21, y+36, 12, 5, '#f8d058');
+    ctx.globalAlpha = 1;
+  }
+  // Door with awning
+  orect(x+14, y+20, 8, 14, '#6a4828');
+  rect(x+15, y+21, 6, 13, '#56381e');
+  px(x+19, y+26, '#c89838'); px(x+19, y+27, '#c89838');
+  rect(x+13, y+19, 10, 1, C.out);                     // awning
+  // Roof (FF6 teal-blue shingles)
+  for(let i=0;i<12;i++){
+    rect(x+i, y+8-i, 36-i*2, 1, i%3===2?C.house_roof2:C.house_roof);
+  }
+  rect(x+1, y+7, 2, 1, C.house_roof3); rect(x+3, y+5, 2, 1, C.house_roof3); // glints
+  rect(x+6, y+2, 2, 1, C.house_roof3);
+  rect(x, y+8, 36, 1, C.out);                         // eave outline
+  rect(x+10, y-5, 16, 2, C.out);                      // peak
+  // Chimney (stone)
+  orect(x+26, y-8, 6, 10, C.stone);
+  rect(x+25, y-9, 8, 2, C.stone_d);
+  if(tick%30<15){
+    px(x+28, y-11, C.smoke); px(x+29, y-13, C.smoke); px(x+27, y-12, C.smoke);
+  } else {
+    px(x+28, y-12, C.smoke); px(x+27, y-14, C.smoke);
+  }
+  // Flowers by door
+  px(x+12, y+30, C.flower_r); px(x+12, y+31, C.flower_stem); px(x+12, y+32, C.flower_stem);
+  px(x+10, y+31, C.flower_p); px(x+10, y+32, C.flower_stem);
+  px(x+24, y+30, C.flower_y); px(x+24, y+31, C.flower_stem); px(x+24, y+32, C.flower_stem);
+}
+
+function drawWell(x, y){
+  // Stone base
+  orect(x, y+8, 14, 8, C.stone);
+  orect(x+2, y+6, 10, 3, C.stone);
+  px(x+3, y+9, C.stone_d); px(x+8, y+11, C.stone_d);
+  px(x+5, y+13, C.stone_d); px(x+11, y+10, C.stone_d);
+  px(x+2, y+12, C.stone_l);
+  // Dark opening
+  rect(x+4, y+7, 6, 2, '#202830');
+  // Posts
+  orect(x+2, y-2, 2, 8, C.well_wood);
+  orect(x+10, y-2, 2, 8, C.well_wood);
+  // Teal roof to match the house
+  orect(x, y-4, 14, 2, C.house_roof);
+  rect(x+2, y-5, 10, 1, C.house_roof2);
+  // Rope & bucket
+  rect(x+6, y-2, 1, 5, C.well_rope);
+  orect(x+5, y+3, 4, 3, C.silo2);
+  rect(x+5, y+3, 4, 1, C.silo3);
+}
+
+function drawTree(x, y, hasApple=false){
+  // Trunk with shaded side
+  orect(x+4, y+8, 4, 8, C.tree_trunk);
+  rect(x+6, y+8, 2, 8, C.tree_trunk2);
+  px(x+3, y+15, C.tree_trunk); px(x+8, y+15, C.tree_trunk2);
+  // Canopy (layered, outlined)
+  orect(x, y+4, 12, 6, C.tree_leaf2);
+  rect(x+2, y+2, 8, 4, C.tree_leaf);
+  rect(x+3, y, 6, 3, C.tree_leaf2);
+  rect(x+3, y-1, 6, 1, C.out);
+  // Highlights
+  px(x+3, y+1, C.tree_leaf3); px(x+4, y+1, C.tree_leaf3);
+  px(x+1, y+4, C.tree_leaf3); px(x+9, y+5, C.tree_leaf3);
+  px(x+5, y+3, C.tree_leaf3);
+  // Snow caps in winter
+  if(season===3){
+    rect(x+3, y, 6, 1, '#eef6fc'); px(x+1, y+4, '#eef6fc'); px(x+9, y+4, '#eef6fc');
+  }
+  if(hasApple){
+    px(x+2, y+6, C.tree_apple); px(x+8, y+4, C.tree_apple); px(x+5, y+7, C.tree_apple);
+  }
+}
+
+function drawFlower(x, y, type){
+  px(x, y+2, C.flower_stem); px(x, y+3, C.flower_stem);
+  if(type===0){
+    px(x,y,C.flower_w); px(x-1,y,C.flower_y); px(x+1,y,C.flower_y); px(x,y-1,C.flower_y); px(x,y+1,C.flower_y);
+  } else if(type===1){
+    px(x,y,C.flower_y); px(x-1,y,C.flower_r); px(x+1,y,C.flower_r); px(x,y-1,C.flower_r);
+  } else {
+    px(x,y,C.flower_p); px(x+1,y,C.flower_w); px(x-1,y,C.flower_p); px(x,y-1,C.flower_w);
+  }
+}
+
+function drawFence(x, y, w, h){
+  rect(x, y+2, w, 2, C.fence);
+  rect(x, y+6, w, 2, C.fence);
+  for(let i=0;i<=w-2;i+=8){
+    orect(x+i, y, 2, 10, C.fence2);
+    px(x+i, y, '#46321c');
+  }
+}
+
+// ── Water pond (FF6: outlined shore, deep centre, animated foam) ──────────────
+function drawPond(x, y, w, h){
+  orect(x, y, w, h, C.water);
+  rect(x+3, y+3, w-6, h-6, C.water_d);                // deep centre
+  rect(x+1, y+1, w-2, 1, C.water_l);                  // shore light
+  rect(x+1, y+h-2, w-2, 1, C.water_l);
+  // Animated foam dashes along the shore
+  const r = Math.floor(tick/16)%4;
+  for(let i=r;i<w-2;i+=6){ px(x+1+i, y+1, C.foam); }
+  for(let i=(r+3)%6;i<w-2;i+=6){ px(x+1+i, y+h-2, C.foam); }
+  px(x+1, y+2+r, C.foam); px(x+w-2, y+h-3-r, C.foam);
+  // Inner sparkle
+  if(tick%40<20) px(x+w/2|0, y+h/2|0, C.water_l);
+  // Lily pads with blossom
+  rect(x+5, y+3, 3, 2, C.tree_leaf2); px(x+6, y+2, C.flower_p);
+  rect(x+w-8, y+h-5, 3, 2, C.tree_leaf2);
+}
+
+// ── Backdrop: forest treeline + meadow (replaces the sky — FF6 has no horizon) ─
+function drawBackdrop(){
+  const g = grassPal();
+  // Grass over the whole map
+  rect(0, 0, LW, LH, g.b);
+  // Deterministic grass texture
+  for(let gx=0;gx<LW;gx+=4){
+    if((gx*7+13)%5===0) rect(gx, (gx*3)%LH, 2, 2, g.d);
+    if((gx*11+5)%7===0) rect(gx, (40+(gx*5))%LH, 2, 2, g.d);
+    if((gx*13+3)%11===0) px(gx+1, (90+(gx*9))%LH, g.h);
+  }
+  // ── Forest treeline across the top (FF6 map border) ──
+  rect(0, 0, LW, 22, C.forest);
+  // Canopy texture: staggered highlight blobs
+  for(let x=0;x<LW;x+=16){
+    const yo = (x*7)%3;
+    rect(x+2, 2+yo, 10, 7, C.forest_l);
+    px(x+4, 3+yo, C.forest_h); px(x+5, 3+yo, C.forest_h);
+    px(x+8, 5+yo, C.forest_h);
+    rect(x+1, 10+yo, 12, 6, C.forest);
+    px(x+3, 11+yo, C.forest_l); px(x+9, 13+yo, C.forest_l);
+  }
+  // Scalloped bottom edge with outline
+  for(let x=0;x<LW;x+=16){
+    const drop = ((x/16)%2===0)?4:0;
+    rect(x, 18+drop, 16, 4-((drop)?0:0), C.forest_d);
+    rect(x, 22+drop, 16, 1, C.out);
+  }
+  // Snow on treeline in winter
+  if(season===3){
+    for(let x=0;x<LW;x+=16){
+      const yo = (x*7)%3;
+      rect(x+2, 1+yo, 10, 2, '#eef6fc');
+    }
+  }
+  // ── Meadow between forest and farmstead ──
+  const meadowFlowers = [[20,40],[52,36],[96,42],[120,34],[140,44],[230,38],[310,40]];
+  if(!(timeOfDay>0.60&&timeOfDay<0.70)){
+    for(let i=0;i<meadowFlowers.length;i++){
+      drawFlower(meadowFlowers[i][0], meadowFlowers[i][1], i%3);
+    }
+  }
+  // Lone trees behind the farmstead
+  drawTree(34, 44);
+  drawTree(104, 48, season===1||season===2);
+  drawTree(232, 42);
+  // A few rocks
+  orect(70, 56, 4, 3, C.stone); px(70, 56, C.stone_l);
+  orect(132, 60, 3, 2, C.stone_d);
+}
+
+// ── Cloud shadows drifting over the land (FF6 overworld touch) ────────────────
+function drawCloudShadows(){
+  if(timeOfDay>0.60) return;            // invisible at night
+  ctx.globalAlpha = 0.10;
+  for(const cl of clouds){
+    const cx = Math.floor(cl.x), cy = cl.y;
+    rect(cx, cy, cl.w, 6, '#102010');
+    rect(cx+3, cy-2, cl.w-6, 2, '#102010');
+    rect(cx+4, cy+6, cl.w-8, 2, '#102010');
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ── Draw ground layer ─────────────────────────────────────────────────────────
+function drawGround(){
+  const g = grassPal();
+  // Grass tufts (scattered)
+  const tufts = [10,24,40,70,110,136,170,200,230,250,290,316];
+  for(const tx of tufts){
+    const ty2 = 76 + (tx*3+7)%16;
+    px(tx, ty2, g.h); px(tx+1, ty2-1, g.h); px(tx+2, ty2, g.h);
+  }
+  // Horizontal path (outlined edges, FF6 style)
+  rect(0, 111, LW, 1, C.path_d);
+  rect(0, 112, LW, 6, C.path);
+  rect(0, 114, LW, 2, C.path_l);
+  rect(0, 118, LW, 1, C.path_d);
+  // Vertical path (to barn/house)
+  rect(147, 76, 1, LH-76, C.path_d);
+  rect(148, 76, 8, LH-76, C.path);
+  rect(150, 76, 4, LH-76, C.path_l);
+  rect(156, 76, 1, LH-76, C.path_d);
+  // Path pebbles
+  for(let gx=6;gx<LW;gx+=22) px(gx, 115, C.path_h);
+  for(let gyy=84;gyy<LH;gyy+=20) px(151+(gyy%3), gyy, C.path_h);
+
+  // Pond (lower left)
+  drawPond(4, 180, 36, 20);
+
+  // Decorative flowers (right-field edge)
+  const flowerSpots = [[138,84],[138,100],[138,116],[138,136],[138,164],[138,180]];
+  for(let i=0;i<flowerSpots.length;i++){
+    if(timeOfDay>0.60&&timeOfDay<0.70) continue; // night: closed
+    drawFlower(flowerSpots[i][0], flowerSpots[i][1], i%3);
+  }
+  // More flowers around pond
+  drawFlower(0, 174, 0); drawFlower(42, 176, 1); drawFlower(2, 206, 2);
+
+  // Trees (left/bottom area)
+  drawTree(8, 200, season===3);
+  drawTree(28, 204, season===1||season===2);
+  drawTree(48, 198);
+  // Fruit trees right side
+  drawTree(252, 136, season===1||season===2);
+  drawTree(276, 136, season===1||season===2);
+  drawTree(300, 136);
+
+  // ── Crop plots ──
+  for(const plot of ZONES.plots){
+    const soilCol = plot.state==='empty'?g.l : plot.state==='tilled'?C.soil_tilled : C.soil_wet;
+    rect(plot.x, plot.y, plot.w, plot.h, soilCol);
+    // Soil texture: furrow rows
+    if(plot.state!=='empty'){
+      for(let j=2;j<plot.h;j+=4) rect(plot.x+1, plot.y+j, plot.w-2, 1, C.dirt3);
+      for(let i=3;i<plot.w;i+=5) px(plot.x+i, plot.y+(i*3)%plot.h, C.dirt2);
+    }
+    // Plants (3 cols × 2 rows)
+    if(plot.state==='seeded'||plot.state==='growing'||plot.state==='ripe'){
+      const type = plot.crop || 'wheat';
+      for(let row=0;row<2;row++){
+        for(let col=0;col<3;col++){
+          drawCrop(plot.x+2+col*9, plot.y+3+row*14, type, plot.growth);
+        }
+      }
+    }
+    // Harvest sparkle
+    if(plot.state==='ripe'){
+      if(tick%20<10){
+        px(plot.x+plot.w-3, plot.y+2, C.sparkle);
+        px(plot.x+3, plot.y+2, C.sparkle);
+        px(plot.x+plot.w/2, plot.y+plot.h-3, C.sparkle);
+      }
+    }
+    // Plot border (dark outline)
+    rect(plot.x, plot.y, plot.w, plot.h, C.out, false);
+  }
+
+  // ── Animal pen ──
+  drawFence(PEN.x, PEN.y, PEN.w, 10);
+  drawFence(PEN.x, PEN.y+PEN.h-8, PEN.w, 10);
+  drawFence(PEN.x, PEN.y+10, 10, PEN.h-8);
+  drawFence(PEN.x+PEN.w-2, PEN.y+10, 10, PEN.h-8);
+  // Pen ground details
+  for(let gx=PEN.x+4;gx<PEN.x+PEN.w-4;gx+=8) px(gx, PEN.y+PEN.h-4, g.d);
+  rect(PEN.x+8, PEN.y+14, 6, 3, C.dirt3);
+  rect(PEN.x+70, PEN.y+60, 8, 3, C.dirt3);
+  // Water trough
+  orect(PEN.x+40, PEN.y+12, 12, 4, C.fence2);
+  rect(PEN.x+41, PEN.y+13, 10, 2, C.water_l);
+
+  // ── Buildings ──
+  drawBarn(156, 76);
+  drawHouse(256, 76);
+  drawWell(300, 112);
+}
+
+// ── Draw animals ──────────────────────────────────────────────────────────────
+function drawAnimals(){
+  for(const a of ANIMALS) drawAnimal(a);
+}
+
+// ── Draw weather effects ───────────────────────────────────────────────────────
+function drawWeather(){
+  for(const w of weather){
+    if(weatherType==='rain'){
+      ctx.fillStyle = `rgba(144,202,249,${0.5+w.alpha*0.4})`;
+      ctx.fillRect(Math.floor(w.x)*SCALE, Math.floor(w.y)*SCALE, SCALE, SCALE*3);
+    } else if(weatherType==='snow'){
+      ctx.fillStyle = `rgba(238,246,252,${0.6+w.alpha*0.4})`;
+      ctx.fillRect(Math.floor(w.x)*SCALE, Math.floor(w.y)*SCALE, SCALE, SCALE);
+    }
+  }
+}
+
+// ── Draw produces / floats / particles ────────────────────────────────────────
+function drawExtras(){
+  for(const p of produces){
+    const ix = Math.floor(p.x), iy = Math.floor(p.y);
+    if(p.type==='wheat'){
+      px(ix,iy,C.wheat); px(ix+1,iy,C.wheat2); px(ix,iy+1,C.wheat2); px(ix+1,iy+1,C.wheat);
+    } else if(p.type==='tomato'){
+      px(ix,iy,C.tomato2); px(ix+1,iy,C.tomato); px(ix,iy+1,C.tomato); px(ix+1,iy+1,C.tomato);
+    } else if(p.type==='pumpkin'){
+      px(ix,iy,C.pumpkin2); px(ix+1,iy,C.pumpkin); px(ix,iy+1,C.pumpkin); px(ix+1,iy+1,C.pumpkin2);
+    }
+  }
+  for(const p of particles){
+    ctx.globalAlpha = p.life/25;
+    ctx.fillStyle = p.col;
+    ctx.fillRect(Math.floor(p.x)*SCALE, Math.floor(p.y)*SCALE, SCALE, SCALE);
+  }
+  ctx.globalAlpha = 1;
+  for(const f of floats){
+    ctx.globalAlpha = f.life/60;
+    ctx.fillStyle = f.col;
+    ctx.font = `${SCALE*7}px monospace`;
+    ctx.fillText(f.text, Math.floor(f.x)*SCALE, Math.floor(f.y)*SCALE);
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ── Fireflies at night (warm FF6 ambience) ────────────────────────────────────
+function drawFireflies(){
+  if(timeOfDay<=0.62 || season===3) return;
+  for(const f of FIREFLIES){
+    if((tick+f.ph*10)%60<36){
+      const fx = f.bx + Math.sin(tick/55+f.ph)*9;
+      const fy = f.by + Math.cos(tick/41+f.ph)*6;
+      ctx.globalAlpha = 0.9;
+      px(Math.floor(fx), Math.floor(fy), C.firefly);
+      ctx.globalAlpha = 0.25;
+      px(Math.floor(fx)-1, Math.floor(fy), C.firefly);
+      px(Math.floor(fx)+1, Math.floor(fy), C.firefly);
+      ctx.globalAlpha = 1;
+    }
+  }
+}
+
+// ── Draw HUD (in-world day/time bar) ──────────────────────────────────────────
+function drawHUD(){
+  const barW = 120, barX = LW/2-60, barY = LH-9;
+  rect(barX-1, barY-1, barW+2, 8, '#181830');
+  rect(barX, barY, barW, 6, '#101040');
+  const filled = Math.floor(timeOfDay*barW);
+  const barCol = timeOfDay<0.5?'#f0d048':'#3a3a7a';
+  rect(barX, barY, filled, 6, barCol);
+  rect(barX, barY, barW, 6, '#e8e8e8', false);
+}
+
+// ── Logic update ──────────────────────────────────────────────────────────────
+function updateWorld(){
+  tick++;
+  timeOfDay = (tick % DAY_TICKS) / DAY_TICKS;
+
+  // Auto-save every 600 ticks (~20 s) and every new day
+  if(tick % 600 === 0 && tick > 0) saveState();
+
+  if(tick % DAY_TICKS === 0){
+    day++;
+    saveState();
+    const prevSeason = season;
+    season = Math.floor(day/10) % 4;
+    if(season !== prevSeason){
+      ZONES.plots.forEach(p=>{ p.state='empty'; p.growth=0; });
+    }
+    if(season===3)      weatherType = Math.random()<0.5?'snow':'clear';
+    else if(season===1) weatherType = Math.random()<0.3?'rain':'clear';
+    else                weatherType = Math.random()<0.2?'rain':'clear';
+  }
+
+  // Cloud shadow movement
+  for(const cl of clouds){
+    cl.x += cl.spd;
+    if(cl.x > LW+8){ cl.x = -cl.w - 4; cl.y = 30+Math.floor(Math.random()*180); }
+  }
+
+  // Weather particles
+  if(weatherType!=='clear' && weather.length<160){
+    for(let n=0;n<2;n++){
+      weather.push({
+        x: Math.random()*LW, y: -3,
+        vx: weatherType==='snow'?(Math.random()-0.5)*0.6:0,
+        vy: weatherType==='rain'?5:1.2,
+        alpha: 0.7+Math.random()*0.3,
+      });
+    }
+  }
+  for(let i=weather.length-1;i>=0;i--){
+    weather[i].x += weather[i].vx;
+    weather[i].y += weather[i].vy;
+    if(weather[i].y>LH) weather.splice(i,1);
+  }
+
+  // Crop growth (faster in good weather & season)
+  const growRate = weatherType==='rain'?0.0008:
+                   season===1?0.0006:0.0005;
+  for(const plot of ZONES.plots){
+    if(plot.state==='growing'){
+      plot.growth = Math.min(1, plot.growth + growRate);
+      if(plot.growth >= 1){ plot.state = 'ripe'; }
+    }
+  }
+
+  // Animal movement
+  for(const a of ANIMALS){
+    if(timeOfDay>0.62){ // night: sleep
+      a.state='sleep';
+      if(Math.random()<0.003) addFloat(a.x-1, a.y-9, 'z', '#cfe0ff');
+      continue;
+    }
+    // morning: wake back up
+    if(a.state==='sleep') a.state = a.type==='sheep'?'graze':a.type==='chicken'?'peck':'wander';
+    a.anim++;
+    if(Math.random()<0.005) a.dx = (Math.random()-0.5)*1.0;
+    if(Math.random()<0.005) a.dy = (Math.random()-0.5)*0.6;
+    a.x += a.dx; a.y += a.dy;
+    a.facing = a.dx>=0?1:-1;
+    a.x = Math.max(PEN.x+8, Math.min(PEN.x+PEN.w-10, a.x));
+    a.y = Math.max(PEN.y+12, Math.min(PEN.y+PEN.h-10, a.y));
+    if(a.x<=PEN.x+8||a.x>=PEN.x+PEN.w-10) a.dx *= -1;
+    if(a.y<=PEN.y+12||a.y>=PEN.y+PEN.h-10) a.dy *= -1;
+    if(Math.random()<0.001 && a.state!=='sleep'){
+      addFloat(a.x-3, a.y-12, '♥', '#ff8888');
+    }
+  }
+
+  // Particles
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.life--;
+    if(p.life<=0) particles.splice(i,1);
+  }
+  // Floats
+  for(let i=floats.length-1;i>=0;i--){
+    floats[i].y+=floats[i].vy; floats[i].life--;
+    if(floats[i].life<=0) floats.splice(i,1);
+  }
+  // Produces
+  for(let i=produces.length-1;i>=0;i--){
+    produces[i].life--;
+    if(produces[i].life<=0){ gold+=produces[i].value; produces.splice(i,1); }
+  }
+
+  // Update UI
+  document.getElementById('s-gold').textContent   = `💰 Gold: ${gold}`;
+  document.getElementById('s-day').textContent    = `📅 Day: ${day}`;
+  document.getElementById('s-season').textContent = SEASONS[season];
+  document.getElementById('s-crops').textContent  = `🌾 Harvests: ${harvestCount}`;
+  document.getElementById('s-animals').textContent= `🐄 Animals: ${ANIMALS.length}`;
+
+  // ── Farmer AI ──
+  farmer.anim++;
+
+  // Dusk: drop everything and head home to rest
+  const HOME = { x:274, y:114 };  // house doorstep
+  if(timeOfDay > 0.58){
+    if(farmer.state !== 'sleep'){
+      if(!farmer.goingHome){
+        farmer.goingHome = true;
+        addFloat(farmer.x-5, farmer.y-18, '🏠', '#ffcc88');
+      }
+      const hdx = HOME.x - farmer.x, hdy = HOME.y - farmer.y;
+      const hdist = Math.hypot(hdx, hdy);
+      if(hdist > 3){
+        farmer.state = 'walk';
+        farmer.x += hdx/hdist * 1.4;
+        farmer.y += hdy/hdist * 1.4;
+        farmer.facing = hdx>0?1:-1;
+      } else {
+        farmer.state = 'sleep';   // steps inside the house
+        farmer.actionTimer = 0;
+        farmer.taskQueue = [];
+      }
+    } else if(tick % 240 === 0){
+      addFloat(HOME.x+4, HOME.y-34, '💤', '#aaccff');
+    }
+    return;
+  }
+  // Dawn: wake up, step outside and start the day's work
+  if(farmer.state === 'sleep'){
+    farmer.state = 'idle';
+    farmer.goingHome = false;
+    farmer.x = HOME.x; farmer.y = HOME.y + 2;
+    addFloat(HOME.x-8, HOME.y-24, '🌅', '#ffdd88');
+    buildTaskQueue();
+  }
+  farmer.goingHome = false;
+
+  if(farmer.taskQueue.length===0) buildTaskQueue();
+  const task = farmer.taskQueue[0];
+  if(!task){ return; }
+
+  let destX, destY;
+  if(task.type==='till'||task.type==='seed'||task.type==='water'||task.type==='harvest'){
+    const plot = ZONES.plots[task.plotIdx];
+    destX = plot.x + plot.w/2;
+    destY = plot.y + plot.h/2;
+  } else if(task.type==='feed'){
+    destX = task.penX; destY = task.penY;
+  } else {
+    destX = task.x; destY = task.y;
+  }
+
+  const dx = destX - farmer.x, dy = destY - farmer.y;
+  const dist = Math.hypot(dx, dy);
+
+  if(dist > 3){
+    farmer.state = 'walk';
+    farmer.x += dx/dist * 1.2;
+    farmer.y += dy/dist * 1.2;
+    farmer.facing = dx>0?1:-1;
+  } else {
+    farmer.actionTimer++;
+    if(task.type==='till'){
+      farmer.state = 'till'; farmer.tool = 'hoe';
+      const plot = ZONES.plots[task.plotIdx];
+      if(farmer.actionTimer > 40){
+        if(plot.state==='empty'){ plot.state='tilled'; addParticles(destX,destY,C.dirt,4); }
+        farmer.actionTimer=0; farmer.taskQueue.shift(); buildTaskQueue();
+      }
+    } else if(task.type==='seed'){
+      farmer.state = 'till'; farmer.tool = 'bag';
+      const plot = ZONES.plots[task.plotIdx];
+      if(farmer.actionTimer > 30){
+        if(plot.state==='tilled'){
+          plot.state='seeded'; plot.growth=0.02;
+          const seasonCrop = season===0?'wheat':season===1?'tomato':season===2?'pumpkin':'wheat';
+          plot.crop = seasonCrop;
+          addFloat(destX-4, destY-8, '🌱', '#88ff88');
+          addParticles(destX,destY,C.seed,4);
+        }
+        farmer.actionTimer=0; farmer.taskQueue.shift();
+      }
+    } else if(task.type==='water'){
+      farmer.state = 'water'; farmer.tool = 'can';
+      const plot = ZONES.plots[task.plotIdx];
+      if(farmer.actionTimer > 35){
+        if(plot.state==='seeded'){ plot.state='growing'; }
+        if(plot.state==='growing') plot.growth = Math.min(1, plot.growth+0.05);
+        farmer.actionTimer=0; farmer.taskQueue.shift();
+        if(Math.random()<0.4) buildTaskQueue();
+      }
+    } else if(task.type==='harvest'){
+      farmer.state = 'harvest'; farmer.tool = 'scythe';
+      const plot = ZONES.plots[task.plotIdx];
+      if(farmer.actionTimer > 45){
+        if(plot.state==='ripe'){
+          plot.state='empty'; plot.growth=0;
+          harvestCount++;
+          const val = plot.crop==='pumpkin'?15:plot.crop==='tomato'?10:8;
+          produces.push({ x:destX, y:destY-4, type:plot.crop, value:val, life:90 });
+          addFloat(destX-8, destY-12, `+${val}G`, '#ffff44');
+          addParticles(destX, destY-4, plot.crop==='wheat'?C.wheat:plot.crop==='tomato'?C.tomato:C.pumpkin, 8);
+        }
+        farmer.actionTimer=0; farmer.taskQueue.shift(); buildTaskQueue();
+      }
+    } else if(task.type==='feed'){
+      farmer.state = 'idle'; farmer.tool = 'bag';
+      if(farmer.actionTimer > 50){
+        addFloat(task.penX-12, task.penY-16, '🐄♥', '#ffaaaa');
+        gold += 5;
+        farmer.actionTimer=0; farmer.taskQueue.shift();
+      }
+    } else {
+      farmer.state = 'idle';
+      if(farmer.actionTimer > 60){ farmer.actionTimer=0; farmer.taskQueue.shift(); buildTaskQueue(); }
+    }
+  }
+}
+
+// ── Time-of-day & season tint (FF6 palette-shift feel) ────────────────────────
+function drawSeasonOverlay(){
+  if(season===3&&weatherType==='snow'){
+    ctx.fillStyle='rgba(230,240,255,0.06)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+  if(season===2){
+    ctx.fillStyle='rgba(255,140,0,0.05)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+  if(weatherType==='rain'){
+    ctx.fillStyle='rgba(20,30,60,0.10)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+  const t = timeOfDay;
+  // Dawn: warm orange fading out
+  if(t < 0.06){
+    ctx.fillStyle = `rgba(255,150,70,${0.20*(1-t/0.06)})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+  // Dusk: orange rising
+  else if(t > 0.48 && t < 0.62){
+    const k = (t-0.48)/0.14;
+    ctx.fillStyle = `rgba(255,110,40,${0.25*k})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+  // Night: deep FF6 blue
+  if(t > 0.58){
+    const k = Math.min(1, (t-0.58)/0.12);
+    ctx.fillStyle = `rgba(14,18,76,${0.52*k})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+}
+
+// ── Main draw loop ────────────────────────────────────────────────────────────
+function draw(){
+  requestAnimationFrame(draw);
+  updateWorld();
+
+  drawBackdrop();
+  drawGround();
+  drawAnimals();
+  drawFarmer();
+  drawCloudShadows();
+  drawWeather();
+  drawExtras();
+  drawSeasonOverlay();
+  drawFireflies();
+  drawHUD();
+}
+
+// Load save before starting
+const hadSave = loadState();
+buildTaskQueue();
+if(hadSave){
+  const el = document.getElementById('save-indicator');
+  el.textContent = '📂 Loaded';
+  el.classList.add('show');
+  saveIndicatorTimer = setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=>{ el.textContent='💾 Saved'; }, 500);
+  }, 2000);
+}
+draw();
+</script>
+</body>
+</html>

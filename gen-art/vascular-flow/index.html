@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vascular Flow</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#02050d;
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; overflow:hidden;
+}
+canvas { display:block; }
+#lbl {
+  position:fixed; bottom:13px; left:0; right:0; text-align:center;
+  font:9px/1 'Helvetica Neue',sans-serif; letter-spacing:.3em;
+  color:rgba(180,48,48,.42); text-transform:uppercase; pointer-events:none;
+}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="lbl">Human Vascular System · Circulatory Flow Simulation</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+<script>
+'use strict';
+
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+let W, H;
+
+// ── coordinate helpers (reference space 420 × 760) ────────────────────────────
+// 8-head figure: HU = 86px, total ≈ 8×86 + 72px padding = 760px
+function rx(v){ return v * W / 420; }
+function ry(v){ return v * H / 760; }
+function rp(ax, ay){ return [rx(ax), ry(ay)]; }
+
+// ── deterministic RNG (xorshift32) ───────────────────────────────────────────
+let _rngS = 0;
+function rng(){ _rngS ^= _rngS<<13; _rngS ^= _rngS>>17; _rngS ^= _rngS<<5; return ((_rngS>>>0)/4294967296); }
+
+// ── anime.js driven state ─────────────────────────────────────────────────────
+const heartObj  = { beat: 0 };
+const breathObj = { v: 0 };
+const BPM = 72;
+const BEAT_MS = 60000 / BPM;
+
+function scheduleBeat(){
+  anime({
+    targets: heartObj,
+    beat: [
+      { value: 1,    duration: 112, easing:'easeOutQuad' },
+      { value: 0.35, duration:  78, easing:'linear' },
+      { value: 0.72, duration:  72, easing:'easeOutQuad' },
+      { value: 0,    duration: 275, easing:'easeInCubic' },
+    ],
+    complete: scheduleBeat,
+  });
+}
+scheduleBeat();
+anime({ targets:breathObj, v:[0,1,0], duration:4600, easing:'easeInOutSine', loop:true });
+
+const pulseRings = [];
+setInterval(()=>{ if(HEART_POS) pulseRings.push({ r:0, a:0.72 }); }, BEAT_MS);
+
+// ── ECG ───────────────────────────────────────────────────────────────────────
+let ECG_T = 0;
+function ecgVal(t){
+  t = ((t%1)+1)%1;
+  if(t<0.10) return 0.18*Math.sin(t/0.10*Math.PI);
+  if(t<0.14) return 0;
+  if(t<0.17) return -0.22*(t-0.14)/0.03;
+  if(t<0.21) return -0.22+1.35*(t-0.17)/0.04;
+  if(t<0.25) return 1.13-1.45*(t-0.21)/0.04;
+  if(t<0.29) return -0.32+0.32*(t-0.25)/0.04;
+  if(t<0.58) return 0.28*Math.sin((t-0.29)/0.29*Math.PI);
+  return 0;
+}
+
+// ── Scene ─────────────────────────────────────────────────────────────────────
+let VESSELS = [], CAPILLARIES = [];
+let HEART_POS = null;
+
+// 8-head anatomical landmarks (reference 420×760)
+// HU = 86px, top-of-head padding = 8px
+// y = 8 + head_units * 86
+const BXR = 210;  // body center x in reference
+function LM(){
+  // HEAD_TOP=8, HEAD_CY=51, HEAD_RX=33, HEAD_RY=43, CHIN=94
+  // NECK_BOT=122, SHOULDER=128
+  // NIPPLE=180, NAVEL=265, CROTCH=352, KNEE=524, ANKLE=672, FLOOR=752
+  return {
+    headCy: 51, headRx: 33, headRy: 43,
+    chinY:  94,
+    neckBotY: 122, neckHW: 14,
+    shoulderY: 128, shoulderHW: 74,
+    chestY: 178, chestHW: 66,
+    waistY: 265, waistHW: 40,
+    hipY:   335, hipHW: 60,
+    crotchY:352,
+    elbowX_off: 90, elbowY: 265,  // BX ± 90
+    wristX_off: 86, wristY: 345,
+    handCY:  418, handX_off: 83,
+    kneeY:  524, kneeX_off: 38,
+    ankleY: 672, ankleX_off: 40,
+    footY:  718, footX_off: 56,
+    heartX: 206, heartY: 220,
+  };
+}
+
+function initScene(){
+  _rngS = 12345679;
+  const p = rp;
+  const L = LM();
+  const BX = BXR;
+
+  HEART_POS = rp(L.heartX, L.heartY);
+
+  // ── Vessel path definitions (reference 420×760) ───────────────────────────
+
+  // Ascending aorta + arch
+  const AO_UP   = [p(BX-2,L.heartY), p(BX-3,195), p(BX-4,175)];
+  // Descending aorta (spine-left) → aortic bifurcation
+  const AO_DOWN = [p(BX-4,175), p(BX-5,202), p(BX-5,240), p(BX-5,265), p(BX-5,300), p(BX-5,335), p(BX-5,355)];
+
+  // Brachiocephalic trunk (right side of arch)
+  const ARCH_R   = [p(BX-4,175), p(BX+8,168), p(BX+22,162)];
+
+  // Left carotid origin (directly from arch)
+  const ARCH_LCA = [p(BX-4,175), p(BX-8,168), p(BX-14,162)];
+
+  // Left common carotid → up through neck → cerebral branches
+  const CAR_L = [p(BX-14,162), p(BX-12,145), p(BX-12,128), p(BX-13,112), p(BX-14,98), p(BX-16,85), p(BX-20,68)];
+  // Right common carotid (from brachiocephalic)
+  const CAR_R = [p(BX+22,162), p(BX+18,145), p(BX+16,128), p(BX+15,112), p(BX+15,98), p(BX+18,85), p(BX+22,68)];
+
+  // Left subclavian → axillary → brachial → radial → hand
+  // Follows inner arm (medial aspect), anatomically correct
+  const ARM_L = [
+    p(BX-4,175),      // left subclavian origin from arch
+    p(BX-20,168),     // subclavian going left
+    p(BX-48,158),     // crossing clavicle
+    p(BX-74,148),     // axillary (shoulder)
+    p(BX-82,172),     // brachial begins, inner upper arm
+    p(BX-86,215),     // mid upper arm
+    p(BX-88,265),     // elbow (at waist level ✓)
+    p(BX-86,305),     // forearm proximal
+    p(BX-84,342),     // forearm distal / wrist
+    p(BX-82,395),     // hand
+  ];
+  // Right subclavian → arm
+  const ARM_R = [
+    p(BX+22,162),     // from brachiocephalic
+    p(BX+38,158),
+    p(BX+64,150),
+    p(BX+74,148),
+    p(BX+82,172),
+    p(BX+86,215),
+    p(BX+88,265),
+    p(BX+86,305),
+    p(BX+84,342),
+    p(BX+82,395),
+  ];
+
+  // Renal arteries (from abdominal aorta at y≈300)
+  const REN_L = [p(BX-5,300), p(BX-22,302), p(BX-38,305), p(BX-52,308)];
+  const REN_R = [p(BX-5,300), p(BX+12,302), p(BX+28,305), p(BX+42,308)];
+
+  // Left iliac → femoral → popliteal → tibial → foot
+  const LEG_L = [
+    p(BX-5,355),      // aortic bifurcation
+    p(BX-15,372),     // common iliac
+    p(BX-26,392),     // external iliac
+    p(BX-34,428),     // femoral proximal (inner thigh)
+    p(BX-36,478),     // mid femoral
+    p(BX-38,524),     // knee (popliteal)
+    p(BX-39,572),     // anterior tibial
+    p(BX-40,620),
+    p(BX-40,668),     // ankle
+    p(BX-42,710),     // foot
+  ];
+  // Right leg
+  const LEG_R = [
+    p(BX-5,355),
+    p(BX+5,372),
+    p(BX+16,392),
+    p(BX+24,428),
+    p(BX+26,478),
+    p(BX+28,524),
+    p(BX+29,572),
+    p(BX+30,620),
+    p(BX+30,668),
+    p(BX+32,710),
+  ];
+
+  // Pulmonary artery (deoxygenated, from right heart → lungs)
+  const PULM_L = [p(BX-5,218), p(BX-18,210), p(BX-34,202), p(BX-50,192), p(BX-62,182)];
+  const PULM_R = [p(BX+2,218), p(BX+18,210), p(BX+34,202), p(BX+50,192), p(BX+62,182)];
+
+  // Pulmonary veins (oxygenated, back to left heart)
+  const PVEIN_L = [p(BX-65,178), p(BX-52,188), p(BX-36,200), p(BX-20,210), p(BX-5,216)];
+  const PVEIN_R = [p(BX+65,178), p(BX+52,188), p(BX+36,200), p(BX+20,210), p(BX+2,216)];
+
+  // Return veins (offset by ~5 ref px from arteries)
+  function off(path, dx){ return path.map(([a,b])=>[a+rx(dx),b]); }
+
+  const VEN_HL = off([...CAR_L].reverse(),  4);
+  const VEN_HR = off([...CAR_R].reverse(), -4);
+  const VEN_AL = off([...ARM_L].reverse(),  5);
+  const VEN_AR = off([...ARM_R].reverse(), -5);
+  const VEN_LL = off([...LEG_L].reverse(),  5);
+  const VEN_LR = off([...LEG_R].reverse(), -5);
+  const SVC    = off([...AO_UP].reverse(),   5);
+  const IVC    = off([...AO_DOWN].reverse(),  6);
+
+  // ── Build vessel objects ───────────────────────────────────────────────────
+  VESSELS = [];
+  function addV(path, type, w, rate, delay){
+    const v = { path, type, w, rate, particles:[], _acc: delay||0 };
+    v.segs=[]; v.length=0;
+    for(let i=1;i<path.length;i++){
+      const dx=path[i][0]-path[i-1][0], dy=path[i][1]-path[i-1][1];
+      const l=Math.hypot(dx,dy);
+      v.segs.push({dx,dy,l}); v.length+=l;
+    }
+    VESSELS.push(v);
+  }
+
+  // Main arteries
+  addV(AO_UP,    'art', 5.0, 14, 0.00);
+  addV(AO_DOWN,  'art', 4.5, 12, 0.00);
+  addV(ARCH_R,   'art', 2.2,  4, 0.05);
+  addV(ARCH_LCA, 'art', 1.8,  3, 0.08);
+  addV(CAR_L,    'art', 1.8,  5, 0.05);
+  addV(CAR_R,    'art', 1.8,  5, 0.08);
+  addV(ARM_L,    'art', 1.6,  5, 0.15);
+  addV(ARM_R,    'art', 1.6,  5, 0.20);
+  addV(LEG_L,    'art', 2.2,  7, 0.30);
+  addV(LEG_R,    'art', 2.2,  7, 0.35);
+  addV(REN_L,    'art', 1.3,  2, 0.55);
+  addV(REN_R,    'art', 1.3,  2, 0.58);
+  // Pulmonary
+  addV(PULM_L,   'pul', 2.0,  4, 0.00);
+  addV(PULM_R,   'pul', 2.0,  4, 0.04);
+  addV(PVEIN_L,  'pv',  1.8,  4, 0.50);
+  addV(PVEIN_R,  'pv',  1.8,  4, 0.54);
+  // Veins
+  addV(SVC,      'ven', 3.5,  9, 0.60);
+  addV(IVC,      'ven', 3.2,  9, 0.62);
+  addV(VEN_HL,   'ven', 1.6,  4, 0.65);
+  addV(VEN_HR,   'ven', 1.6,  4, 0.68);
+  addV(VEN_AL,   'ven', 1.5,  4, 0.72);
+  addV(VEN_AR,   'ven', 1.5,  4, 0.75);
+  addV(VEN_LL,   'ven', 2.0,  6, 0.80);
+  addV(VEN_LR,   'ven', 2.0,  6, 0.84);
+
+  // ── Capillary trees ───────────────────────────────────────────────────────
+  CAPILLARIES = [];
+  function branch(bx,by,ang,len,dep){
+    if(dep<=0 || len<rx(2.2)) return;
+    const ex=bx+Math.cos(ang)*len, ey=by+Math.sin(ang)*len;
+    CAPILLARIES.push({x1:bx,y1:by,x2:ex,y2:ey,d:dep});
+    if(dep>1){
+      const sp=0.28+rng()*0.38;
+      branch(ex,ey,ang-sp,len*(0.48+rng()*0.12),dep-1);
+      branch(ex,ey,ang+sp,len*(0.48+rng()*0.12),dep-1);
+    }
+  }
+  const L2 = LM();
+  const capZones = [
+    { cx:W/2,              cy:ry(L2.headCy), r:rx(40), n:16, d:3 }, // head
+    { cx:W/2-rx(82),       cy:ry(400),       r:rx(14), n:12, d:2 }, // left hand
+    { cx:W/2+rx(82),       cy:ry(400),       r:rx(14), n:12, d:2 }, // right hand
+    { cx:W/2-rx(42),       cy:ry(712),       r:rx(18), n:12, d:2 }, // left foot
+    { cx:W/2+rx(32),       cy:ry(712),       r:rx(18), n:12, d:2 }, // right foot
+    { cx:W/2-rx(50),       cy:ry(185),       r:rx(28), n:14, d:3 }, // left lung
+    { cx:W/2+rx(50),       cy:ry(185),       r:rx(28), n:14, d:3 }, // right lung
+  ];
+  for(const z of capZones){
+    for(let i=0;i<z.n;i++){
+      const a=(i/z.n)*Math.PI*2+rng()*0.35;
+      branch(z.cx,z.cy,a,z.r,z.d);
+    }
+  }
+}
+
+// ── Path interpolation ────────────────────────────────────────────────────────
+function posOnV(v,t){
+  let dist=t*v.length;
+  for(let i=0;i<v.segs.length;i++){
+    const seg=v.segs[i];
+    if(dist<=seg.l || i===v.segs.length-1){
+      const f=seg.l>0.001?Math.min(dist/seg.l,1):1;
+      return [v.path[i][0]+seg.dx*f, v.path[i][1]+seg.dy*f];
+    }
+    dist-=seg.l;
+  }
+  return v.path[v.path.length-1];
+}
+
+// ── Particle update ───────────────────────────────────────────────────────────
+function updateParticles(dt){
+  for(const v of VESSELS){
+    const spd = v.type==='art'?rx(52):v.type==='pul'?rx(48):rx(38);
+    const gap = (v.w*rx(1.1))/spd;
+    v._acc+=dt;
+    while(v._acc>=gap){
+      v._acc-=gap;
+      v.particles.push({
+        t:0, spd:spd/v.length,
+        sz:v.w*rx(0.55)+Math.random()*v.w*rx(0.25),
+        al:0.72+Math.random()*0.28,
+        wbc:Math.random()<0.016,
+      });
+    }
+    for(let i=v.particles.length-1;i>=0;i--){
+      v.particles[i].t+=v.particles[i].spd*dt;
+      if(v.particles[i].t>1) v.particles.splice(i,1);
+    }
+  }
+}
+
+// ── Colours ───────────────────────────────────────────────────────────────────
+const COL={
+  art:{ tube:'#c01c1c', glow:'rgba(220,35,35,0.32)', cell:'#ff4848', gCell:'rgba(255,72,72,0.45)' },
+  pul:{ tube:'#7a2295', glow:'rgba(160,40,200,0.28)', cell:'#cc44dd', gCell:'rgba(200,60,220,0.4)' },
+  pv: { tube:'#c01c1c', glow:'rgba(210,40,40,0.26)', cell:'#ff5555', gCell:'rgba(255,80,80,0.4)'  },
+  ven:{ tube:'#1a3faa', glow:'rgba(35,65,210,0.20)', cell:'#4466ee', gCell:'rgba(60,90,240,0.35)' },
+};
+
+// ── Draw: body silhouette (8-head realistic proportions) ──────────────────────
+function drawBody(){
+  const BX = W/2;
+  ctx.save();
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle   = '#0d1f3a';
+  ctx.strokeStyle = 'rgba(38,72,145,0.20)';
+  ctx.lineWidth   = rx(0.8);
+
+  function part(fn){ ctx.beginPath(); fn(); ctx.fill(); ctx.stroke(); }
+
+  // ── Head (smaller, realistic ~1/8 of body) ──
+  part(()=>ctx.ellipse(BX, ry(51), rx(33), ry(43), 0, 0, Math.PI*2));
+
+  // ── Neck (narrow column) ──
+  part(()=>{
+    ctx.moveTo(BX-rx(14), ry(92));
+    ctx.bezierCurveTo(BX-rx(15), ry(100), BX-rx(15), ry(112), BX-rx(16), ry(122));
+    ctx.lineTo(BX+rx(16), ry(122));
+    ctx.bezierCurveTo(BX+rx(15), ry(112), BX+rx(15), ry(100), BX+rx(14), ry(92));
+    ctx.closePath();
+  });
+
+  // ── Torso: single bezier path for natural silhouette ──
+  // Left side: neck → shoulder → chest → waist → hip → crotch
+  // Right side: mirror
+  part(()=>{
+    ctx.moveTo(BX-rx(16), ry(122));                               // neck base left
+    // slope to shoulder
+    ctx.bezierCurveTo(BX-rx(38),ry(122), BX-rx(74),ry(125), BX-rx(78),ry(138));
+    // chest wall (slight taper inward)
+    ctx.bezierCurveTo(BX-rx(80),ry(155), BX-rx(74),ry(172), BX-rx(68),ry(185));
+    // chest to waist (taper inward strongly)
+    ctx.bezierCurveTo(BX-rx(66),ry(215), BX-rx(52),ry(250), BX-rx(42),ry(268));
+    // waist to hip (flare outward)
+    ctx.bezierCurveTo(BX-rx(40),ry(292), BX-rx(56),ry(318), BX-rx(62),ry(340));
+    // hip to inner crotch
+    ctx.bezierCurveTo(BX-rx(62),ry(355), BX-rx(36),ry(363), BX-rx(8), ry(366));
+    // crotch bottom
+    ctx.lineTo(BX+rx(8), ry(366));
+    // right hip (mirror)
+    ctx.bezierCurveTo(BX+rx(36),ry(363), BX+rx(62),ry(355), BX+rx(62),ry(340));
+    ctx.bezierCurveTo(BX+rx(56),ry(318), BX+rx(40),ry(292), BX+rx(42),ry(268));
+    ctx.bezierCurveTo(BX+rx(52),ry(250), BX+rx(66),ry(215), BX+rx(68),ry(185));
+    ctx.bezierCurveTo(BX+rx(74),ry(172), BX+rx(80),ry(155), BX+rx(78),ry(138));
+    ctx.bezierCurveTo(BX+rx(74),ry(125), BX+rx(38),ry(122), BX+rx(16),ry(122));
+    ctx.closePath();
+  });
+
+  // ── Upper arms (long, anatomically correct) ──
+  // Arm axis: shoulder (BX±74, y=132) → elbow (BX±90, y=265)
+  function uArm(s){
+    const hW=rx(14), hWe=rx(11); // half-width at shoulder, elbow
+    // outer edge
+    ctx.moveTo(BX+s*rx(64), ry(128));
+    ctx.bezierCurveTo(BX+s*rx(80),ry(132), BX+s*rx(94),ry(175), BX+s*rx(100),ry(235));
+    ctx.bezierCurveTo(BX+s*rx(102),ry(248), BX+s*rx(102),ry(258), BX+s*rx(100),ry(270));
+    // elbow transition
+    ctx.lineTo(BX+s*rx(84), ry(275));
+    // inner edge
+    ctx.bezierCurveTo(BX+s*rx(80),ry(262), BX+s*rx(78),ry(242), BX+s*rx(76),ry(210));
+    ctx.bezierCurveTo(BX+s*rx(74),ry(172), BX+s*rx(72),ry(145), BX+s*rx(66),ry(130));
+    ctx.closePath();
+  }
+  part(()=>uArm(-1));
+  part(()=>uArm( 1));
+
+  // ── Forearms (tapering toward wrist) ──
+  function fArm(s){
+    ctx.moveTo(BX+s*rx(100), ry(268));
+    ctx.bezierCurveTo(BX+s*rx(104),ry(298), BX+s*rx(105),ry(330), BX+s*rx(102),ry(352));
+    ctx.lineTo(BX+s*rx(90), ry(352));
+    ctx.bezierCurveTo(BX+s*rx(88),ry(330), BX+s*rx(86),ry(298), BX+s*rx(84),ry(272));
+    ctx.closePath();
+  }
+  part(()=>fArm(-1));
+  part(()=>fArm( 1));
+
+  // ── Hands (small, oval) ──
+  part(()=>ctx.ellipse(BX-rx(96), ry(398), rx(10), ry(18), rx(-0.05), 0, Math.PI*2));
+  part(()=>ctx.ellipse(BX+rx(96), ry(398), rx(10), ry(18), rx( 0.05), 0, Math.PI*2));
+
+  // ── Upper legs (long thighs) ──
+  function thigh(s){
+    // from hip/crotch → knee, slightly angled outward
+    ctx.moveTo(BX+s*rx(8),  ry(362));                              // inner crotch
+    ctx.bezierCurveTo(BX+s*rx(6), ry(395), BX+s*rx(10),ry(460), BX+s*rx(18),ry(530));
+    ctx.lineTo(BX+s*rx(38), ry(530));                              // inner knee bottom
+    ctx.bezierCurveTo(BX+s*rx(56),ry(460), BX+s*rx(60),ry(400), BX+s*rx(60),ry(362));
+    ctx.closePath();
+  }
+  part(()=>thigh(-1));
+  part(()=>thigh( 1));
+
+  // ── Lower legs (calf → ankle, natural tapering) ──
+  function lleg(s){
+    const ox = s<0 ? -rx(18) : rx(10);   // outer knee left shifts out more
+    ctx.moveTo(BX+s*rx(18), ry(528));
+    ctx.bezierCurveTo(BX+s*rx(14),ry(565), BX+s*rx(18),ry(600), BX+s*rx(22),ry(640));
+    ctx.bezierCurveTo(BX+s*rx(24),ry(658), BX+s*rx(24),ry(665), BX+s*rx(22),ry(672));
+    ctx.lineTo(BX+s*rx(38), ry(672));
+    ctx.bezierCurveTo(BX+s*rx(40),ry(664), BX+s*rx(42),ry(645), BX+s*rx(44),ry(622));
+    ctx.bezierCurveTo(BX+s*rx(50),ry(590), BX+s*rx(56),ry(558), BX+s*rx(58),ry(528));
+    ctx.closePath();
+  }
+  part(()=>lleg(-1));
+  part(()=>lleg( 1));
+
+  // ── Feet (natural foot shape, pointing forward) ──
+  function foot(s){
+    const cx=BX+s*rx(30), cy=ry(716);
+    ctx.moveTo(cx-rx(s<0?22:14), ry(668));
+    ctx.bezierCurveTo(cx-rx(22),ry(688), cx-rx(25),ry(710), cx-rx(28),ry(720));
+    ctx.bezierCurveTo(cx-rx(10),ry(724), cx+rx(20),ry(722), cx+rx(28),ry(716));
+    ctx.bezierCurveTo(cx+rx(30),ry(705), cx+rx(24),ry(685), cx+rx(s<0?22:14),ry(668));
+    ctx.closePath();
+  }
+  part(()=>foot(-1));
+  part(()=>foot( 1));
+
+  ctx.restore();
+}
+
+// ── Draw: organs + skeleton ────────────────────────────────────────────────────
+function drawOrgans(){
+  const BX = W/2;
+  ctx.save(); ctx.globalAlpha = 0.08;
+
+  // lungs
+  ctx.fillStyle = '#6080b8';
+  ctx.beginPath(); ctx.ellipse(BX-rx(48),ry(188), rx(30),ry(48), -0.08,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(BX+rx(48),ry(188), rx(30),ry(48),  0.08,0,Math.PI*2); ctx.fill();
+
+  // liver
+  ctx.fillStyle = '#6b3018';
+  ctx.beginPath(); ctx.ellipse(BX+rx(20),ry(282), rx(40),ry(24), 0,0,Math.PI*2); ctx.fill();
+
+  // stomach
+  ctx.fillStyle = '#4a3520';
+  ctx.beginPath(); ctx.ellipse(BX-rx(20),ry(295), rx(22),ry(18), 0.25,0,Math.PI*2); ctx.fill();
+
+  // kidneys
+  ctx.fillStyle = '#7a3020';
+  function kidney(s){ ctx.beginPath(); ctx.ellipse(BX+s*rx(34),ry(315), rx(14),ry(20), s*0.16,0,Math.PI*2); ctx.fill(); }
+  kidney(-1); kidney(1);
+
+  // spine
+  ctx.strokeStyle = 'rgba(140,150,200,0.10)';
+  ctx.lineWidth = rx(5);
+  ctx.beginPath(); ctx.moveTo(BX, ry(95)); ctx.lineTo(BX, ry(360)); ctx.stroke();
+
+  // ribs (7 pairs, proper arc shape)
+  ctx.lineWidth = rx(0.7);
+  ctx.strokeStyle = 'rgba(140,155,210,0.11)';
+  for(let i=0;i<7;i++){
+    const ribY = ry(148+i*30);
+    [-1,1].forEach(s=>{
+      ctx.beginPath();
+      ctx.moveTo(BX+s*rx(8), ribY);
+      ctx.bezierCurveTo(BX+s*rx(30),ribY-ry(10), BX+s*rx(58),ribY-ry(8), BX+s*rx(70),ribY+ry(5));
+      ctx.stroke();
+    });
+  }
+
+  // collarbone (clavicle)
+  ctx.lineWidth = rx(1.0);
+  ctx.strokeStyle = 'rgba(160,170,220,0.13)';
+  [-1,1].forEach(s=>{
+    ctx.beginPath();
+    ctx.moveTo(BX+s*rx(12), ry(128));
+    ctx.bezierCurveTo(BX+s*rx(40),ry(124), BX+s*rx(68),ry(128), BX+s*rx(78),ry(140));
+    ctx.stroke();
+  });
+
+  ctx.restore();
+}
+
+// ── Draw: vessel tubes ─────────────────────────────────────────────────────────
+function drawVessels(){
+  ctx.save();
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  for(const v of VESSELS){
+    const c=COL[v.type];
+    const w=v.w*(W/420);
+    ctx.beginPath();
+    ctx.moveTo(v.path[0][0],v.path[0][1]);
+    for(let i=1;i<v.path.length;i++) ctx.lineTo(v.path[i][0],v.path[i][1]);
+    ctx.strokeStyle=c.glow; ctx.lineWidth=w*3.2; ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(v.path[0][0],v.path[0][1]);
+    for(let i=1;i<v.path.length;i++) ctx.lineTo(v.path[i][0],v.path[i][1]);
+    ctx.strokeStyle=c.tube; ctx.lineWidth=w;
+    ctx.globalAlpha=0.62; ctx.stroke(); ctx.globalAlpha=1;
+  }
+  ctx.restore();
+}
+
+// ── Draw: capillaries ─────────────────────────────────────────────────────────
+function drawCapillaries(){
+  ctx.save();
+  for(const cap of CAPILLARIES){
+    ctx.globalAlpha=Math.max(0.04, 0.18-cap.d*0.04);
+    ctx.strokeStyle=cap.d<=2?'#cc3333':'#4466cc';
+    ctx.lineWidth=cap.d===1?rx(0.4):cap.d===2?rx(0.6):rx(0.9);
+    ctx.beginPath(); ctx.moveTo(cap.x1,cap.y1); ctx.lineTo(cap.x2,cap.y2); ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+  ctx.restore();
+}
+
+// ── Draw: particles ────────────────────────────────────────────────────────────
+function drawParticles(){
+  ctx.save();
+  for(const v of VESSELS){
+    const c=COL[v.type];
+    for(const p of v.particles){
+      const [px,py]=posOnV(v,p.t);
+      if(p.wbc){
+        const r=p.sz*1.6;
+        ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(225,232,255,${p.al*0.78})`; ctx.fill();
+        ctx.beginPath(); ctx.arc(px-r*0.2,py-r*0.1,r*0.45,0,Math.PI*2);
+        ctx.fillStyle=`rgba(160,175,235,${p.al*0.6})`; ctx.fill();
+      } else {
+        const r=p.sz;
+        ctx.beginPath(); ctx.arc(px,py,r*2.2,0,Math.PI*2);
+        ctx.fillStyle=c.gCell; ctx.globalAlpha=p.al*0.22; ctx.fill();
+        ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
+        ctx.fillStyle=c.cell; ctx.globalAlpha=p.al; ctx.fill();
+        ctx.beginPath(); ctx.arc(px,py,r*0.42,0,Math.PI*2);
+        ctx.fillStyle='rgba(0,0,0,0.28)'; ctx.fill();
+      }
+    }
+  }
+  ctx.globalAlpha=1;
+  ctx.restore();
+}
+
+// ── Draw: heart ────────────────────────────────────────────────────────────────
+function drawHeart(){
+  const [hx,hy]=HEART_POS;
+  const b=heartObj.beat;
+  const r=rx(12)*(1+b*0.20);
+  ctx.save(); ctx.translate(hx,hy);
+  const aura=ctx.createRadialGradient(0,0,0,0,0,r*(3+b*1.8));
+  aura.addColorStop(0,`rgba(255,40,40,${0.35+b*0.28})`);
+  aura.addColorStop(0.4,`rgba(200,20,20,${0.12+b*0.08})`);
+  aura.addColorStop(1,'rgba(180,0,0,0)');
+  ctx.fillStyle=aura; ctx.beginPath(); ctx.arc(0,0,r*(3+b*1.8),0,Math.PI*2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(0,r*0.38);
+  ctx.bezierCurveTo(-r*0.12,r*0.12,-r,-r*0.18,-r,-r*0.52);
+  ctx.bezierCurveTo(-r,-r*0.98,0,-r*0.82,0,-r*0.38);
+  ctx.bezierCurveTo(0,-r*0.82,r,-r*0.98,r,-r*0.52);
+  ctx.bezierCurveTo(r,-r*0.18,r*0.12,r*0.12,0,r*0.38);
+  ctx.closePath();
+  ctx.fillStyle=`rgb(${Math.round(172+b*68)},${Math.round(18+b*10)},18)`;
+  ctx.fill();
+  ctx.strokeStyle=`rgba(255,80,80,${0.42+b*0.45})`; ctx.lineWidth=rx(0.9); ctx.stroke();
+  ctx.restore();
+}
+
+// ── Draw: pulse rings ──────────────────────────────────────────────────────────
+function drawPulseRings(){
+  const [hx,hy]=HEART_POS;
+  ctx.save();
+  for(let i=pulseRings.length-1;i>=0;i--){
+    const ring=pulseRings[i];
+    ring.r+=rx(1.7); ring.a-=0.011;
+    if(ring.a<=0){ pulseRings.splice(i,1); continue; }
+    ctx.beginPath(); ctx.arc(hx,hy,ring.r,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(215,38,38,${ring.a})`; ctx.lineWidth=rx(1.0); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// ── Draw: ECG ──────────────────────────────────────────────────────────────────
+function drawECG(){
+  const ew=rx(136), eh=ry(46);
+  const ex=W-ew-rx(10), ey=H-eh-ry(12);
+  ctx.save();
+  ctx.fillStyle='rgba(0,12,6,0.78)';
+  ctx.strokeStyle='rgba(0,70,28,0.35)'; ctx.lineWidth=rx(0.6);
+  ctx.beginPath();
+  ctx.moveTo(ex+4,ey); ctx.lineTo(ex+ew-4,ey); ctx.quadraticCurveTo(ex+ew,ey,ex+ew,ey+4);
+  ctx.lineTo(ex+ew,ey+eh-4); ctx.quadraticCurveTo(ex+ew,ey+eh,ex+ew-4,ey+eh);
+  ctx.lineTo(ex+4,ey+eh); ctx.quadraticCurveTo(ex,ey+eh,ex,ey+eh-4);
+  ctx.lineTo(ex,ey+4); ctx.quadraticCurveTo(ex,ey,ex+4,ey);
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle='rgba(0,70,28,0.18)'; ctx.lineWidth=rx(0.4);
+  for(let g=0;g<=4;g++){
+    ctx.beginPath(); ctx.moveTo(ex+g*ew/4,ey+2); ctx.lineTo(ex+g*ew/4,ey+eh-2); ctx.stroke();
+  }
+  ECG_T+=0.0038;
+  ctx.beginPath();
+  const N=100;
+  for(let i=0;i<N;i++){
+    const t=ECG_T-(N-1-i)*0.003;
+    const val=ecgVal(t);
+    const px=ex+6+(i/(N-1))*(ew-12);
+    const py=ey+eh/2-val*(eh*0.42);
+    i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.strokeStyle='#00ee5a'; ctx.lineWidth=rx(0.9);
+  ctx.shadowColor='#00dd50'; ctx.shadowBlur=rx(4); ctx.stroke(); ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(0,218,80,0.72)';
+  ctx.font=`${rx(7.2)}px 'Helvetica Neue',monospace`;
+  ctx.fillText(`♥ ${BPM} bpm`,ex+5,ey+9);
+  ctx.fillStyle='rgba(0,180,60,0.45)';
+  ctx.fillText('II',ex+ew-rx(14),ey+9);
+  ctx.restore();
+}
+
+// ── Draw: labels ───────────────────────────────────────────────────────────────
+function drawLabels(){
+  const BX=W/2;
+  ctx.save(); ctx.font=`${rx(7.2)}px 'Helvetica Neue',sans-serif`;
+  const labels=[
+    { t:'Carotid A.',  x:BX+rx(38), y:ry(130), c:'rgba(255,80,80,0.55)'  },
+    { t:'Aortic Arch', x:BX+rx(30), y:ry(172), c:'rgba(255,80,80,0.55)'  },
+    { t:'Pulmonary',   x:BX-rx(90), y:ry(192), c:'rgba(195,75,225,0.55)' },
+    { t:'Brachial A.', x:BX-rx(130),y:ry(215), c:'rgba(255,80,80,0.50)'  },
+    { t:'Aorta',       x:BX+rx(10), y:ry(295), c:'rgba(255,80,80,0.42)'  },
+    { t:'Renal A.',    x:BX+rx(40), y:ry(308), c:'rgba(255,80,80,0.50)'  },
+    { t:'Femoral A.',  x:BX+rx(42), y:ry(438), c:'rgba(255,80,80,0.50)'  },
+    { t:'Tibial A.',   x:BX+rx(40), y:ry(592), c:'rgba(255,80,80,0.45)'  },
+  ];
+  for(const lb of labels){ ctx.fillStyle=lb.c; ctx.fillText(lb.t,lb.x,lb.y); }
+  // legend
+  const lx=rx(10), lly=H-ry(62);
+  const leg=[
+    { c:'#e03030', t:'Artery (O₂ rich)'   },
+    { c:'#3a55dd', t:'Vein (O₂ depleted)' },
+    { c:'#aa44cc', t:'Pulmonary circuit'   },
+    { c:'rgba(220,232,255,0.85)', t:'Leukocyte' },
+  ];
+  ctx.font=`${rx(7)}px 'Helvetica Neue',sans-serif`;
+  for(let i=0;i<leg.length;i++){
+    const yy=lly+i*ry(14);
+    ctx.fillStyle=leg[i].c;
+    ctx.beginPath(); ctx.arc(lx+rx(3),yy-rx(2),rx(3.5),0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(180,195,230,0.48)';
+    ctx.fillText(leg[i].t,lx+rx(10),yy);
+  }
+  ctx.restore();
+}
+
+// ── Draw: stats ────────────────────────────────────────────────────────────────
+function drawStats(){
+  const total=VESSELS.reduce((s,v)=>s+v.particles.length,0);
+  ctx.save();
+  ctx.font=`${rx(7)}px 'Helvetica Neue',monospace`;
+  ctx.fillStyle='rgba(160,180,230,0.30)';
+  ctx.fillText(`RBC: ${total}`, rx(10), ry(14));
+  ctx.fillText(`O₂ sat: 98%`, rx(10), ry(26));
+  ctx.restore();
+}
+
+// ── Main loop ─────────────────────────────────────────────────────────────────
+let lastT=0;
+function draw(ts){
+  requestAnimationFrame(draw);
+  const dt=Math.min((ts-lastT)/1000,0.048); lastT=ts;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#02050d'; ctx.fillRect(0,0,W,H);
+  const bg=ctx.createRadialGradient(W/2,H*0.38,0,W/2,H*0.38,H*0.46);
+  bg.addColorStop(0,'rgba(12,22,50,0.5)'); bg.addColorStop(1,'rgba(2,5,13,0)');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  drawBody();
+  drawOrgans();
+  drawVessels();
+  drawCapillaries();
+  drawPulseRings();
+  drawHeart();
+  updateParticles(dt);
+  drawParticles();
+  drawECG();
+  drawLabels();
+  drawStats();
+}
+
+function resize(){
+  const sc=Math.min(window.innerWidth/420, window.innerHeight/760);
+  W=Math.round(420*sc); H=Math.round(760*sc);
+  canvas.width=W; canvas.height=H;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  initScene();
+}
+
+resize();
+window.addEventListener('resize', resize);
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

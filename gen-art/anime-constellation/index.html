@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Anime Constellation — Generative Art</title>
+  <meta name="description" content="A generative constellation sketch using anime.js timeline, stagger, SVG path motion and easing.">
+  <meta name="author" content="kvzhuang">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #06070c;
+      color: #f5f7ff;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Noto Sans TC", sans-serif;
+    }
+    body {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      touch-action: manipulation;
+    }
+    main {
+      position: relative;
+      width: 100vw;
+      min-height: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 22% 20%, rgba(52, 168, 235, 0.24), transparent 24%),
+        radial-gradient(circle at 78% 78%, rgba(255, 184, 77, 0.20), transparent 28%),
+        linear-gradient(135deg, #080912 0%, #101528 45%, #07090d 100%);
+    }
+    #stage {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #sky {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .orbit {
+      fill: none;
+      stroke: rgba(255,255,255,0.16);
+      stroke-width: 1.15;
+      stroke-dasharray: 7 12;
+      vector-effect: non-scaling-stroke;
+    }
+    .chord {
+      stroke: rgba(255,255,255,0.20);
+      stroke-width: 0.8;
+      vector-effect: non-scaling-stroke;
+      transform-origin: center;
+    }
+    .node {
+      position: absolute;
+      width: clamp(5px, 1.1vw, 10px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--c);
+      box-shadow: 0 0 16px var(--c), 0 0 34px color-mix(in srgb, var(--c), transparent 45%);
+      transform: translate(-50%, -50%);
+      will-change: transform, opacity;
+    }
+    .traveler {
+      position: absolute;
+      width: clamp(9px, 1.5vw, 16px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--c);
+      box-shadow: 0 0 22px var(--c), 0 0 48px color-mix(in srgb, var(--c), white 25%);
+      transform: translate(-50%, -50%);
+      will-change: transform;
+    }
+    .traveler::after {
+      content: "";
+      position: absolute;
+      inset: -115%;
+      border: 1px solid color-mix(in srgb, var(--c), transparent 32%);
+      border-radius: 50%;
+    }
+    .cell {
+      position: absolute;
+      width: 8px;
+      aspect-ratio: 1;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.14);
+      transform: translate(-50%, -50%);
+      will-change: transform, opacity, border-radius;
+    }
+    .label {
+      position: absolute;
+      left: clamp(16px, 4vw, 42px);
+      top: clamp(16px, 4vw, 38px);
+      letter-spacing: 0.08em;
+      pointer-events: none;
+    }
+    .label h1 {
+      font-size: clamp(1.15rem, 3vw, 2.3rem);
+      font-weight: 650;
+      line-height: 1;
+    }
+    .label p {
+      margin-top: 10px;
+      max-width: min(460px, 76vw);
+      color: rgba(245, 247, 255, 0.66);
+      font-size: clamp(0.72rem, 1.45vw, 0.92rem);
+      line-height: 1.7;
+      letter-spacing: 0.04em;
+    }
+    #readout {
+      position: absolute;
+      right: clamp(16px, 4vw, 42px);
+      bottom: clamp(18px, 5vw, 46px);
+      display: grid;
+      gap: 6px;
+      min-width: 150px;
+      color: rgba(245,247,255,0.72);
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      text-align: right;
+      pointer-events: none;
+    }
+    #controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px max(10px, env(safe-area-inset-bottom));
+      background: rgba(4, 5, 9, 0.92);
+      border-top: 1px solid rgba(255,255,255,0.10);
+    }
+    button {
+      min-width: 112px;
+      min-height: 44px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      background: #e9eefc;
+      color: #111522;
+      font-weight: 750;
+      font-size: 0.92rem;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button.secondary {
+      background: transparent;
+      color: #e9eefc;
+    }
+    button:active { transform: translateY(1px); }
+    @media (max-width: 640px) {
+      #readout {
+        left: 16px;
+        right: auto;
+        text-align: left;
+      }
+      #controls { gap: 8px; }
+      button {
+        min-width: 0;
+        flex: 1;
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+</head>
+<body>
+  <main id="stage">
+    <svg id="sky" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <g id="orbits"></g>
+      <g id="chords"></g>
+    </svg>
+    <div class="label">
+      <h1>ANIME CONSTELLATION</h1>
+      <p>timeline choreography, stagger ripples, generated SVG orbits</p>
+    </div>
+    <div id="readout"></div>
+  </main>
+  <nav id="controls" aria-label="Controls">
+    <button id="btn-generate">Generate</button>
+    <button id="btn-mode" class="secondary">Mode</button>
+    <button id="btn-pause" class="secondary">Pause</button>
+  </nav>
+  <script src="sketch.js?v=20260527a"></script>
+</body>
+</html>

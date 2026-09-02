@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>🎲 骰子戰爭 · Dice Wars</title>
+  <meta name="description" content="蜂巢六角領地的回合制骰子戰爭：你是紫色，兩顆以上骰子即可攻擊鄰國，佔領全圖獲勝。先手有優勢、人越多越好趁亂。">
+  <meta name="theme-color" content="#0e2620">
+  <meta property="og:title" content="🎲 骰子戰爭 · Dice Wars">
+  <meta property="og:description" content="六角領地回合制策略：擲骰奪國，一統天下。">
+  <meta property="og:type" content="website">
+  <style>
+    :root{ --gold:#e9c46a; --purple:#9b5de5; }
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body{ margin:0; min-height:100%; color:#eef2ea;
+      background:radial-gradient(circle at 50% 6%, #1c4a3d, #0a1512);
+      font-family:"Noto Sans TC","Hiragino Sans",system-ui,sans-serif; }
+    .wrap{ max-width:1100px; margin:0 auto; padding:16px 14px 60px; }
+    .back{ display:inline-block; color:#9fc0b2; text-decoration:none; font-size:13px; letter-spacing:.06em; }
+    .back:hover{ color:var(--gold); }
+    h1{ font-size:24px; margin:8px 0 2px; letter-spacing:.04em; }
+    h1 .en{ font-size:14px; color:#9fb6a9; font-weight:400; letter-spacing:.14em; }
+    .sub{ color:#b9c8bd; font-size:13px; margin:2px 0 12px; line-height:1.6; }
+
+    .stage{ position:relative; background:#0b1a15; border:1px solid #ffffff1c;
+      border-radius:14px; padding:10px; box-shadow:0 12px 34px #0007; overflow:auto; }
+    #board{ display:block; margin:0 auto; }
+
+    /* HUD */
+    #hud{ display:none; align-items:center; gap:10px; flex-wrap:wrap; margin:10px 2px; }
+    #hud.show{ display:flex; }
+    #standings{ display:flex; gap:6px; flex-wrap:wrap; flex:1; }
+    .tag{ color:#10201b; font-weight:700; font-size:12px; padding:3px 9px; border-radius:20px; }
+    #status{ font-size:13px; color:#cfe0d6; min-height:18px; margin:6px 2px; }
+    button{ font-family:inherit; cursor:pointer; border:0; border-radius:10px;
+      padding:9px 16px; font-size:14px; font-weight:700; color:#10201b;
+      background:var(--gold); transition:transform .1s, filter .1s; }
+    button:hover{ filter:brightness(1.08); transform:translateY(-1px); }
+    button.ghost{ background:#1d3a30; color:#dCEbe2; border:1px solid #ffffff2a; }
+
+    /* 覆蓋層 */
+    .overlay{ display:none; position:absolute; inset:0; z-index:5;
+      background:rgba(6,14,11,.82); backdrop-filter:blur(2px);
+      align-items:center; justify-content:center; text-align:center; padding:20px; border-radius:14px; }
+    .overlay.show{ display:flex; }
+    .panel{ max-width:440px; }
+    .panel h2{ margin:0 0 6px; font-size:22px; }
+    .panel p{ color:#c3d3c9; font-size:14px; line-height:1.7; margin:6px 0 16px; }
+    #pbtns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+    #pbtns button{ min-width:64px; }
+
+    /* 換地圖：底部條，讓地圖露出來 */
+    #mapchoice{ display:none; position:absolute; left:0; right:0; bottom:0; z-index:6;
+      background:linear-gradient(#0b1a15cc,#0b1a15f2); padding:12px; text-align:center;
+      border-top:1px solid #ffffff22; border-radius:0 0 14px 14px; }
+    #mapchoice.show{ display:block; }
+    #mapchoice .row{ display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; }
+
+    #over .panel h2{ font-size:24px; }
+    #over.win .panel h2{ color:var(--gold); }
+
+    .tips{ margin-top:16px; background:#0f2620; border:1px solid #ffffff14; border-radius:12px;
+      padding:12px 16px; color:#b7c8bd; font-size:13px; line-height:1.75; }
+    .tips b{ color:#e9dca0; }
+    .rules{ color:#9fb6a9; font-size:12.5px; line-height:1.7; margin-top:6px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../poker/">← 返回遊戲合輯</a>
+    <h1>🎲 骰子戰爭 <span class="en">DICE WARS</span></h1>
+    <div class="sub">蜂巢六角領地的回合制策略。你是 <b style="color:var(--purple)">紫色</b>，領地有 2 顆以上骰子即可進攻鄰國——擲骰比大小，贏了就佔領。目標：吞併整張地圖。</div>
+
+    <div class="stage">
+      <canvas id="board" width="600" height="400"></canvas>
+
+      <!-- 玩家數 -->
+      <div id="setup" class="overlay">
+        <div class="panel">
+          <h2>選擇玩家數</h2>
+          <p>你固定是紫色。人越多、局勢越亂，越有機會趁亂壯大（難度反而較低）。</p>
+          <div id="pbtns"></div>
+        </div>
+      </div>
+
+      <!-- 換地圖 -->
+      <div id="mapchoice">
+        <div class="row">
+          <span style="font-size:15px;font-weight:700">要玩這張地圖嗎？</span>
+          <button id="mapYes">要，開打！</button>
+          <button id="mapNo" class="ghost">換一張</button>
+        </div>
+      </div>
+
+      <!-- 結算 -->
+      <div id="over" class="overlay">
+        <div class="panel">
+          <h2 id="overmsg"></h2>
+          <button id="againBtn">再玩一局</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="hud">
+      <div id="standings"></div>
+      <button id="newBtn" class="ghost">新局</button>
+      <button id="endBtn">結束回合</button>
+    </div>
+    <div id="status"></div>
+
+    <div class="tips">
+      <b>🎯 攻略心得</b><br>
+      • <b>先手有優勢</b>，開局搶邊境先站穩一角。<br>
+      • <b>人數越多難度越低</b>——大家互咬，你可趁亂擴張。<br>
+      • <b>別腹背受敵</b>：靠地圖邊緣發展，減少接壤面。<br>
+      • 中期取得優勢後就是<b>大者恆大</b>：連成一片、滾雪球吞掉全圖。
+      <div class="rules">
+        規則：擲骰比「總點數」，攻方＞守方才佔領；佔領後把攻方骰子留 1 顆、其餘移入新領地。攻方輸了則只剩 1 顆。<br>
+        <b>調度骰子（每回合限一次）</b>：點自己領地（≥2 骰）→ 再點<b>同一連通塊</b>內的另一塊自己領地（會亮<span style="color:#33d6ff">青框</span>），即可把骰子調過去（來源留 1、目標上限 8）；紅框＝可攻擊的鄰國。<br>
+        結束回合補充骰子＝你「最大連通領地塊」的格數，隨機分配到各領地（單格上限 8）。<br>
+        <b>⚔️ 決戰模式（破僵局）</b>：約第 10 回合起，骰子上限逐回合從 8 往上升（最高 16）、且<b>平手改判攻方</b>，讓終盤的「8 對 8 高牆」能被突破；第 40 回合為硬上限，直接<b>依領地數判定勝負</b>。
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 依慣例：動態注入主 JS，用 ?v=時間戳破快取；載入後啟動。
+    (function () {
+      var s = document.createElement('script');
+      s.src = 'dicewars.js?v=' + Date.now();
+      s.onload = function () {
+        if (window.__dicewarsBoot) {
+          if (document.readyState === 'loading')
+            document.addEventListener('DOMContentLoaded', window.__dicewarsBoot);
+          else window.__dicewarsBoot();
+        }
+      };
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

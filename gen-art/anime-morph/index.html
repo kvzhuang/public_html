@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Anime Path Morph — Generative Art</title>
+  <meta name="description" content="anime.js SVG path morph demo. Three procedurally generated blob shapes morph between random forms, with synchronized fill color and rotation.">
+  <meta name="author" content="kvzhuang">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: #0a0a0f; width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, "Helvetica Neue", sans-serif; }
+    main { display: flex; justify-content: center; align-items: center; width: 100vw; height: calc(100vh - 60px); }
+    #stage { width: min(92vw, 92vh - 60px); aspect-ratio: 1; }
+    #stage svg { width: 100%; height: 100%; display: block; }
+    #controls { display: flex; justify-content: center; gap: 12px; padding: 10px; }
+    #controls button { padding: 12px 28px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; color: #fff; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    #controls button:active { opacity: 0.7; }
+    #btn-new { background: #06D6A0; }
+    #scene-name { position: fixed; top: 12px; left: 0; right: 0; text-align: center; color: #888; font-size: 13px; letter-spacing: 0.15em; pointer-events: none; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+</head>
+<body>
+  <div id="scene-name"></div>
+  <main>
+    <div id="stage">
+      <svg viewBox="0 0 800 800" preserveAspectRatio="xMidYMid meet">
+        <g id="blob-group-a" style="transform-origin: 400px 400px;">
+          <path id="blob-a" d="" />
+        </g>
+        <g id="blob-group-b" style="transform-origin: 400px 400px;">
+          <path id="blob-b" d="" />
+        </g>
+        <g id="blob-group-c" style="transform-origin: 400px 400px;">
+          <path id="blob-c" d="" />
+        </g>
+      </svg>
+    </div>
+  </main>
+  <div id="controls"><button id="btn-new">New Forms</button></div>
+  <script src="sketch.js?v=20260515a"></script>
+</body>
+</html>

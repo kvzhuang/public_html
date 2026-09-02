@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>簡易網頁電路模擬器</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #eef1f4;
+      --panel: #ffffff;
+      --ink: #1f2933;
+      --muted: #6b7280;
+      --line: #d8dee6;
+      --brand: #0f766e;
+      --brand-2: #2563eb;
+      --danger: #dc2626;
+      --hole: #27313d;
+      --rail-red: #ef4444;
+      --rail-blue: #2563eb;
+      --plastic: #f7f4eb;
+      --plastic-2: #e7e1d3;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button, select {
+      font: inherit;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 230px minmax(0, 1fr) 260px;
+      min-height: 100vh;
+    }
+
+    .sidebar, .inspector {
+      background: var(--panel);
+      border-color: var(--line);
+      padding: 16px;
+      overflow: auto;
+    }
+
+    .sidebar { border-right: 1px solid var(--line); }
+    .inspector { border-left: 1px solid var(--line); }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 9px 10px, #fff 0 2px, transparent 3px),
+        radial-gradient(circle at 23px 22px, #fff 0 2px, transparent 3px),
+        linear-gradient(135deg, var(--brand), var(--brand-2));
+    }
+
+    .group {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .group-title {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .tool {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      padding: 7px 9px;
+    }
+
+    .tool.active {
+      border-color: var(--brand);
+      background: #ecfdf5;
+      box-shadow: inset 0 0 0 1px var(--brand);
+    }
+
+    .tool-icon {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      background: #f3f5f7;
+      font-weight: 800;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      min-width: 0;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .88);
+      backdrop-filter: blur(8px);
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status strong { color: var(--ink); }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      min-height: 36px;
+      padding: 0 12px;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff;
+    }
+
+    .btn.danger {
+      color: var(--danger);
+    }
+
+    .canvas-wrap {
+      position: relative;
+      overflow: auto;
+      padding: 28px;
+    }
+
+    .workspace {
+      position: relative;
+      width: 1180px;
+      height: 680px;
+      margin: 0 auto;
+    }
+
+    .board {
+      position: absolute;
+      inset: 52px 70px 74px 70px;
+      border-radius: 14px;
+      border: 1px solid #c7beb0;
+      background:
+        radial-gradient(circle at 28px 28px, rgba(255,255,255,.82) 0 2px, transparent 3px),
+        radial-gradient(circle at calc(100% - 28px) 28px, rgba(255,255,255,.82) 0 2px, transparent 3px),
+        radial-gradient(circle at 28px calc(100% - 28px), rgba(255,255,255,.75) 0 2px, transparent 3px),
+        radial-gradient(circle at calc(100% - 28px) calc(100% - 28px), rgba(255,255,255,.75) 0 2px, transparent 3px),
+        repeating-linear-gradient(90deg, transparent 0 29px, rgba(76, 65, 50, .055) 29px 30px),
+        linear-gradient(180deg, #fffdf7 0%, var(--plastic) 46%, var(--plastic-2) 100%);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.9),
+        inset 0 -12px 24px rgba(95, 78, 52, .12),
+        0 24px 56px rgba(15, 23, 42, .22);
+    }
+
+    .board::before,
+    .board::after {
+      content: "";
+      position: absolute;
+      left: 58px;
+      right: 58px;
+      border-radius: 10px;
+      pointer-events: none;
+    }
+
+    .board::before {
+      top: 108px;
+      height: 138px;
+      background:
+        repeating-linear-gradient(90deg, rgba(62, 50, 34, .055) 0 1px, transparent 1px 30px),
+        linear-gradient(180deg, rgba(255,255,255,.52), rgba(180, 169, 150, .12));
+      box-shadow: inset 0 1px 2px rgba(72, 58, 37, .13);
+    }
+
+    .board::after {
+      bottom: 108px;
+      height: 168px;
+      background:
+        repeating-linear-gradient(90deg, rgba(62, 50, 34, .055) 0 1px, transparent 1px 30px),
+        linear-gradient(180deg, rgba(255,255,255,.42), rgba(180, 169, 150, .12));
+      box-shadow: inset 0 1px 2px rgba(72, 58, 37, .13);
+    }
+
+    .rail-line {
+      position: absolute;
+      left: 64px;
+      right: 64px;
+      height: 5px;
+      border-radius: 999px;
+      opacity: .86;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 1px 2px rgba(15,23,42,.16);
+    }
+
+    .rail-line.red.top { top: 36px; background: var(--rail-red); }
+    .rail-line.blue.top { top: 64px; background: var(--rail-blue); }
+    .rail-line.red.bottom { bottom: 64px; background: var(--rail-red); }
+    .rail-line.blue.bottom { bottom: 36px; background: var(--rail-blue); }
+
+    .center-gap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 261px;
+      height: 28px;
+      border-top: 1px solid #c7beb0;
+      border-bottom: 1px solid #c7beb0;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.32), transparent 18%, transparent 82%, rgba(255,255,255,.32)),
+        #d7d0c4;
+      box-shadow: inset 0 6px 12px rgba(74, 62, 44, .12);
+    }
+
+    #svgLayer {
+      position: absolute;
+      inset: 0;
+      overflow: visible;
+      z-index: 4;
+    }
+
+    #holesLayer {
+      position: absolute;
+      inset: 0;
+      z-index: 7;
+      pointer-events: none;
+    }
+
+    .hole {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      margin: -6px 0 0 -6px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 42% 42%, #05070a 0 32%, #1d2631 33% 58%, #53606d 59% 72%, #171d25 73%);
+      border: 1px solid rgba(255,255,255,.28);
+      box-shadow:
+        inset 0 1px 2px rgba(0,0,0,.9),
+        0 1px 0 rgba(255,255,255,.55),
+        0 0 0 1px rgba(64, 51, 33, .17);
+      cursor: crosshair;
+      pointer-events: auto;
+      touch-action: none;
+    }
+
+    .hole:hover, .hole.selected, .hole.drag-target {
+      background:
+        radial-gradient(circle at 42% 42%, #2b1700 0 28%, #f59e0b 30% 68%, #92400e 70%);
+      border-color: #92400e;
+      transform: scale(1.45);
+      z-index: 10;
+    }
+
+    .hole-label {
+      position: absolute;
+      color: #8b96a5;
+      font-size: 10px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .component {
+      position: absolute;
+      z-index: 6;
+      pointer-events: none;
+      filter: drop-shadow(0 8px 8px rgba(15, 23, 42, .22));
+    }
+
+    .resistor-body {
+      fill: url(#resistorGradient);
+      stroke: #8b5e34;
+      stroke-width: 2;
+    }
+
+    .switch-body {
+      fill: url(#switchGradient);
+      stroke: #5b6472;
+      stroke-width: 2;
+    }
+
+    .led-glass {
+      fill: url(#ledGradient);
+      stroke: #991b1b;
+      stroke-width: 2;
+    }
+
+    .led-glass.on {
+      fill: #ef4444;
+      filter: drop-shadow(0 0 11px rgba(239, 68, 68, .95));
+    }
+
+    .battery-body {
+      fill: url(#batteryGradient);
+      stroke: #111827;
+      stroke-width: 2;
+    }
+
+    .wire-line {
+      fill: none;
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: stroke;
+      cursor: pointer;
+    }
+
+    .wire-shadow {
+      fill: none;
+      stroke: rgba(15, 23, 42, .25);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .wire-preview {
+      fill: none;
+      stroke: rgba(15, 118, 110, .72);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 8 8;
+      pointer-events: none;
+    }
+
+    .wire-preview-shadow {
+      fill: none;
+      stroke: rgba(15, 23, 42, .18);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .metric {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .metric span { color: var(--muted); }
+    .metric strong { font-size: 18px; }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      margin-top: 12px;
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    .item small {
+      display: block;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .tiny {
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      cursor: pointer;
+      padding: 0 8px;
+    }
+
+    .tiny.danger { color: var(--danger); }
+
+    .color-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    .swatch {
+      height: 28px;
+      border-radius: 7px;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+
+    .swatch.active {
+      border-color: #111827;
+    }
+
+    .setting {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 40px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      flex: 0 0 auto;
+    }
+
+    .toggle input {
+      position: absolute;
+      opacity: 0;
+      inset: 0;
+    }
+
+    .toggle span {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: #cbd5e1;
+      box-shadow: inset 0 1px 2px rgba(15,23,42,.22);
+      cursor: pointer;
+      transition: background .18s ease;
+    }
+
+    .toggle span::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 3px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(15,23,42,.24);
+      transition: transform .18s ease;
+    }
+
+    .toggle input:checked + span {
+      background: var(--brand);
+    }
+
+    .toggle input:checked + span::after {
+      transform: translateX(20px);
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+      .sidebar, .inspector {
+        border: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .sidebar {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+      .group {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .group-title {
+        grid-column: 1 / -1;
+      }
+      .workspace {
+        width: 1060px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="logo" aria-hidden="true"></span><span>電路板模擬器</span></div>
+
+      <section class="group" id="toolbox">
+        <div class="group-title">元件</div>
+        <button class="tool active" data-tool="wire"><span class="tool-icon">╱</span><span>跳線</span></button>
+        <button class="tool" data-tool="resistor"><span class="tool-icon">Ω</span><span>電阻</span></button>
+        <button class="tool" data-tool="led"><span class="tool-icon">●</span><span>LED</span></button>
+        <button class="tool" data-tool="switch"><span class="tool-icon">⏽</span><span>開關</span></button>
+        <button class="tool" data-tool="battery"><span class="tool-icon">+</span><span>5V 電池</span></button>
+        <button class="tool" data-tool="delete"><span class="tool-icon">×</span><span>刪除</span></button>
+      </section>
+
+      <section class="group">
+        <div class="group-title">線色</div>
+        <div class="color-row" id="colors"></div>
+      </section>
+
+      <section class="group">
+        <div class="group-title">互動</div>
+        <label class="setting">
+          <span>拖拉佈線</span>
+          <span class="toggle">
+            <input id="dragToggle" type="checkbox" checked>
+            <span aria-hidden="true"></span>
+          </span>
+        </label>
+      </section>
+
+      <p class="hint">選擇元件後，可依序點兩個孔位，或從第一個孔位拖到第二個孔位。點工作區中的線可刪除；開關可在右側切換開合。</p>
+    </aside>
+
+    <section class="stage">
+      <header class="topbar">
+        <div class="status"><strong id="toolName">跳線</strong><span id="prompt">請點第一個孔位</span></div>
+        <div class="actions">
+          <button class="btn" id="demoBtn">載入範例</button>
+          <button class="btn danger" id="clearBtn">清空</button>
+          <button class="btn primary" id="simulateBtn">重新模擬</button>
+        </div>
+      </header>
+
+      <div class="canvas-wrap">
+        <div class="workspace" id="workspace">
+          <svg id="svgLayer">
+            <defs>
+              <linearGradient id="resistorGradient" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stop-color="#ffe6b8"/>
+                <stop offset=".5" stop-color="#d8a765"/>
+                <stop offset="1" stop-color="#8f6335"/>
+              </linearGradient>
+              <linearGradient id="switchGradient" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stop-color="#f8fafc"/>
+                <stop offset=".55" stop-color="#cbd5e1"/>
+                <stop offset="1" stop-color="#818b98"/>
+              </linearGradient>
+              <radialGradient id="ledGradient" cx=".35" cy=".3" r=".75">
+                <stop offset="0" stop-color="#fff1f2"/>
+                <stop offset=".38" stop-color="#fb7185"/>
+                <stop offset="1" stop-color="#991b1b"/>
+              </radialGradient>
+              <linearGradient id="batteryGradient" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stop-color="#475569"/>
+                <stop offset=".5" stop-color="#111827"/>
+                <stop offset="1" stop-color="#020617"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="board" aria-hidden="true">
+            <div class="rail-line red top"></div>
+            <div class="rail-line blue top"></div>
+            <div class="rail-line red bottom"></div>
+            <div class="rail-line blue bottom"></div>
+            <div class="center-gap"></div>
+          </div>
+          <div id="holesLayer" aria-label="麵包板孔位"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="inspector">
+      <div class="brand"><span class="logo" aria-hidden="true"></span><span>模擬狀態</span></div>
+      <div class="metric"><span>電池</span><strong id="batteryCount">0</strong></div>
+      <div class="metric"><span>LED 亮起</span><strong id="ledOnCount">0</strong></div>
+      <div class="metric"><span>線路/元件</span><strong id="partCount">0</strong></div>
+
+      <section class="group" style="margin-top:18px">
+        <div class="group-title">元件清單</div>
+        <div class="list" id="partList"></div>
+      </section>
+    </aside>
+  </main>
+
+  <script>
+    const workspace = document.getElementById('workspace');
+    const holesLayer = document.getElementById('holesLayer');
+    const svg = document.getElementById('svgLayer');
+    const toolbox = document.getElementById('toolbox');
+    const colors = document.getElementById('colors');
+    const partList = document.getElementById('partList');
+    const promptEl = document.getElementById('prompt');
+    const toolNameEl = document.getElementById('toolName');
+    const dragToggle = document.getElementById('dragToggle');
+    const svgDefs = svg.querySelector('defs')?.outerHTML || '';
+
+    const rows = [
+      { id: 'tp', label: '+', y: 88, rail: 'top+' },
+      { id: 'tn', label: '-', y: 116, rail: 'top-' },
+      { id: 'a', label: 'a', y: 182 },
+      { id: 'b', label: 'b', y: 212 },
+      { id: 'c', label: 'c', y: 242 },
+      { id: 'd', label: 'd', y: 304 },
+      { id: 'e', label: 'e', y: 334 },
+      { id: 'f', label: 'f', y: 364 },
+      { id: 'g', label: 'g', y: 394 },
+      { id: 'h', label: 'h', y: 424 },
+      { id: 'bp', label: '+', y: 496, rail: 'bottom+' },
+      { id: 'bn', label: '-', y: 524, rail: 'bottom-' }
+    ];
+    const cols = 30;
+    const originX = 138;
+    const pitch = 30;
+    const wireColors = ['#ef4444', '#111827', '#2563eb', '#16a34a', '#f59e0b', '#a855f7'];
+    const toolLabels = { wire: '跳線', resistor: '電阻', led: 'LED', switch: '開關', battery: '5V 電池', delete: '刪除' };
+    let state = { tool: 'wire', firstHole: null, color: wireColors[0], parts: [], nextId: 1, dragPlacement: true };
+    let dragState = { active: false, start: null, pointerId: null, moved: false, origin: null, target: null };
+    const holes = new Map();
+
+    class DSU {
+      constructor() { this.parent = new Map(); }
+      add(x) { if (!this.parent.has(x)) this.parent.set(x, x); }
+      find(x) {
+        this.add(x);
+        const p = this.parent.get(x);
+        if (p !== x) this.parent.set(x, this.find(p));
+        return this.parent.get(x);
+      }
+      union(a, b) {
+        const ra = this.find(a);
+        const rb = this.find(b);
+        if (ra !== rb) this.parent.set(rb, ra);
+      }
+    }
+
+    function holeId(row, col) {
+      return `${row}:${col}`;
+    }
+
+    function pointOf(id) {
+      return holes.get(id);
+    }
+
+    function buildHoles() {
+      rows.forEach(row => {
+        const label = document.createElement('div');
+        label.className = 'hole-label';
+        label.textContent = row.label;
+        label.style.left = '104px';
+        label.style.top = `${row.y}px`;
+        holesLayer.appendChild(label);
+
+        for (let col = 1; col <= cols; col++) {
+          const id = holeId(row.id, col);
+          const x = originX + (col - 1) * pitch;
+          holes.set(id, { id, row: row.id, col, x, y: row.y });
+          const el = document.createElement('button');
+          el.className = 'hole';
+          el.type = 'button';
+          el.dataset.id = id;
+          el.title = `${row.label}${col}`;
+          el.style.left = `${x}px`;
+          el.style.top = `${row.y}px`;
+          holesLayer.appendChild(el);
+        }
+      });
+
+      for (let col = 1; col <= cols; col += 5) {
+        const label = document.createElement('div');
+        label.className = 'hole-label';
+        label.textContent = col;
+        label.style.left = `${originX + (col - 1) * pitch}px`;
+        label.style.top = '154px';
+        holesLayer.appendChild(label);
+      }
+    }
+
+    function setTool(tool) {
+      state.tool = tool;
+      state.firstHole = null;
+      document.querySelectorAll('.tool').forEach(btn => btn.classList.toggle('active', btn.dataset.tool === tool));
+      document.querySelectorAll('.hole.selected').forEach(el => el.classList.remove('selected'));
+      toolNameEl.textContent = toolLabels[tool];
+      promptEl.textContent = tool === 'delete' ? '點擊線路或清單中的刪除' : '請點第一個孔位';
+    }
+
+    function createPart(type, a, b) {
+      if (a === b) return;
+      const part = {
+        id: state.nextId++,
+        type,
+        a,
+        b,
+        color: type === 'wire' ? state.color : null,
+        closed: type === 'switch',
+        ledOn: false
+      };
+      state.parts.push(part);
+      state.firstHole = null;
+      render();
+    }
+
+    function selectHole(id) {
+      if (state.tool === 'delete') return;
+      if (!state.firstHole) {
+        state.firstHole = id;
+        document.querySelector(`[data-id="${id}"]`).classList.add('selected');
+        promptEl.textContent = '請點第二個孔位';
+        return;
+      }
+      document.querySelector(`[data-id="${state.firstHole}"]`)?.classList.remove('selected');
+      createPart(state.tool, state.firstHole, id);
+      promptEl.textContent = '請點第一個孔位';
+    }
+
+    function wirePath(a, b) {
+      const p1 = pointOf(a);
+      const p2 = pointOf(b);
+      const midY = Math.min(p1.y, p2.y) - 22 - Math.min(80, Math.abs(p1.x - p2.x) * .05);
+      return `M ${p1.x} ${p1.y} C ${p1.x} ${midY}, ${p2.x} ${midY}, ${p2.x} ${p2.y}`;
+    }
+
+    function wirePathToPoint(a, p2) {
+      const p1 = pointOf(a);
+      const midY = Math.min(p1.y, p2.y) - 22 - Math.min(80, Math.abs(p1.x - p2.x) * .05);
+      return `M ${p1.x} ${p1.y} C ${p1.x} ${midY}, ${p2.x} ${midY}, ${p2.x} ${p2.y}`;
+    }
+
+    function pointerToWorkspace(event) {
+      const rect = workspace.getBoundingClientRect();
+      return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    }
+
+    function holeFromPoint(event) {
+      const el = document.elementFromPoint(event.clientX, event.clientY)?.closest('.hole');
+      return el?.dataset.id || null;
+    }
+
+    function previewSvg(start, point) {
+      const d = wirePathToPoint(start, point);
+      return `<path class="wire-preview-shadow" d="${d}"></path><path class="wire-preview" style="stroke:${state.color}" d="${d}"></path>`;
+    }
+
+    function drawSvg(preview = '') {
+      svg.innerHTML = svgDefs + state.parts.map(lineSvg).join('') + preview;
+    }
+
+    function lineSvg(part) {
+      const p1 = pointOf(part.a);
+      const p2 = pointOf(part.b);
+      const x = Math.min(p1.x, p2.x);
+      const y = Math.min(p1.y, p2.y);
+      const w = Math.abs(p1.x - p2.x);
+      const h = Math.abs(p1.y - p2.y);
+      const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+      const len = Math.hypot(w, h);
+      const cx = (p1.x + p2.x) / 2;
+      const cy = (p1.y + p2.y) / 2;
+
+      if (part.type === 'wire') {
+        return `<path class="wire-shadow" d="${wirePath(part.a, part.b)}"></path>
+          <path class="wire-line" data-part="${part.id}" style="stroke:${part.color}" d="${wirePath(part.a, part.b)}"></path>`;
+      }
+
+      if (part.type === 'resistor') {
+        return `<g class="component" transform="translate(${cx} ${cy}) rotate(${angle})">
+          <line x1="${-len / 2}" y1="0" x2="-35" y2="0" stroke="#525c6a" stroke-width="4"/>
+          <rect class="resistor-body" x="-35" y="-10" width="70" height="20" rx="6"/>
+          <line x1="35" y1="0" x2="${len / 2}" y2="0" stroke="#525c6a" stroke-width="4"/>
+          <line x1="-17" y1="-10" x2="-17" y2="10" stroke="#7c3aed" stroke-width="4"/>
+          <line x1="0" y1="-10" x2="0" y2="10" stroke="#111827" stroke-width="4"/>
+          <line x1="17" y1="-10" x2="17" y2="10" stroke="#dc2626" stroke-width="4"/>
+        </g>`;
+      }
+
+      if (part.type === 'switch') {
+        const blade = part.closed ? 'M -18 0 L 18 0' : 'M -18 0 L 12 -15';
+        return `<g class="component" transform="translate(${cx} ${cy}) rotate(${angle})">
+          <line x1="${-len / 2}" y1="0" x2="-24" y2="0" stroke="#525c6a" stroke-width="4"/>
+          <rect class="switch-body" x="-30" y="-18" width="60" height="36" rx="7"/>
+          <path d="${blade}" stroke="#0f766e" stroke-width="5" stroke-linecap="round"/>
+          <line x1="24" y1="0" x2="${len / 2}" y2="0" stroke="#525c6a" stroke-width="4"/>
+        </g>`;
+      }
+
+      if (part.type === 'led') {
+        return `<g class="component" transform="translate(${cx} ${cy}) rotate(${angle})">
+          <line x1="${-len / 2}" y1="0" x2="-18" y2="0" stroke="#525c6a" stroke-width="4"/>
+          <circle class="led-glass ${part.ledOn ? 'on' : ''}" cx="0" cy="0" r="18"/>
+          <path d="M -8 -7 L 8 0 L -8 7 Z" fill="#7f1d1d"/>
+          <line x1="18" y1="0" x2="${len / 2}" y2="0" stroke="#525c6a" stroke-width="4"/>
+          <text x="-7" y="-25" font-size="12" fill="#991b1b">A</text>
+          <text x="10" y="-25" font-size="12" fill="#991b1b">K</text>
+        </g>`;
+      }
+
+      return `<g class="component" transform="translate(${cx} ${cy}) rotate(${angle})">
+        <line x1="${-len / 2}" y1="0" x2="-28" y2="0" stroke="#dc2626" stroke-width="5"/>
+        <rect class="battery-body" x="-28" y="-20" width="56" height="40" rx="7"/>
+        <text x="-14" y="6" fill="#fff" font-size="18" font-weight="800">+</text>
+        <text x="9" y="6" fill="#fff" font-size="18" font-weight="800">-</text>
+        <line x1="28" y1="0" x2="${len / 2}" y2="0" stroke="#111827" stroke-width="5"/>
+      </g>`;
+    }
+
+    function baseConnectivity() {
+      const dsu = new DSU();
+      rows.forEach(row => {
+        for (let col = 1; col <= cols; col++) dsu.add(holeId(row.id, col));
+        if (row.rail) {
+          for (let col = 2; col <= cols; col++) dsu.union(holeId(row.id, 1), holeId(row.id, col));
+        }
+      });
+      for (let col = 1; col <= cols; col++) {
+        ['a', 'b', 'c'].forEach(r => dsu.union(holeId('a', col), holeId(r, col)));
+        ['d', 'e', 'f', 'g', 'h'].forEach(r => dsu.union(holeId('d', col), holeId(r, col)));
+      }
+      return dsu;
+    }
+
+    function simulate() {
+      const dsu = baseConnectivity();
+      state.parts.forEach(part => {
+        if (part.type === 'wire' || (part.type === 'switch' && part.closed)) dsu.union(part.a, part.b);
+      });
+
+      const edges = new Map();
+      const addEdge = (a, b, kind) => {
+        const ra = dsu.find(a);
+        const rb = dsu.find(b);
+        if (!edges.has(ra)) edges.set(ra, []);
+        if (!edges.has(rb)) edges.set(rb, []);
+        edges.get(ra).push({ to: rb, kind });
+        edges.get(rb).push({ to: ra, kind });
+      };
+
+      state.parts.forEach(part => {
+        if (part.type === 'resistor') addEdge(part.a, part.b, 'resistor');
+        if (part.type === 'switch' && part.closed) addEdge(part.a, part.b, 'wire');
+      });
+
+      const batteries = state.parts.filter(p => p.type === 'battery');
+      const plus = new Set(batteries.map(p => dsu.find(p.a)));
+      const minus = new Set(batteries.map(p => dsu.find(p.b)));
+
+      const reachable = (starts, target, needsResistor) => {
+        const queue = [...starts].map(node => ({ node, resistor: false }));
+        const seen = new Set(queue.map(q => `${q.node}:false`));
+        while (queue.length) {
+          const cur = queue.shift();
+          if (cur.node === target && (!needsResistor || cur.resistor)) return true;
+          for (const edge of edges.get(cur.node) || []) {
+            const nextResistor = cur.resistor || edge.kind === 'resistor';
+            const key = `${edge.to}:${nextResistor}`;
+            if (!seen.has(key)) {
+              seen.add(key);
+              queue.push({ node: edge.to, resistor: nextResistor });
+            }
+          }
+        }
+        return false;
+      };
+
+      state.parts.forEach(part => {
+        part.ledOn = false;
+        if (part.type !== 'led' || batteries.length === 0) return;
+        const anode = dsu.find(part.a);
+        const cathode = dsu.find(part.b);
+        const toAnode = reachable(plus, anode, false);
+        const toCathode = reachable(new Set([cathode]), [...minus][0], false) || [...minus].some(m => reachable(new Set([cathode]), m, false));
+        const hasResistor = reachable(plus, anode, true) || reachable(new Set([cathode]), [...minus][0], true) || [...minus].some(m => reachable(new Set([cathode]), m, true));
+        part.ledOn = toAnode && toCathode && hasResistor && anode !== cathode;
+      });
+    }
+
+    function render() {
+      simulate();
+      drawSvg();
+      document.getElementById('batteryCount').textContent = state.parts.filter(p => p.type === 'battery').length;
+      document.getElementById('ledOnCount').textContent = state.parts.filter(p => p.type === 'led' && p.ledOn).length;
+      document.getElementById('partCount').textContent = state.parts.length;
+      renderList();
+    }
+
+    function renderList() {
+      if (state.parts.length === 0) {
+        partList.innerHTML = '<p class="hint">尚未放置元件。</p>';
+        return;
+      }
+      partList.innerHTML = state.parts.map(part => `
+        <div class="item">
+          <div><strong>${toolLabels[part.type]} #${part.id}</strong><small>${part.a} → ${part.b}${part.type === 'switch' ? (part.closed ? '，閉合' : '，斷開') : ''}${part.type === 'led' ? (part.ledOn ? '，亮' : '，未亮') : ''}</small></div>
+          <div>
+            ${part.type === 'switch' ? `<button class="tiny" data-toggle="${part.id}">${part.closed ? '斷開' : '閉合'}</button>` : ''}
+            <button class="tiny danger" data-remove="${part.id}">刪除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function removePart(id) {
+      state.parts = state.parts.filter(part => part.id !== Number(id));
+      render();
+    }
+
+    function toggleSwitch(id) {
+      const part = state.parts.find(p => p.id === Number(id));
+      if (part) part.closed = !part.closed;
+      render();
+    }
+
+    function clearDragClasses() {
+      document.querySelectorAll('.hole.drag-target').forEach(el => el.classList.remove('drag-target'));
+    }
+
+    function updateDragPreview(event) {
+      const point = pointerToWorkspace(event);
+      const target = holeFromPoint(event);
+      dragState.target = target;
+      clearDragClasses();
+      if (target && target !== dragState.start) {
+        document.querySelector(`[data-id="${target}"]`)?.classList.add('drag-target');
+        drawSvg(previewSvg(dragState.start, pointOf(target)));
+      } else {
+        drawSvg(previewSvg(dragState.start, point));
+      }
+    }
+
+    function beginDrag(event, id) {
+      if (!state.dragPlacement || state.tool === 'delete') return;
+      dragState = {
+        active: true,
+        start: id,
+        pointerId: event.pointerId,
+        moved: false,
+        origin: { x: event.clientX, y: event.clientY },
+        target: null
+      };
+      event.target.setPointerCapture?.(event.pointerId);
+      document.querySelector(`[data-id="${id}"]`)?.classList.add('selected');
+      promptEl.textContent = '拖到第二個孔位後放開';
+    }
+
+    function moveDrag(event) {
+      if (!dragState.active || event.pointerId !== dragState.pointerId) return;
+      const dx = event.clientX - dragState.origin.x;
+      const dy = event.clientY - dragState.origin.y;
+      if (Math.hypot(dx, dy) < 4 && !dragState.moved) return;
+      dragState.moved = true;
+      updateDragPreview(event);
+    }
+
+    function endDrag(event) {
+      if (!dragState.active || event.pointerId !== dragState.pointerId) return false;
+      const didMove = dragState.moved;
+      const target = dragState.target || holeFromPoint(event);
+      clearDragClasses();
+      document.querySelector(`[data-id="${dragState.start}"]`)?.classList.remove('selected');
+      drawSvg();
+      if (didMove && target && target !== dragState.start) {
+        createPart(state.tool, dragState.start, target);
+        promptEl.textContent = '請點第一個孔位';
+      } else if (!didMove) {
+        selectHole(dragState.start);
+      }
+      dragState = { active: false, start: null, pointerId: null, moved: false, origin: null, target: null };
+      return didMove;
+    }
+
+    function loadDemo() {
+      state.parts = [];
+      state.nextId = 1;
+      const add = (type, a, b, extra = {}) => state.parts.push({ id: state.nextId++, type, a, b, color: extra.color || state.color, closed: extra.closed ?? type === 'switch', ledOn: false });
+      add('battery', 'tp:2', 'tn:2');
+      add('wire', 'tp:2', 'tp:10', { color: '#ef4444' });
+      add('wire', 'tn:2', 'tn:16', { color: '#111827' });
+      add('resistor', 'tp:10', 'a:10');
+      add('switch', 'c:10', 'c:16', { closed: true });
+      add('led', 'd:16', 'tn:16');
+      add('wire', 'a:10', 'c:10', { color: '#16a34a' });
+      add('wire', 'c:16', 'd:16', { color: '#2563eb' });
+      render();
+    }
+
+    toolbox.addEventListener('click', event => {
+      const btn = event.target.closest('[data-tool]');
+      if (btn) setTool(btn.dataset.tool);
+    });
+
+    holesLayer.addEventListener('click', event => {
+      const hole = event.target.closest('.hole');
+      if (hole && (!state.dragPlacement || state.tool === 'delete')) selectHole(hole.dataset.id);
+    });
+
+    holesLayer.addEventListener('pointerdown', event => {
+      const hole = event.target.closest('.hole');
+      if (hole) beginDrag(event, hole.dataset.id);
+    });
+
+    holesLayer.addEventListener('pointermove', moveDrag);
+
+    holesLayer.addEventListener('pointerup', event => {
+      const usedDrag = endDrag(event);
+      if (usedDrag) event.preventDefault();
+    });
+
+    holesLayer.addEventListener('pointercancel', event => {
+      if (!dragState.active || event.pointerId !== dragState.pointerId) return;
+      clearDragClasses();
+      document.querySelector(`[data-id="${dragState.start}"]`)?.classList.remove('selected');
+      dragState = { active: false, start: null, pointerId: null, moved: false, origin: null, target: null };
+      render();
+      promptEl.textContent = '請點第一個孔位';
+    });
+
+    svg.addEventListener('click', event => {
+      const partId = event.target.dataset.part;
+      if (partId && state.tool === 'delete') removePart(partId);
+    });
+
+    partList.addEventListener('click', event => {
+      const remove = event.target.closest('[data-remove]');
+      const toggle = event.target.closest('[data-toggle]');
+      if (remove) removePart(remove.dataset.remove);
+      if (toggle) toggleSwitch(toggle.dataset.toggle);
+    });
+
+    document.getElementById('simulateBtn').addEventListener('click', render);
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      state.parts = [];
+      state.firstHole = null;
+      render();
+      setTool(state.tool);
+    });
+    document.getElementById('demoBtn').addEventListener('click', loadDemo);
+
+    dragToggle.addEventListener('change', () => {
+      state.dragPlacement = dragToggle.checked;
+      state.firstHole = null;
+      clearDragClasses();
+      document.querySelectorAll('.hole.selected').forEach(el => el.classList.remove('selected'));
+      promptEl.textContent = state.dragPlacement ? '可點孔位或拖拉放置元件' : '請點第一個孔位';
+    });
+
+    wireColors.forEach(color => {
+      const btn = document.createElement('button');
+      btn.className = `swatch${color === state.color ? ' active' : ''}`;
+      btn.type = 'button';
+      btn.style.background = color;
+      btn.title = color;
+      btn.addEventListener('click', () => {
+        state.color = color;
+        document.querySelectorAll('.swatch').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+      });
+      colors.appendChild(btn);
+    });
+
+    buildHoles();
+    loadDemo();
+  </script>
+</body>
+</html>

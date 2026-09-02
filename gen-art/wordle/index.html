@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Wordle - Daily Word Game</title>
+  <meta name="description" content="A daily word guessing game. Guess the 5-7 letter word in 6 tries.">
+  <meta name="author" content="kvzhuang">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🟩</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: #121213;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      user-select: none;
+    }
+
+    header {
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #3a3a3c;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+    }
+
+    #message {
+      height: 32px;
+      line-height: 32px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: center;
+      color: #fff;
+    }
+
+    #board {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 10px 0;
+      flex-grow: 1;
+    }
+
+    .row {
+      display: flex;
+      gap: 5px;
+    }
+
+    .tile {
+      width: 58px;
+      height: 58px;
+      border: 2px solid #3a3a3c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      transition: transform 0.1s;
+    }
+
+    .tile.filled {
+      border-color: #565758;
+      animation: pop 0.1s;
+    }
+
+    .tile.reveal {
+      animation: flip 0.5s ease forwards;
+    }
+
+    .tile.correct  { background: #538d4e; border-color: #538d4e; }
+    .tile.present  { background: #b59f3b; border-color: #b59f3b; }
+    .tile.absent   { background: #3a3a3c; border-color: #3a3a3c; }
+
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes flip {
+      0%   { transform: rotateX(0deg); }
+      45%  { transform: rotateX(90deg); }
+      55%  { transform: rotateX(90deg); }
+      100% { transform: rotateX(0deg); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+
+    .row.shake { animation: shake 0.4s; }
+
+    #keyboard {
+      padding: 8px 4px 16px;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .kb-row {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .key {
+      height: 52px;
+      min-width: 32px;
+      padding: 0 8px;
+      border: none;
+      border-radius: 4px;
+      background: #818384;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      transition: background 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .key:active { opacity: 0.8; }
+    .key.wide { min-width: 60px; font-size: 0.75rem; }
+    .key.correct { background: #538d4e; }
+    .key.present { background: #b59f3b; }
+    .key.absent  { background: #3a3a3c; }
+
+    #info {
+      font-size: 0.8rem;
+      color: #666;
+      padding: 8px;
+      text-align: center;
+    }
+
+    #share-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 90;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #share-overlay.show {
+      display: flex !important;
+    }
+
+    #share-panel {
+      background: #1e1e20;
+      border: 1px solid #3a3a3c;
+      border-radius: 12px;
+      text-align: center;
+      padding: 24px 20px;
+      max-width: 360px;
+      width: 90%;
+    }
+
+    #share-panel h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    #share-preview {
+      font-family: monospace;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      white-space: pre;
+    }
+
+    .share-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .share-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .share-btn:active { opacity: 0.8; }
+    .share-copy    { background: #538d4e; }
+    .share-fb      { background: #1877F2; }
+    .share-threads { background: #000; border: 1px solid #333; }
+    .share-x       { background: #000; border: 1px solid #333; }
+
+    #copy-toast {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      color: #121213;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      z-index: 100;
+    }
+
+    @media (max-width: 400px) {
+      .tile { width: 48px; height: 48px; font-size: 1.5rem; }
+      .key { height: 46px; min-width: 26px; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>WORDLE</h1>
+  </header>
+  <div id="message"></div>
+  <div id="board"></div>
+  <div id="keyboard"></div>
+  <div id="share-overlay">
+    <div id="share-panel">
+      <h2 id="share-title"></h2>
+      <div id="share-preview"></div>
+      <div class="share-buttons">
+        <button class="share-btn share-copy" id="btnCopy">Copy</button>
+        <button class="share-btn share-fb" id="btnFB">Facebook</button>
+        <button class="share-btn share-threads" id="btnThreads">Threads</button>
+        <button class="share-btn share-x" id="btnX">X</button>
+      </div>
+    </div>
+  </div>
+  <div id="copy-toast">Copied!</div>
+  <div id="info"></div>
+  <script src="game.js?v=4"></script>
+</body>
+</html>

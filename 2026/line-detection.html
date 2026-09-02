@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LINE Mini App 授權偵測</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px 24px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      background: #06C755;
+      border-radius: 20px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: white;
+      font-weight: bold;
+    }
+
+    h1 { font-size: 20px; color: #111; margin-bottom: 8px; }
+
+    .subtitle {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-group input:focus { border-color: #06C755; }
+    .input-group .hint {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 4px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn:active { opacity: 0.8; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: #06C755; color: white; }
+    .btn-logout {
+      background: #f0f0f0;
+      color: #666;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      text-align: left;
+    }
+    .status.show { display: block; }
+    .status.detecting { background: #FFF8E1; color: #F59E0B; }
+    .status.found     { background: #E8F5E9; color: #16a34a; }
+    .status.not-found { background: #FEF2F2; color: #dc2626; }
+    .status.info      { background: #E3F2FD; color: #1976D2; }
+    .status.error     { background: #FEF2F2; color: #dc2626; }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .result-table {
+      width: 100%;
+      margin-top: 16px;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+    .result-table td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: top;
+    }
+    .result-table td:first-child {
+      font-weight: 600;
+      color: #555;
+      white-space: nowrap;
+      width: 110px;
+    }
+    .result-table td:last-child {
+      color: #222;
+      word-break: break-all;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-weight: 600;
+    }
+    .badge-yes { background: #E8F5E9; color: #16a34a; }
+    .badge-no  { background: #FEF2F2; color: #dc2626; }
+    .badge-na  { background: #f0f0f0; color: #999; }
+
+    .profile-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      padding: 12px;
+      background: #fafafa;
+      border-radius: 10px;
+      text-align: left;
+    }
+    .profile-row img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .profile-row .name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #111;
+    }
+    .profile-row .uid {
+      font-size: 11px;
+      color: #999;
+      word-break: break-all;
+      margin-top: 2px;
+    }
+
+    .env-badge {
+      display: inline-block;
+      font-size: 11px;
+      background: #eee;
+      color: #666;
+      border-radius: 20px;
+      padding: 2px 10px;
+      margin-bottom: 20px;
+    }
+
+    #resultSection { display: none; }
+    #resultSection.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">LIFF</div>
+    <h1>LINE Mini App 授權偵測</h1>
+    <p class="subtitle">輸入 LIFF ID，偵測該 Mini App 的授權狀態、登入資訊與使用者 Profile</p>
+    <div class="env-badge" id="envBadge">—</div>
+
+    <div class="input-group">
+      <label for="liffId">LIFF ID</label>
+      <input type="text" id="liffId" placeholder="例如：1234567890-abcdefgh" value="2009786794-KzMhg8kE" />
+      <div class="hint">從 LINE Developers Console 取得</div>
+    </div>
+
+    <button class="btn btn-primary" id="detectBtn" onclick="startDetect()">
+      偵測授權狀態
+    </button>
+    <button class="btn btn-logout" id="logoutBtn" onclick="doLogout()" style="display:none">
+      登出此 LIFF
+    </button>
+
+    <div class="status" id="status"></div>
+
+    <div id="resultSection">
+      <div id="profileRow" class="profile-row" style="display:none">
+        <img id="profileImg" src="" alt="avatar" />
+        <div>
+          <div class="name" id="profileName"></div>
+          <div class="uid" id="profileUid"></div>
+        </div>
+      </div>
+
+      <table class="result-table" id="resultTable">
+        <tbody id="resultBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+    let liffReady = false;
+
+    function showStatus(type, html) {
+      const el = document.getElementById('status');
+      el.className = 'status show ' + type;
+      el.innerHTML = html;
+    }
+
+    function badge(val) {
+      if (val === true)  return '<span class="badge badge-yes">✓ Yes</span>';
+      if (val === false) return '<span class="badge badge-no">✗ No</span>';
+      return '<span class="badge badge-na">N/A</span>';
+    }
+
+    function addRow(label, value) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + label + '</td><td>' + value + '</td>';
+      document.getElementById('resultBody').appendChild(tr);
+    }
+
+    async function startDetect() {
+      const liffId = document.getElementById('liffId').value.trim();
+      if (!liffId) {
+        showStatus('error', '⚠️ 請輸入 LIFF ID');
+        return;
+      }
+
+      const btn = document.getElementById('detectBtn');
+      btn.disabled = true;
+      document.getElementById('resultSection').className = '';
+      document.getElementById('resultBody').innerHTML = '';
+      document.getElementById('profileRow').style.display = 'none';
+      document.getElementById('logoutBtn').style.display = 'none';
+
+      showStatus('detecting', '<span class="spinner"></span> 初始化 LIFF SDK...');
+
+      try {
+        await liff.init({ liffId: liffId });
+        liffReady = true;
+      } catch (e) {
+        btn.disabled = false;
+        showStatus('error', '❌ LIFF 初始化失敗<br><small style="font-weight:400">' + escapeHtml(e.message || e.code || String(e)) + '</small>');
+        return;
+      }
+
+      // 環境資訊
+      const inClient = liff.isInClient();
+      const os = liff.getOS() || 'unknown';
+      const lang = liff.getLanguage() || 'unknown';
+      const ver = liff.getVersion() || 'unknown';
+      const liffIdDisplay = liff.id || liffId;
+
+      document.getElementById('envBadge').textContent =
+        inClient ? 'LINE App 內開啟' : '外部瀏覽器';
+
+      // 登入狀態
+      const isLoggedIn = liff.isLoggedIn();
+
+      showStatus('detecting', '<span class="spinner"></span> 讀取授權資訊...');
+
+      // 結果表格
+      const section = document.getElementById('resultSection');
+      section.className = 'show';
+
+      addRow('LIFF ID', '<code>' + escapeHtml(liffIdDisplay) + '</code>');
+      addRow('LIFF SDK', 'v' + escapeHtml(ver));
+      addRow('執行環境', inClient ? 'LINE App 內' : '外部瀏覽器');
+      addRow('OS', escapeHtml(os));
+      addRow('語言', escapeHtml(lang));
+      addRow('已登入', badge(isLoggedIn));
+
+      if (isLoggedIn) {
+        // Access Token
+        const token = liff.getAccessToken();
+        addRow('Access Token', token
+          ? '<code style="font-size:11px">' + escapeHtml(token.slice(0, 20)) + '...</code>'
+          : badge(null));
+
+        // ID Token（解碼基本資訊）
+        try {
+          const decoded = liff.getDecodedIDToken();
+          if (decoded) {
+            addRow('ID Token sub', '<code style="font-size:11px">' + escapeHtml(decoded.sub || '') + '</code>');
+            addRow('ID Token iss', escapeHtml(decoded.iss || ''));
+            if (decoded.email) addRow('Email', escapeHtml(decoded.email));
+          }
+        } catch (e) {
+          addRow('ID Token', '<span class="badge badge-na">無法取得</span>');
+        }
+
+        // Friendship（需要 bot link feature）
+        try {
+          const friendship = await liff.getFriendship();
+          addRow('官方帳號好友', badge(friendship.friendFlag));
+        } catch (e) {
+          addRow('官方帳號好友', '<span class="badge badge-na">未啟用 bot link</span>');
+        }
+
+        // Profile
+        try {
+          const profile = await liff.getProfile();
+          addRow('Display Name', escapeHtml(profile.displayName));
+          addRow('User ID', '<code style="font-size:11px">' + escapeHtml(profile.userId) + '</code>');
+          if (profile.statusMessage) {
+            addRow('狀態訊息', escapeHtml(profile.statusMessage));
+          }
+
+          // 顯示大頭貼
+          if (profile.pictureUrl) {
+            const row = document.getElementById('profileRow');
+            document.getElementById('profileImg').src = profile.pictureUrl;
+            document.getElementById('profileName').textContent = profile.displayName;
+            document.getElementById('profileUid').textContent = profile.userId;
+            row.style.display = 'flex';
+          }
+        } catch (e) {
+          addRow('Profile', '<span class="badge badge-no">取得失敗：' + escapeHtml(e.message || '') + '</span>');
+        }
+
+        // Context（群組/聊天室資訊）
+        try {
+          const ctx = liff.getContext();
+          if (ctx) {
+            addRow('Context type', escapeHtml(ctx.type || ''));
+            if (ctx.groupId) addRow('Group ID', '<code style="font-size:11px">' + escapeHtml(ctx.groupId) + '</code>');
+            if (ctx.roomId) addRow('Room ID', '<code style="font-size:11px">' + escapeHtml(ctx.roomId) + '</code>');
+          }
+        } catch (e) { /* ignore */ }
+
+        showStatus('found', '✅ 已授權登入');
+        document.getElementById('logoutBtn').style.display = 'block';
+
+      } else {
+        // 未登入
+        showStatus('not-found', '❌ 尚未授權（未登入）<br><small style="font-weight:400">點擊下方按鈕進行 LINE Login 授權</small>');
+
+        // 加一個登入按鈕
+        const loginRow = document.createElement('tr');
+        loginRow.innerHTML = '<td>操作</td><td><button class="btn btn-primary" style="padding:10px;font-size:14px;margin-top:4px" onclick="doLogin()">進行 LINE Login</button></td>';
+        document.getElementById('resultBody').appendChild(loginRow);
+      }
+
+      btn.disabled = false;
+    }
+
+    function doLogin() {
+      if (!liffReady) return;
+      liff.login({ redirectUri: window.location.href });
+    }
+
+    function doLogout() {
+      if (!liffReady) return;
+      liff.logout();
+      window.location.reload();
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date()); gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Loading Pets — Cat Spinner Matrix</title>
+  <meta name="description" content="A matrix of spinning cat loading animations with color and direction variations. Inspired by domaso.">
+  <meta name="author" content="kvzhuang">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--bg);
+      font-family: -apple-system, sans-serif;
+    }
+
+    #grid {
+      display: grid;
+      gap: var(--gap);
+      width: var(--size);
+      height: var(--size);
+    }
+
+    .cat {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      background-color: var(--cat-bg);
+      border-radius: 12%;
+    }
+    .cat::before {
+      content: '';
+      display: block;
+      padding-bottom: 100%;
+    }
+
+    .cat__head, .cat__tail, .cat__body {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      animation: rotating var(--speed) var(--easing) infinite;
+      animation-direction: var(--dir);
+    }
+    .cat__head, .cat__tail, .cat__body {
+      /* each piece uses a quadrant of the sprite */
+    }
+    .cat__head::before,
+    .cat__tail::before,
+    .cat__body::before {
+      content: '';
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      background-size: 200%;
+      background-repeat: no-repeat;
+      background-image: var(--sprite);
+      filter: hue-rotate(var(--hue)) saturate(var(--sat)) brightness(var(--bright));
+    }
+
+    .cat__head::before {
+      top: 0; right: 0;
+      background-position: 100% 0%;
+      transform-origin: 0% 100%;
+      transform: rotate(90deg);
+    }
+
+    .cat__tail {
+      animation-delay: calc(var(--delay) * 2);
+    }
+    .cat__tail::before {
+      left: 0; bottom: 0;
+      background-position: 0% 100%;
+      transform-origin: 100% 0%;
+      transform: rotate(-30deg);
+    }
+
+    .cat__body--1 {
+      animation-delay: var(--delay);
+    }
+    .cat__body--2 {
+      animation-delay: calc(var(--delay) * 2);
+    }
+    .cat__body--1::before,
+    .cat__body--2::before {
+      right: 0; bottom: 0;
+      background-position: 100% 100%;
+      transform-origin: 0% 0%;
+    }
+
+    @keyframes rotating {
+      from { transform: rotate(720deg); }
+      to { transform: none; }
+    }
+  </style>
+
+  <!-- fxhash snippet -->
+  <script id="fxhash-snippet">
+    var alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+    var fxhash = "oo" + Array(49).fill(0).map(function(_){ return alphabet[(Math.random() * alphabet.length) | 0]; }).join("");
+    var b58dec = function(str) { var p=0; for(var i=0;i<str.length;i++) p=p*alphabet.length+alphabet.indexOf(str[i]); return p; };
+    var fxhashTrunc = fxhash.slice(2);
+    var regex = new RegExp(".{" + ((fxhashTrunc.length / 4) | 0) + "}", "g");
+    var hashes = fxhashTrunc.match(regex).map(function(h){ return b58dec(h); });
+    var sfc32 = function(a,b,c,d){ return function(){ a|=0;b|=0;c|=0;d|=0; var t=(a+b|0)+d|0; d=d+1|0; a=b^(b>>>9); b=c+(c<<3)|0; c=(c<<21)|(c>>>11); c=c+t|0; return(t>>>0)/4294967296; }; };
+    var fxrand = sfc32(hashes[0],hashes[1],hashes[2],hashes[3]);
+    function fxpreview(){ window.dispatchEvent(new Event("fxhash-preview")); }
+    window.$fxhashFeatures = {};
+  </script>
+</head>
+<body>
+  <div id="grid"></div>
+
+  <script>
+    var rand = fxrand;
+
+    var BG_PALETTES = [
+      { bg: '#e6dcdc', catBg: '#e6dcdc' },
+      { bg: '#dce6e6', catBg: '#dce6e6' },
+      { bg: '#e0dce6', catBg: '#e0dce6' },
+      { bg: '#dce6dc', catBg: '#dce6dc' },
+      { bg: '#e6e0dc', catBg: '#e6e0dc' },
+      { bg: '#f0ece5', catBg: '#f0ece5' },
+      { bg: '#e5ecf0', catBg: '#e5ecf0' },
+      { bg: '#1a1a2e', catBg: '#2a2a3e' },
+      { bg: '#1e1e2e', catBg: '#2e2e3e' },
+      { bg: '#2d2030', catBg: '#3d3040' },
+      { bg: '#1a2e1a', catBg: '#2a3e2a' },
+      { bg: '#0d1117', catBg: '#1d2127' },
+    ];
+
+    var SPRITE_URL = "url('https://images.weserv.nl/?url=i.imgur.com/M1raXX3.png&il')";
+
+    // Grid size: 3-6
+    var cols = Math.floor(rand() * 4) + 3;
+    var rows = cols;
+    var palette = BG_PALETTES[Math.floor(rand() * BG_PALETTES.length)];
+
+    // Detect dark bg
+    var bgHex = palette.bg;
+    var rr = parseInt(bgHex.slice(1,3),16), gg = parseInt(bgHex.slice(3,5),16), bb = parseInt(bgHex.slice(5,7),16);
+    var isDark = (rr*0.299 + gg*0.587 + bb*0.114) < 128;
+
+    // Set CSS vars on body
+    var sz = Math.min(window.innerWidth, window.innerHeight);
+    var gap = Math.max(Math.round(sz * 0.015), 2);
+    document.body.style.setProperty('--bg', palette.bg);
+
+    var grid = document.getElementById('grid');
+    grid.style.setProperty('--size', sz + 'px');
+    grid.style.setProperty('--gap', gap + 'px');
+    grid.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+    grid.style.gridTemplateRows = 'repeat(' + rows + ', 1fr)';
+
+    // Generate cats
+    for (var i = 0; i < cols * rows; i++) {
+      var hue = Math.floor(rand() * 360);
+      var speed = (rand() * 2 + 2).toFixed(2);       // 2-4s
+      var delay = (rand() * 0.15 + 0.05).toFixed(3);  // 0.05-0.2s
+      var dir = rand() < 0.5 ? 'normal' : 'reverse';
+      var sat = (rand() * 0.8 + 0.6).toFixed(2);      // 0.6-1.4
+      var bright = isDark ? (rand() * 0.4 + 1.0).toFixed(2) : (rand() * 0.3 + 0.85).toFixed(2);
+      var flipX = rand() < 0.3 ? 'scaleX(-1)' : '';
+      var flipY = rand() < 0.2 ? 'scaleY(-1)' : '';
+      var easing = rand() < 0.5
+        ? 'cubic-bezier(.65,.54,.12,.93)'
+        : 'cubic-bezier(.45,.64,.22,.88)';
+
+      var cat = document.createElement('div');
+      cat.className = 'cat';
+      cat.style.setProperty('--cat-bg', palette.catBg);
+      cat.style.setProperty('--sprite', SPRITE_URL);
+      cat.style.setProperty('--hue', hue + 'deg');
+      cat.style.setProperty('--sat', sat);
+      cat.style.setProperty('--bright', bright);
+      cat.style.setProperty('--speed', speed + 's');
+      cat.style.setProperty('--delay', delay + 's');
+      cat.style.setProperty('--dir', dir);
+      cat.style.setProperty('--easing', easing);
+      if (flipX || flipY) {
+        cat.style.transform = (flipX + ' ' + flipY).trim();
+      }
+
+      cat.innerHTML =
+        '<div class="cat__body cat__body--1"></div>' +
+        '<div class="cat__body cat__body--2"></div>' +
+        '<div class="cat__tail"></div>' +
+        '<div class="cat__head"></div>';
+
+      grid.appendChild(cat);
+    }
+
+    window.$fxhashFeatures = {
+      "Grid": cols + "x" + rows,
+      "Background": isDark ? "Dark" : "Light",
+    };
+
+    setTimeout(fxpreview, 3000);
+
+    // Resize
+    window.addEventListener('resize', function() {
+      sz = Math.min(window.innerWidth, window.innerHeight);
+      gap = Math.max(Math.round(sz * 0.015), 2);
+      grid.style.setProperty('--size', sz + 'px');
+      grid.style.setProperty('--gap', gap + 'px');
+    });
+  </script>
+</body>
+</html>

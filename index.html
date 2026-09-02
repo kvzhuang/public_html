@@ -1,46 +1,434 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nginx 測試頁面</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f9;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 3rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border-top: 5px solid #007bff;
-        }
-        h1 { color: #007bff; margin-bottom: 0.5rem; }
-        p { color: #666; font-size: 1.1rem; }
-        .status-tag {
-            display: inline-block;
-            background: #e1f5fe;
-            color: #01579b;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin-top: 1rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kevin Zhuang 莊為任 — Software Engineer / Technical Coach</title>
+  <meta name="description" content="Kevin Zhuang（莊為任）— 軟體工程師，深耕廣告科技（AdTech）與網頁技術。Development is in the Detail.">
+  <meta name="author" content="Kevin Zhuang">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:title" content="Kevin Zhuang 莊為任 — Software Engineer / Technical Coach">
+  <meta property="og:description" content="AdTech · Web · Generative Art — Development is in the Detail.">
+  <meta name="theme-color" content="#1d2733">
+  <style>
+    :root {
+      --bg: #f7f6f2;
+      --paper: #ffffff;
+      --ink: #23292f;
+      --muted: #5b646e;
+      --line: #e2e0d9;
+      --accent: #1d5f7a;
+      --accent-dark: #164a5f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.75;
+      padding: 48px 20px;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .sheet {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: 0 2px 24px rgba(30, 40, 50, 0.07);
+      position: relative;
+    }
+
+    /* ── 語言切換 ── */
+    .lang-switcher {
+      position: absolute;
+      top: 20px; right: 24px;
+      display: flex; gap: 4px;
+      font-size: 0.8rem;
+    }
+    .lang-switcher a {
+      padding: 3px 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--muted);
+    }
+    .lang-switcher a:hover { border-color: var(--accent); text-decoration: none; }
+    .lang-switcher a.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── Header ── */
+    .head {
+      padding: 60px 64px 40px;
+      border-bottom: 3px solid var(--accent);
+    }
+    .head h1 {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 700;
+    }
+    .head h1 .zh { font-weight: 500; color: var(--muted); font-size: 0.72em; margin-left: 10px; }
+    .head .title {
+      margin-top: 6px;
+      font-size: 1.05rem;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .head .tagline {
+      margin-top: 4px;
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.95rem;
+    }
+    .contact {
+      margin-top: 22px;
+      display: flex; flex-wrap: wrap;
+      gap: 8px 28px;
+      font-size: 0.92rem;
+    }
+    .contact span { color: var(--muted); }
+
+    /* ── Body ── */
+    .body { padding: 44px 64px 56px; }
+    section + section { margin-top: 42px; }
+    h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--accent-dark);
+      text-transform: uppercase;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 18px;
+    }
+    p { color: var(--ink); margin-bottom: 12px; }
+    .muted { color: var(--muted); }
+
+    .item { margin-bottom: 22px; }
+    .item:last-child { margin-bottom: 0; }
+    .item h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .item h3 .period { font-weight: 400; color: var(--muted); font-size: 0.92em; margin-left: 8px; }
+    .item p { font-size: 0.95rem; color: var(--muted); margin: 0; }
+
+    ul.plain { list-style: none; }
+    ul.plain li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 9px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    ul.plain li::before {
+      content: "—";
+      position: absolute; left: 0;
+      color: var(--accent);
+    }
+
+    footer {
+      padding: 26px 64px;
+      border-top: 1px solid var(--line);
+      display: flex; flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    footer .links { display: flex; gap: 22px; }
+
+    @media (max-width: 640px) {
+      body { padding: 0; }
+      .sheet { border: none; box-shadow: none; }
+      .head { padding: 56px 26px 30px; }
+      .body { padding: 32px 26px 44px; }
+      footer { padding: 22px 26px; }
+      .lang-switcher { top: 14px; right: 14px; }
+    }
+    @media print {
+      body { padding: 0; background: #fff; }
+      .sheet { border: none; box-shadow: none; max-width: none; }
+      .lang-switcher { display: none; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚀 Nginx 運行成功！</h1>
-        <div class="status-tag">Status: Online</div>
+
+<div class="sheet">
+
+  <nav class="lang-switcher" id="lang-switcher" aria-label="Language">
+    <a href="?lang=zh" data-lang="zh">中文</a>
+    <a href="?lang=en" data-lang="en">EN</a>
+    <a href="?lang=ja" data-lang="ja">日本語</a>
+    <a href="?lang=ko" data-lang="ko">한국어</a>
+  </nav>
+
+  <div class="head">
+    <h1>Kevin Zhuang<span class="zh">莊為任</span></h1>
+    <div class="title">Software Engineer / Technical Coach — AdTech / Web</div>
+    <div class="tagline">Development is in the Detail.</div>
+    <div class="contact">
+      <div><span>Email：</span>kvzhuang＠gmail.com</div>
+      <div><span>LinkedIn：</span><a href="https://www.linkedin.com/in/kevinzhuang" target="_blank" rel="noopener">linkedin.com/in/kevinzhuang</a></div>
+      <div><span>Blog：</span><a href="https://www.kvzhuang.net/" target="_blank" rel="noopener">kvzhuang.net</a></div>
     </div>
+  </div>
+
+  <div class="body">
+
+    <section>
+      <h2 data-i18n="h_summary">簡介</h2>
+      <p data-i18n="summary1">
+        軟體工程師，自 2008 年投入資訊產業研發，長年深耕廣告科技（AdTech）領域跟 Web 相關技術，
+        現任職於廣告技術公司 <a href="https://www.funp.com/" target="_blank" rel="noopener">funP 雲沛創新集團</a>，
+        擔任技術副理。專注於程序化廣告的投放與追蹤技術，
+        擅長大流量系統架構與可持續營運的不間斷（24/7）服務實作，
+        並持續研究瀏覽器隱私機制的演進——從 Intelligent Tracking Prevention、GDPR、CNAME Cloaking
+        到 User-Agent Client Hints——在隱私保護與廣告生態之間尋找工程上的平衡。
+      </p>
+      <p class="muted" data-i18n="summary2">
+        相信細節成就品質：無論是一段追蹤程式在瀏覽器裡的實際行為，
+        還是一個介面在不同裝置上的呈現，都值得反覆推敲。
+      </p>
+    </section>
+
+    <section>
+      <h2 data-i18n="h_exp">工作經歷</h2>
+      <div class="item">
+        <h3><span data-i18n="j1_t">TenMax 騰學廣告科技 / cacaFly 聖洋科技（funP 雲沛創新集團）— 技術副理</span><span class="period">2016.12 –<span data-i18n="now">現在</span></span></h3>
+        <p data-i18n="j1_d">
+          主導線上廣告創意編輯平台 AdNeon 的架構與營運：曝光量自 600 萬成長至 1 億（+1667%），
+          發布商取得素材時間由兩週縮短至一分鐘。參與即時競價（RTB）生態系開發，
+          共同開發營運 DSP、SSP 與 Ad Exchange，廣告流量年成長 75%。
+        </p>
+      </div>
+      <div class="item">
+        <h3><span data-i18n="j2_t">104 人力銀行 — 資深前端工程師／Team Lead</span><span class="period">2015.06 – 2016.11</span></h3>
+        <p data-i18n="j2_d">籌建六人 React 前端團隊，負責前端架構與開發準則，規劃未來三年平台架構。</p>
+      </div>
+      <div class="item">
+        <h3><span data-i18n="j3_t">miiiCasa — 前端工程師</span><span class="period">2012 – 2015.06</span></h3>
+        <p data-i18n="j3_d">家庭雲端服務平台前端架構，帶領三人團隊完成公司三項主力產品。</p>
+      </div>
+      <div class="item">
+        <h3><span data-i18n="j4_t">InfoPower — 軟體工程師</span><span class="period">2008 – 2012</span></h3>
+        <p data-i18n="j4_d">政府與金融業 Java 報表系統開發、客戶需求訪談與售前顧問。</p>
+      </div>
+    </section>
+
+    <section>
+      <h2 data-i18n="h_community">社群參與</h2>
+      <div class="item">
+        <h3><span data-i18n="c1_t">AI x Front-End Developers Taiwan（fed.tw）創辦人</span><span class="period">2012 –<span data-i18n="now2">現在</span></span></h3>
+        <p data-i18n="c1_d">
+          以志工身分創辦並經營台灣前端開發者社群：舉辦線上活動與內容策展，
+          串聯開發者、技術社群與企業，社群成員逾 63,000 人。
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2 data-i18n="h_skills">專業領域</h2>
+      <div class="item">
+        <h3 data-i18n="s1_t">廣告科技 AdTech</h3>
+        <p data-i18n="s1_d">程序化廣告、追蹤與歸因技術、廣告詐騙（Ad Fraud）分析；瀏覽器隱私機制（ITP、Privacy Sandbox、UA-CH）與 GDPR 因應實務。</p>
+      </div>
+      <div class="item">
+        <h3 data-i18n="s2_t">Web 開發</h3>
+        <p data-i18n="s2_d">JavaScript／React 生態系、Java、關聯式資料庫；瀏覽器行為與效能細節、Cookie 與身分識別機制、資訊安全（CSRF／XSS）防護。</p>
+      </div>
+      <div class="item">
+        <h3 data-i18n="s3_t">生成藝術與演算法視覺化</h3>
+        <p data-i18n="s3_d">以 Canvas／p5.js 創作八十餘件作品，涵蓋油畫筆觸模擬、等軸測幾何、自動對局模擬與經典演算法視覺化，發表於 <a href="./gen-art/">gen-art 線上作品集</a>。</p>
+      </div>
+    </section>
+
+    <section>
+      <h2 data-i18n="h_edu">學歷</h2>
+      <div class="item">
+        <h3><span data-i18n="e1_t">國立臺灣師範大學 — 資訊工程碩士（軟體工程）</span><span class="period">2005 – 2007</span></h3>
+      </div>
+      <div class="item">
+        <h3><span data-i18n="e2_t">輔仁大學 — 資訊工程學士</span><span class="period">2001 – 2005</span></h3>
+      </div>
+    </section>
+
+    <section>
+      <h2 data-i18n="h_writing">技術寫作</h2>
+      <p class="muted" style="font-size:0.95rem;" data-i18n="w_intro">
+        於<a href="https://www.kvzhuang.net/" target="_blank" rel="noopener">個人部落格</a>分享廣告科技與網頁技術的觀察與實務，代表主題：
+      </p>
+      <ul class="plain">
+        <li data-i18n="w1"><a href="https://www.kvzhuang.net/2020/08/cname-cloaking.html" target="_blank" rel="noopener">CNAME Cloaking 與第一方 Cookie——廣告追蹤技術的攻防演進</a></li>
+        <li data-i18n="w2"><a href="https://www.kvzhuang.net/2018/11/blog-post.html" target="_blank" rel="noopener">WebKit Intelligent Tracking Prevention 對廣告生態的影響</a></li>
+        <li data-i18n="w3"><a href="https://www.kvzhuang.net/2022/02/google-chrome-user-agent-string.html" target="_blank" rel="noopener">User-Agent Client Hints：UA 字串退場後的裝置識別</a></li>
+        <li data-i18n="w4"><a href="https://web.archive.org/web/20191205225207/https://www.tenmax.io/gdpr-for-publisher" target="_blank" rel="noopener">給網站主的 GDPR 因應建議</a></li>
+        <li data-i18n="w5">廣告詐騙類型與分析（<a href="https://www.slideshare.net/KevinZhuang3" target="_blank" rel="noopener">技術分享簡報</a>）</li>
+      </ul>
+    </section>
+
+  </div>
+
+  <footer>
+    <div>© Kevin Zhuang · kvzhuang＠gmail.com</div>
+    <div class="links">
+      <a href="https://www.linkedin.com/in/kevinzhuang" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://www.kvzhuang.net/" target="_blank" rel="noopener">Blog</a>
+      <a href="./gen-art/">Gen-Art</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function() {
+  // 與 gen-art 相同的語言機制：?lang= 覆寫 > 瀏覽器語言，zh 為預設
+  var urlLang = (location.search.match(/[?&]lang=([^&]+)/) || [])[1];
+  var lang;
+  if (urlLang) lang = decodeURIComponent(urlLang).toLowerCase();
+  else lang = ((navigator.languages && navigator.languages[0]) || navigator.language || "en").toLowerCase();
+  var langCode =
+    /^zh\b/i.test(lang) ? "zh" :
+    /^ja\b/i.test(lang) ? "ja" :
+    /^ko\b/i.test(lang) ? "ko" : "en";
+
+  var switcher = document.getElementById("lang-switcher");
+  if (switcher) {
+    var btns = switcher.querySelectorAll("a");
+    for (var b = 0; b < btns.length; b++) {
+      if (btns[b].getAttribute("data-lang") === langCode) btns[b].classList.add("active");
+    }
+  }
+  if (langCode === "zh") return;
+
+  document.documentElement.lang = { en: "en", ja: "ja", ko: "ko" }[langCode];
+  var metaDescByLang = {
+    en: "Kevin Zhuang — Software engineer specializing in AdTech and web technologies. Development is in the Detail.",
+    ja: "Kevin Zhuang（莊為任）— アドテックとウェブ技術を専門とするソフトウェアエンジニア。Development is in the Detail.",
+    ko: "Kevin Zhuang(莊為任) — 애드테크와 웹 기술을 전문으로 하는 소프트웨어 엔지니어. Development is in the Detail."
+  };
+  var md = document.querySelector('meta[name="description"]');
+  if (md) md.setAttribute("content", metaDescByLang[langCode]);
+
+  var DICT = {
+    en: {
+      h_summary: "Summary",
+      summary1: 'Software engineer in R&amp;D since 2008, specializing in advertising technology (AdTech) and web technologies. Currently Assistant Technical Manager at <a href="https://www.funp.com/" target="_blank" rel="noopener">funP Innovation Group</a>. Focused on programmatic ad serving and tracking, experienced in building high-traffic systems and sustainable, always-on services, with ongoing research into browser privacy — from Intelligent Tracking Prevention, GDPR, and CNAME Cloaking to User-Agent Client Hints — seeking the engineering balance between privacy and the ads ecosystem.',
+      summary2: "I believe quality lives in the details: how a tracking script actually behaves inside the browser, or how an interface renders across devices — everything deserves careful refinement.",
+      h_exp: "Experience",
+      now: " Present", now2: " Present",
+      j1_t: "TenMax Ad Tech Lab / cacaFly (funP Innovation Group) — Assistant Technical Manager",
+      j1_d: "Led architecture and operation of AdNeon, an online ad-creative editing platform: impressions grew from 6M to 100M (+1667%), and creative delivery time for publishers dropped from two weeks to one minute. Co-developed the Real-Time Bidding ecosystem (DSP, SSP, and Ad Exchange) with 75% year-over-year traffic growth.",
+      j2_t: "104 Job Bank — Senior Front-End Engineer / Team Lead",
+      j2_d: "Built a six-person React team, owned front-end architecture and guidelines, and designed the platform architecture for the next three years.",
+      j3_t: "miiiCasa — Front-End Engineer",
+      j3_d: "Front-end architecture for a home-cloud service platform; led a team of three and shipped the company's three flagship products.",
+      j4_t: "InfoPower — Software Engineer",
+      j4_d: "Java reporting systems for government and financial clients; requirements consulting and pre-sales.",
+      h_community: "Community",
+      c1_t: "Founder, AI x Front-End Developers Taiwan (fed.tw)",
+      c1_d: "Founded and run Taiwan's front-end developer community as a volunteer: online events and curation connecting developers, tech groups, and companies — over 63,000 members.",
+      h_skills: "Expertise",
+      s1_t: "Advertising Technology",
+      s1_d: "Programmatic advertising, tracking and attribution, ad-fraud analysis; browser privacy mechanisms (ITP, Privacy Sandbox, UA-CH) and GDPR compliance in practice.",
+      s2_t: "Web Development",
+      s2_d: "JavaScript / React ecosystem, Java, relational databases; browser behavior and performance details, cookies and identity, security (CSRF / XSS).",
+      s3_t: "Generative Art &amp; Algorithm Visualization",
+      s3_d: 'Over 80 works built with Canvas / p5.js — impasto painting engines, isometric geometry, auto-playing game simulations, and classic algorithm visualizations, published in the <a href="./gen-art/">gen-art gallery</a>.',
+      h_edu: "Education",
+      e1_t: "National Taiwan Normal University — M.S. in Computer Science (Software Engineering)",
+      e2_t: "Fu Jen Catholic University — B.S. in Computer Science",
+      h_writing: "Writing",
+      w_intro: 'I write about AdTech and web technologies on my <a href="https://www.kvzhuang.net/" target="_blank" rel="noopener">blog</a>. Selected topics:',
+      w1: '<a href="https://www.kvzhuang.net/2020/08/cname-cloaking.html" target="_blank" rel="noopener">CNAME Cloaking and first-party cookies — the evolution of ad tracking</a>',
+      w2: '<a href="https://www.kvzhuang.net/2018/11/blog-post.html" target="_blank" rel="noopener">How WebKit Intelligent Tracking Prevention reshapes the ads ecosystem</a>',
+      w3: '<a href="https://www.kvzhuang.net/2022/02/google-chrome-user-agent-string.html" target="_blank" rel="noopener">User-Agent Client Hints: device identification after the UA string</a>',
+      w4: '<a href="https://web.archive.org/web/20191205225207/https://www.tenmax.io/gdpr-for-publisher" target="_blank" rel="noopener">GDPR guidance for website publishers</a>',
+      w5: 'Ad-fraud taxonomy and analysis (<a href="https://www.slideshare.net/KevinZhuang3" target="_blank" rel="noopener">tech talk slides</a>)'
+    },
+    ja: {
+      h_summary: "概要",
+      summary1: '2008年より情報産業の研究開発に従事し、アドテック（AdTech）領域とWeb関連技術を専門とするソフトウェアエンジニア。現在は <a href="https://www.funp.com/" target="_blank" rel="noopener">funP Innovation Group</a> にてテクニカルアシスタントマネージャーを務める。プログラマティック広告の配信・トラッキング技術に注力し、大規模トラフィックに耐えるシステムと持続可能な無停止（24/7）サービスの構築を得意とする。ITP・GDPR・CNAME Cloaking・User-Agent Client Hints などブラウザプライバシーの進化を継続的に研究、プライバシーと広告エコシステムの工学的バランスを追求している。',
+      summary2: "品質は細部に宿ると信じている。トラッキングスクリプトのブラウザ内での実際の挙動も、デバイスごとのUIの見え方も、すべて丁寧に磨き込む価値がある。",
+      h_exp: "職務経歴",
+      now: " 現在", now2: " 現在",
+      j1_t: "TenMax Ad Tech Lab / cacaFly（funP Innovation Group）— テクニカルアシスタントマネージャー",
+      j1_d: "オンライン広告クリエイティブ編集プラットフォーム AdNeon のアーキテクチャと運用を主導：表示回数は600万から1億へ成長（+1667%）、パブリッシャーへの素材提供時間は2週間から1分に短縮。RTBエコシステム（DSP・SSP・Ad Exchange）の開発運用にも参画し、広告トラフィックは年75%成長。",
+      j2_t: "104人力銀行 — シニアフロントエンドエンジニア／チームリード",
+      j2_d: "6名のReactチームを立ち上げ、フロントエンドアーキテクチャと開発ガイドラインを担当。今後3年間のプラットフォーム設計を主導。",
+      j3_t: "miiiCasa — フロントエンドエンジニア",
+      j3_d: "ホームクラウドサービスのフロントエンド設計。3名のチームを率い、主力3製品を開発。",
+      j4_t: "InfoPower — ソフトウェアエンジニア",
+      j4_d: "官公庁・金融機関向けJavaレポーティングシステムの開発、要件ヒアリングとプリセールス。",
+      h_community: "コミュニティ",
+      c1_t: "AI x Front-End Developers Taiwan（fed.tw）創設者",
+      c1_d: "ボランティアとして台湾のフロントエンド開発者コミュニティを創設・運営。オンラインイベントとキュレーションで開発者・技術コミュニティ・企業をつなぐ。メンバー数63,000人超。",
+      h_skills: "専門領域",
+      s1_t: "アドテック AdTech",
+      s1_d: "プログラマティック広告、トラッキングとアトリビューション、アドフラウド分析；ブラウザプライバシー機構（ITP・Privacy Sandbox・UA-CH）とGDPR対応の実務。",
+      s2_t: "Web開発",
+      s2_d: "JavaScript／Reactエコシステム、Java、リレーショナルDB；ブラウザ挙動とパフォーマンスの詳細、Cookieと識別子、セキュリティ（CSRF／XSS）対策。",
+      s3_t: "ジェネラティブアートとアルゴリズム可視化",
+      s3_d: 'Canvas／p5.jsで80点超の作品を制作。油彩筆致エンジン、アイソメトリック幾何、自動対局シミュレーション、古典アルゴリズムの可視化など。<a href="./gen-art/">gen-artギャラリー</a>にて公開。',
+      h_edu: "学歴",
+      e1_t: "国立台湾師範大学 — 情報工学修士（ソフトウェア工学）",
+      e2_t: "輔仁大学 — 情報工学学士",
+      h_writing: "技術執筆",
+      w_intro: '<a href="https://www.kvzhuang.net/" target="_blank" rel="noopener">個人ブログ</a>にてアドテックとWeb技術の考察を発信。代表的なテーマ：',
+      w1: '<a href="https://www.kvzhuang.net/2020/08/cname-cloaking.html" target="_blank" rel="noopener">CNAME Cloakingとファーストパーティ Cookie——広告トラッキング技術の攻防</a>',
+      w2: '<a href="https://www.kvzhuang.net/2018/11/blog-post.html" target="_blank" rel="noopener">WebKit Intelligent Tracking Preventionが広告エコシステムに与える影響</a>',
+      w3: '<a href="https://www.kvzhuang.net/2022/02/google-chrome-user-agent-string.html" target="_blank" rel="noopener">User-Agent Client Hints：UA文字列廃止後のデバイス識別</a>',
+      w4: '<a href="https://web.archive.org/web/20191205225207/https://www.tenmax.io/gdpr-for-publisher" target="_blank" rel="noopener">サイト運営者のためのGDPR対応ガイド</a>',
+      w5: 'アドフラウドの類型と分析（<a href="https://www.slideshare.net/KevinZhuang3" target="_blank" rel="noopener">技術共有スライド</a>）'
+    },
+    ko: {
+      h_summary: "소개",
+      summary1: '2008년부터 정보산업 R&amp;D에 종사하며 애드테크(AdTech) 영역과 웹 관련 기술을 전문으로 하는 소프트웨어 엔지니어. 현재 <a href="https://www.funp.com/" target="_blank" rel="noopener">funP Innovation Group</a>에서 테크니컬 어시스턴트 매니저로 재직 중. 프로그래매틱 광고의 송출·트래킹 기술에 집중하며, 대용량 트래픽 시스템과 지속 가능한 무중단(24/7) 서비스 구축에 강점이 있습니다. ITP·GDPR·CNAME Cloaking·User-Agent Client Hints 등 브라우저 프라이버시의 진화를 연구해 프라이버시와 광고 생태계 사이의 공학적 균형을 추구합니다.',
+      summary2: "품질은 디테일에서 나온다고 믿습니다. 트래킹 스크립트의 브라우저 내 실제 동작이든, 다양한 기기에서의 인터페이스 렌더링이든, 모두 거듭 다듬을 가치가 있습니다.",
+      h_exp: "경력",
+      now: " 현재", now2: " 현재",
+      j1_t: "TenMax Ad Tech Lab / cacaFly (funP Innovation Group) — 테크니컬 어시스턴트 매니저",
+      j1_d: "온라인 광고 크리에이티브 편집 플랫폼 AdNeon의 아키텍처와 운영을 주도: 노출 수 600만→1억(+1667%), 퍼블리셔의 소재 확보 시간 2주→1분 단축. RTB 생태계(DSP·SSP·Ad Exchange) 개발·운영에 참여, 광고 트래픽 연 75% 성장.",
+      j2_t: "104 잡뱅크 — 시니어 프런트엔드 엔지니어／팀 리드",
+      j2_d: "6인 React 팀을 구성하고 프런트엔드 아키텍처와 개발 가이드라인을 담당, 향후 3년의 플랫폼 아키텍처를 설계.",
+      j3_t: "miiiCasa — 프런트엔드 엔지니어",
+      j3_d: "홈 클라우드 서비스 플랫폼의 프런트엔드 아키텍처. 3인 팀을 이끌며 회사의 주력 3개 제품을 완성.",
+      j4_t: "InfoPower — 소프트웨어 엔지니어",
+      j4_d: "정부·금융권 Java 리포팅 시스템 개발, 고객 요구사항 컨설팅 및 프리세일즈.",
+      h_community: "커뮤니티",
+      c1_t: "AI x Front-End Developers Taiwan (fed.tw) 창립자",
+      c1_d: "자원봉사로 대만 프런트엔드 개발자 커뮤니티를 창립·운영. 온라인 이벤트와 큐레이션으로 개발자·기술 커뮤니티·기업을 연결, 회원 63,000명 이상.",
+      h_skills: "전문 분야",
+      s1_t: "애드테크 AdTech",
+      s1_d: "프로그래매틱 광고, 트래킹·어트리뷰션, 광고 사기(Ad Fraud) 분석; 브라우저 프라이버시 메커니즘(ITP·Privacy Sandbox·UA-CH)과 GDPR 대응 실무.",
+      s2_t: "웹 개발",
+      s2_d: "JavaScript／React 생태계, Java, 관계형 DB; 브라우저 동작과 성능 디테일, 쿠키와 식별 메커니즘, 보안(CSRF／XSS) 방어.",
+      s3_t: "제너러티브 아트와 알고리즘 시각화",
+      s3_d: 'Canvas／p5.js로 80여 점의 작품 제작 — 유화 붓터치 엔진, 아이소메트릭 기하, 자동 대국 시뮬레이션, 고전 알고리즘 시각화. <a href="./gen-art/">gen-art 갤러리</a>에 공개.',
+      h_edu: "학력",
+      e1_t: "국립대만사범대학 — 컴퓨터공학 석사(소프트웨어 공학)",
+      e2_t: "푸런대학 — 컴퓨터공학 학사",
+      h_writing: "기술 글쓰기",
+      w_intro: '<a href="https://www.kvzhuang.net/" target="_blank" rel="noopener">개인 블로그</a>에서 애드테크와 웹 기술에 대한 관찰과 실무를 공유. 대표 주제:',
+      w1: '<a href="https://www.kvzhuang.net/2020/08/cname-cloaking.html" target="_blank" rel="noopener">CNAME Cloaking과 퍼스트파티 쿠키 — 광고 트래킹 기술의 공방</a>',
+      w2: '<a href="https://www.kvzhuang.net/2018/11/blog-post.html" target="_blank" rel="noopener">WebKit Intelligent Tracking Prevention이 광고 생태계에 미치는 영향</a>',
+      w3: '<a href="https://www.kvzhuang.net/2022/02/google-chrome-user-agent-string.html" target="_blank" rel="noopener">User-Agent Client Hints: UA 문자열 퇴장 이후의 기기 식별</a>',
+      w4: '<a href="https://web.archive.org/web/20191205225207/https://www.tenmax.io/gdpr-for-publisher" target="_blank" rel="noopener">웹사이트 운영자를 위한 GDPR 대응 가이드</a>',
+      w5: '광고 사기 유형과 분석(<a href="https://www.slideshare.net/KevinZhuang3" target="_blank" rel="noopener">기술 공유 슬라이드</a>)'
+    }
+  };
+
+  var dict = DICT[langCode];
+  if (!dict) return;
+  var nodes = document.querySelectorAll("[data-i18n]");
+  for (var i = 0; i < nodes.length; i++) {
+    var key = nodes[i].getAttribute("data-i18n");
+    if (dict[key]) nodes[i].innerHTML = dict[key];
+  }
+  document.title = "Kevin Zhuang 莊為任 — Software Engineer / Technical Coach";
+})();
+</script>
+
 </body>
 </html>

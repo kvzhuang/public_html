@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>🎴 UNO — 一人對三電腦</title>
+  <meta name="description" content="UNO 紙牌遊戲：你對三位電腦。出同色或同數字/符號的牌，善用跳過、反轉、+2、萬用、+4，先出完手牌得分，累計先達 500 分全場勝出。">
+  <meta name="theme-color" content="#0e2620">
+  <meta property="og:title" content="🎴 UNO — 一人對三電腦">
+  <meta property="og:description" content="經典 UNO：同色/同號出牌、跳過反轉+2 萬用+4，對三電腦競速出完手牌。">
+  <meta property="og:type" content="website">
+  <style>
+    :root{ --gold:#e9c46a; }
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body{ margin:0; min-height:100%; color:#eef2ea; user-select:none;
+      background:radial-gradient(circle at 50% 8%, #24405a, #0a121c);
+      font-family:"Noto Sans TC","Hiragino Sans",system-ui,sans-serif; }
+    .wrap{ max-width:640px; margin:0 auto; padding:8px 10px 26px; }
+    .bar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .bar a{ color:#9fc0b2; text-decoration:none; font-size:13px; }
+    .bar h1{ font-size:18px; margin:0; } .bar .sp{ flex:1; }
+    .bar button{ background:#ffffff18; color:#eef2ea; border:1px solid #ffffff33; border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer; }
+    #msg{ text-align:center; min-height:22px; font-size:14px; color:var(--gold); margin:6px 0; }
+
+    .opps{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+    .opp{ flex:1; min-width:150px; background:#ffffff10; border:1px solid #ffffff1e; border-radius:10px; padding:7px 9px; }
+    .opp.turn{ box-shadow:0 0 0 2px #7fd9a6 inset; background:#ffffff18; }
+    .ohead{ font-size:12.5px; color:#cfe3d6; line-height:1.5; } .ohead .sc{ color:#9fb6a9; font-size:11px; }
+    .uno{ background:#e0483b; color:#fff; border-radius:5px; padding:0 5px; font-size:11px; font-weight:800; }
+    .obacks{ display:flex; flex-wrap:wrap; gap:2px; margin-top:5px; }
+
+    .mid{ display:flex; align-items:center; justify-content:center; gap:14px; margin:14px 0; }
+    .pile{ text-align:center; } .pile .lbl{ font-size:11px; color:#9fb6a9; margin-bottom:4px; }
+    .midinfo{ text-align:center; font-size:13px; }
+    .dir{ color:#dfe7ea; margin-bottom:6px; }
+    .curcol{ border-radius:8px; padding:4px 10px; font-weight:800; color:#111; }
+
+    .mewrap{ margin-top:6px; }
+    .meinfo{ text-align:center; font-size:13px; color:#cfe3d6; margin-bottom:8px; }
+    .hand{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; }
+
+    /* UNO 牌 */
+    .uc{ width:52px; height:74px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+      box-shadow:0 3px 8px #0007; border:3px solid #fff; position:relative; }
+    .uc .k{ font-size:24px; font-weight:900; color:#fff; text-shadow:0 2px 3px #0006; }
+    .uc.big{ width:62px; height:88px; } .uc.big .k{ font-size:28px; }
+    .uc.mini{ width:15px; height:22px; border-width:2px; border-radius:4px; }
+    .c-R{ background:#d23b30; } .c-Y{ background:#e6b400; } .c-G{ background:#33a04a; } .c-B{ background:#2b6fd6; }
+    .c-Y .k{ color:#4a3a00; text-shadow:none; }
+    .c-W{ background:conic-gradient(#d23b30 0 25%, #e6b400 0 50%, #33a04a 0 75%, #2b6fd6 0 100%); }
+    .uc.back{ background:#20324a; border-color:#3a516e; }
+    .uc.back::after{ content:"UNO"; color:#e6b400; font-weight:900; font-size:11px; letter-spacing:.04em; transform:rotate(-20deg); }
+    .uc.back.mini::after{ content:""; }
+    .hand .uc{ cursor:default; transition:transform .1s; }
+    .hand .uc.ok{ cursor:pointer; box-shadow:0 0 0 2px #ffe98a, 0 6px 14px #0008; transform:translateY(-6px); }
+    .hand .uc.ok:hover{ transform:translateY(-12px); }
+    .hand .uc.no{ opacity:.55; }
+    .hand .uc.swap{ cursor:pointer; box-shadow:0 0 0 2px #7fd9ff, 0 6px 14px #0008; }
+    .hand .uc.swap:hover{ transform:translateY(-10px); }
+
+    #controls{ display:flex; gap:12px; justify-content:center; margin-top:14px; min-height:46px; }
+    .ubtn{ border:0; border-radius:10px; padding:11px 22px; font-size:15px; font-weight:800; cursor:pointer; }
+    .ubtn.draw{ background:var(--gold); color:#3a2c00; } .ubtn.pass{ background:#c0563a; color:#fff; }
+    .ubtn.swap{ background:#3a86c8; color:#fff; } .ubtn.swap.on{ background:#7fd9ff; color:#08243a; }
+
+    #overlay{ position:fixed; inset:0; background:#000c; display:none; align-items:center; justify-content:center; padding:16px; z-index:20; }
+    #overlay.show{ display:flex; }
+    .modal{ background:linear-gradient(#1b3350,#0c1a2a); border:1px solid var(--gold); border-radius:16px; padding:22px; max-width:480px; width:100%; text-align:center; box-shadow:0 24px 70px #000c; max-height:88vh; overflow:auto; }
+    #ov-title{ font-size:21px; color:var(--gold); margin-bottom:10px; }
+    #ov-body{ font-size:15px; color:#e6efe8; line-height:1.6; } #ov-body .rows{ margin-top:10px; font-size:14px; text-align:left; display:inline-block; }
+    #ov-actions{ display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
+    .ovbtn{ background:var(--gold); color:#3a2c00; border:0; border-radius:10px; padding:11px 18px; font-size:15px; font-weight:700; cursor:pointer; }
+    .colbtn{ border:0; border-radius:10px; padding:14px 22px; font-size:17px; font-weight:800; color:#fff; cursor:pointer; }
+    .rulestxt{ text-align:left; font-size:14px; line-height:1.9; }
+    #toast{ position:fixed; left:50%; bottom:76px; transform:translateX(-50%) translateY(16px); background:#0c1a2aee; border:1px solid var(--gold);
+      color:#fff; padding:9px 15px; border-radius:10px; font-size:14px; opacity:0; transition:.25s; z-index:30; pointer-events:none; }
+    #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bar">
+      <a href="../poker/">← 撲克紙牌</a>
+      <h1>🎴 UNO</h1>
+      <span class="sp"></span>
+      <button id="rules">玩法</button>
+      <button id="newgame">新遊戲</button>
+    </div>
+    <div id="msg"></div>
+    <div id="table"></div>
+    <div id="controls"></div>
+  </div>
+  <div id="overlay"><div class="modal"><div id="ov-title"></div><div id="ov-body"></div><div id="ov-actions"></div></div></div>
+  <div id="toast"></div>
+  <script>
+    (function(){ var s=document.createElement('script'); s.src='game.js?v='+Date.now(); document.body.appendChild(s); })();
+  </script>
+</body>
+</html>

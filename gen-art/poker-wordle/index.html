@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-3GP0KMK7NS');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>🃏 撲克 Wordle · Poker Wordle</title>
+  <meta name="description" content="Wordle 式撲克推理解謎：用綠黃灰雙維度線索與高低箭頭，6 次內猜出 5 張謎底手牌。純演繹、無機率。">
+  <meta name="theme-color" content="#0e2620">
+  <style>
+    :root{--gold:#e9c46a;--green:#3aa860;--yellow:#d9a92e;--gray:#3a4a44;}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    html,body{margin:0;min-height:100%;color:#eef2ea;background:radial-gradient(circle at 50% 6%,#1c4a3d,#0a1512);
+      font-family:"Noto Sans TC","Hiragino Sans",system-ui,sans-serif;}
+    .wrap{max-width:560px;margin:0 auto;padding:14px 12px 40px;}
+    .back{color:#9fc0b2;text-decoration:none;font-size:13px;}.back:hover{color:var(--gold);}
+    h1{font-size:22px;margin:6px 0 2px;}h1 .en{font-size:13px;color:#9fb6a9;font-weight:400;letter-spacing:.12em;}
+    .sub{color:#b9c8bd;font-size:12.5px;margin:2px 0 12px;line-height:1.6;}
+    .board{display:grid;grid-template-rows:repeat(6,1fr);gap:7px;justify-content:center;margin:0 auto 12px;}
+    .row{display:grid;grid-template-columns:repeat(5,46px);gap:7px;}
+    .cell{width:46px;height:62px;border-radius:7px;background:#0e211b;border:1px solid #ffffff22;
+      display:flex;flex-direction:column;overflow:hidden;position:relative;transition:transform .12s;}
+    .cell .half{flex:1;display:flex;align-items:center;justify-content:center;font-weight:800;position:relative;}
+    .cell .rank{font-size:18px;border-bottom:1px solid #ffffff22;}
+    .cell .suit{font-size:19px;}
+    .cell .arrow{position:absolute;right:3px;bottom:1px;font-size:10px;opacity:.85;font-weight:700;}
+    .s-correct{background:var(--green);color:#fff;}
+    .s-present{background:var(--yellow);color:#2a2410;}
+    .s-absent{background:var(--gray);color:#c7d3c9;}
+    .cell.filled{background:#16302704;border-color:var(--gold);}
+    .cell.cur .rank{color:#fff;}
+    .red{color:#ff8a8a;}
+    .cell.pop{animation:pop .18s;}
+    @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+    .row.shake{animation:shake .4s;}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+    .cell.flip{animation:flip .5s ease both;}
+    @keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+    #hints{font-size:12.5px;color:#ffe1a0;line-height:1.7;min-height:18px;margin:2px 4px 4px;text-align:center;}
+    #msg{font-size:13px;color:#ff9a9a;min-height:18px;text-align:center;margin:2px 0 6px;}
+    .kb{display:flex;flex-direction:column;gap:7px;align-items:center;margin-top:4px;}
+    .kbrow{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;}
+    .key{min-width:30px;height:44px;padding:0 8px;border:0;border-radius:7px;background:#25463b;color:#eef2ea;
+      font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:filter .1s,transform .1s;}
+    .key:hover{filter:brightness(1.12);}
+    .key.suit{font-size:20px;min-width:44px;}
+    .key.sel{outline:3px solid var(--gold);}
+    .key.k-correct{background:var(--green);color:#fff;}
+    .key.k-present{background:var(--yellow);color:#2a2410;}
+    .key.k-absent{background:#1a2a24;color:#61756c;}
+    .key.wide{min-width:64px;background:var(--gold);color:#12251d;}
+    .bar{display:flex;gap:8px;justify-content:center;margin-top:12px;}
+    .bar button{font-family:inherit;border:0;border-radius:9px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;background:#1c3a30;color:#dcebe2;border:1px solid #ffffff26;}
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,14,11,.86);z-index:9;padding:20px;text-align:center;}
+    .overlay.show{display:flex;}
+    .panel{max-width:400px;background:#12251d;border:1px solid #ffffff22;border-radius:14px;padding:20px;}
+    .panel h2{margin:0 0 8px;}.panel p{color:#c3d3c9;font-size:13.5px;line-height:1.8;}
+    .panel button{margin-top:12px;border:0;border-radius:9px;padding:9px 18px;font-weight:700;background:var(--gold);color:#12251d;cursor:pointer;font-family:inherit;}
+    .note{color:#9fb6a9;font-size:12px;line-height:1.75;margin-top:16px;background:#0f2620;border:1px solid #ffffff14;border-radius:10px;padding:10px 14px;}
+    .legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;font-size:11.5px;color:#b9c8bd;margin:4px 0;}
+    .sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:middle;margin-right:3px;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../poker/">← 返回遊戲合輯</a>
+    <h1>🃏 撲克 Wordle <span class="en">POKER WORDLE</span></h1>
+    <div class="sub">Wordle 式撲克<b>推理解謎</b>：6 次內猜出 5 張謎底手牌。每張牌分「數字」「花色」兩維度給 <b style="color:#5fce87">綠</b>／<b style="color:#e9c46a">黃</b>／<b style="color:#8aa">灰</b> 提示，灰燈附 ↑↓ 高低箭頭。純演繹、無機率。</div>
+
+    <div class="legend">
+      <span><span class="sw" style="background:var(--green)"></span>位置與內容皆對</span>
+      <span><span class="sw" style="background:var(--yellow)"></span>有但位置錯</span>
+      <span><span class="sw" style="background:var(--gray)"></span>沒有（↑↓＝謎底更大/小）</span>
+    </div>
+
+    <div class="board" id="board"></div>
+    <div id="hints"></div>
+    <div id="msg"></div>
+
+    <div class="kb" id="kb"></div>
+
+    <div class="bar">
+      <button id="howBtn">📖 玩法</button>
+      <button id="statBtn">📊 統計</button>
+      <button id="newBtn">🆕 新題</button>
+    </div>
+
+    <div class="note">
+      <b>操作</b>：先點<b>數字鍵</b>（會反白）再點<b>花色鍵</b> → 湊成一張牌填入；⌫ 刪除、Enter 提交（需 5 張、不可重複）。<br>
+      你選的牌會<b>即時排成數字大→小</b>（同數字 ♠&gt;♥&gt;♦&gt;♣）顯示，提交也照此比對，<b>所見即所比</b>——<b>順序不用猜，專心找出正確的 5 張牌</b>即可。綠＝該格數字/花色正確、黃＝有這張但落在別格。猜錯會逐步解鎖牌型等 meta 線索。
+    </div>
+  </div>
+
+  <div id="over" class="overlay"><div class="panel"><h2 id="overttl"></h2><p id="overmsg"></p>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+      <button id="copyBtn">📋 複製成績</button>
+      <button id="imgBtn" style="background:#2b7cc9;color:#fff">🖼️ 下載成績圖</button>
+      <button id="overBtn">🆕 再來一題</button>
+    </div>
+    <div id="copymsg" style="font-size:12px;color:#9fce87;min-height:16px;margin-top:8px"></div>
+    <img id="shareimg" alt="成績圖" style="display:none;max-width:260px;margin:8px auto 0;border-radius:8px;border:1px solid #ffffff22"/>
+  </div></div>
+  <div id="how" class="overlay"><div class="panel"><h2>玩法</h2>
+    <p style="text-align:left">🎯 目標：6 次內猜出 5 張謎底手牌。<br><br>
+    🟩 綠：這張的<b>數字（或花色）</b>位置與內容皆對。<br>
+    🟨 黃：有這個數字/花色，但位置不對。<br>
+    ⬛ 灰：謎底沒有；數字灰燈附 <b>↑</b>(謎底更大)／<b>↓</b>(更小)。<br>
+    數字、花色<b>分開</b>判定（卡片上下分色）。<br><br>
+    🃏 猜錯會逐步給線索：牌型、紅色牌數、最大牌。<br>
+    ♠&gt;♥&gt;♦&gt;♣、A 最大。</p>
+    <button onclick="document.getElementById('how').className='overlay'">知道了</button></div></div>
+  <div id="stat" class="overlay"><div class="panel"><h2>📊 統計</h2><p id="statbody"></p>
+    <button onclick="document.getElementById('stat').className='overlay'">關閉</button></div></div>
+
+  <script>
+  (function(){
+    var s=document.createElement('script'); s.src='pokerwordle.js?v='+Date.now();
+    s.onload=function(){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot(); };
+    document.body.appendChild(s);
+    var A, pendingRank=null, animateRow=-1;
+
+    function boot(){
+      A=window.__pw;
+      document.getElementById('newBtn').onclick=function(){ A.clearSave(); A.newGame(); pendingRank=null; render(); };
+      document.getElementById('overBtn').onclick=function(){ document.getElementById('over').className='overlay'; A.clearSave(); A.newGame(); pendingRank=null; render(); };
+      document.getElementById('howBtn').onclick=function(){ document.getElementById('how').className='overlay show'; };
+      document.getElementById('statBtn').onclick=showStats;
+      document.getElementById('copyBtn').onclick=copyShare;
+      document.getElementById('imgBtn').onclick=downloadShareImage;
+      document.addEventListener('keydown',onKey);
+      if(!A.load()) A.newGame();
+      if(location.search.indexOf('demo')>=0){
+        [[14,'S'],[13,'S'],[12,'H'],[10,'D'],[7,'C']].forEach(function(x){A.pushCard(x[0],x[1]);});
+        A.submit(); [[9,'S'],[8,'S'],[6,'H'],[4,'D'],[3,'C']].forEach(function(x){A.pushCard(x[0],x[1]);}); A.submit();
+        // 直接以謎底猜中，觸發結算分享畫面
+        var t=A.sortHand(A.state().target); t.forEach(function(c){A.pushCard(c.rank,c.suit);}); A.submit();
+      }
+      render();
+      window.__pwrender=render;   // 測試/除錯用：外部強制重繪
+    }
+
+    function cardHTML(c, ev){
+      var red = A.isRed(c.suit) ? ' red' : '';
+      var rcls='', scls='', arrow='';
+      if(ev){ rcls=' s-'+ev.rankStatus.toLowerCase(); scls=' s-'+ev.suitStatus.toLowerCase();
+        if(ev.rankHint==='UP') arrow='<span class="arrow">↑</span>'; else if(ev.rankHint==='DOWN') arrow='<span class="arrow">↓</span>'; }
+      return '<div class="half rank'+rcls+'">'+A.rankLabel(c.rank)+arrow+'</div>'+
+             '<div class="half suit'+scls+(ev?'':red)+'">'+A.SUIT_SYM[c.suit]+'</div>';
+    }
+
+    function render(){
+      var S=A.state(); if(!S) return;
+      var curSorted = A.sortHand(S.cur);   // 目前這排即時排成大→小顯示（＝提交時的比對順序）
+      var board=document.getElementById('board'); board.innerHTML='';
+      for(var r=0;r<A.MAX_ROWS;r++){
+        var row=document.createElement('div'); row.className='row'; row.id='row'+r;
+        var ev = S.rows[r];
+        for(var i=0;i<A.HAND;i++){
+          var cell=document.createElement('div'); cell.className='cell';
+          if(ev){ cell.innerHTML=cardHTML(ev[i],ev[i]); cell.className='cell filled';
+            if(r===animateRow){ cell.classList.add('flip'); cell.style.animationDelay=(i*0.12)+'s'; } }
+          else if(r===S.rows.length){ // current row（即時大→小排序顯示）
+            var c=curSorted[i];
+            if(c){ cell.innerHTML=cardHTML(c,null); cell.className='cell cur filled'; }
+            else if(i===S.cur.length && pendingRank!=null){ cell.innerHTML='<div class="half rank" style="color:var(--gold)">'+A.rankLabel(pendingRank)+'</div><div class="half suit" style="color:#5b7">?</div>'; }
+          }
+          row.appendChild(cell);
+        }
+        board.appendChild(row);
+      }
+      animateRow=-1;
+      // hints
+      document.getElementById('hints').innerHTML = A.metaHints().join('　');
+      renderKB();
+      if(S.status!=='playing') setTimeout(function(){ showOver(S); }, 900);
+    }
+
+    function key(label,cls,fn){ var b=document.createElement('button'); b.className='key '+(cls||''); b.innerHTML=label; b.onclick=fn; return b; }
+    function renderKB(){
+      var S=A.state(), kb=document.getElementById('kb'), ks=A.keyStatus(); kb.innerHTML='';
+      // rank row
+      var r1=document.createElement('div'); r1.className='kbrow';
+      A.RANKS.slice().sort(function(a,b){return a-b;}).forEach(function(rank){
+        var st=ks.rank[rank]; var cls=st?('k-'+st.toLowerCase()):''; if(pendingRank===rank) cls+=' sel';
+        r1.appendChild(key(A.rankLabel(rank),cls,function(){ pendingRank=rank; render(); }));
+      });
+      kb.appendChild(r1);
+      // suit row + actions
+      var r2=document.createElement('div'); r2.className='kbrow';
+      A.SUITS.forEach(function(su){
+        var st=ks.suit[su]; var cls='suit '+(st?('k-'+st.toLowerCase()):''); var red=A.isRed(su)?'style="color:#ff8a8a"':'';
+        r2.appendChild(key('<span '+red+'>'+A.SUIT_SYM[su]+'</span>',cls,function(){ placeSuit(su); }));
+      });
+      r2.appendChild(key('⌫','wide',function(){ pendingRank=null; A.backspace(); render(); }));
+      r2.appendChild(key('Enter','wide',doSubmit));
+      kb.appendChild(r2);
+    }
+
+    function placeSuit(su){
+      var S=A.state(); if(!S||S.status!=='playing') return;
+      if(pendingRank==null){ flash('先點數字，再點花色。'); return; }
+      if(!A.pushCard(pendingRank,su)){ return; }
+      pendingRank=null; flash(''); render();
+      // pop 動畫最後一張
+      var S2=A.state(); var idx=S2.cur.length-1;
+      var cell=document.querySelectorAll('#row'+S2.rows.length+' .cell')[idx];
+      if(cell) cell.classList.add('pop');
+    }
+    function doSubmit(){
+      var res=A.submit();
+      if(!res.ok){ flash(res.msg); var row=document.getElementById('row'+A.state().rows.length); if(row) { row.classList.add('shake'); setTimeout(function(){row.classList.remove('shake');},450);} return; }
+      flash(''); pendingRank=null; animateRow=A.state().rows.length-1; render();
+    }
+    function flash(t){ document.getElementById('msg').textContent=t||''; }
+
+    function onKey(e){
+      var S=A.state(); if(!S||S.status!=='playing') return;
+      var k=e.key.toUpperCase();
+      if(k==='ENTER'){ doSubmit(); return; }
+      if(k==='BACKSPACE'){ pendingRank=null; A.backspace(); render(); return; }
+      var map={A:14,K:13,Q:12,J:11,T:10,'10':10};
+      if(map[k]){ pendingRank=map[k]; render(); return; }
+      if(/^[2-9]$/.test(k)){ pendingRank=parseInt(k,10); render(); return; }
+      if(k==='S'||k==='H'||k==='D'||k==='C'){ placeSuit(k); return; }
+    }
+
+    function showOver(S){
+      var won=S.status==='won';
+      document.getElementById('overttl').textContent = won ? '🏆 猜對了！' : '💀 沒猜中';
+      var sol = A.sortHand(S.target).map(function(c){ return A.rankLabel(c.rank)+A.SUIT_SYM[c.suit]; }).join('  ');
+      document.getElementById('overmsg').innerHTML = (won ? ('用了 '+S.rows.length+' 次。') : '謎底是：') + '<br><b style="font-size:18px">'+sol+'</b><br><span style="color:#9fb6a9">牌型：'+S.cat+'</span>';
+      document.getElementById('copymsg').textContent='';
+      document.getElementById('shareimg').style.display='none';
+      document.getElementById('over').className='overlay show';
+    }
+    function copyShare(){
+      var txt=A.buildShareText();
+      var done=function(){ document.getElementById('copymsg').textContent='✅ 已複製 emoji 成績，可直接貼到社群！'; };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,function(){fallbackCopy(txt);done();}); }
+      else { fallbackCopy(txt); done(); }
+    }
+    function fallbackCopy(txt){ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); }
+    function buildShareCanvas(){
+      var S=A.state(), rows=S.rows;
+      var cw=34, ch=44, gap=6, padX=20, padTop=52, padBot=30;
+      var W=padX*2 + 5*cw + 4*gap, H=padTop + rows.length*(ch+gap) + padBot, DPR=2;
+      var cv=document.createElement('canvas'); cv.width=W*DPR; cv.height=H*DPR;
+      var x=cv.getContext('2d'); x.scale(DPR,DPR);
+      x.fillStyle='#0e211b'; x.fillRect(0,0,W,H);
+      x.fillStyle='#e9c46a'; x.font='bold 18px system-ui,sans-serif'; x.textAlign='center';
+      var n=S.status==='won'?S.rows.length:'X';
+      x.fillText('Poker Wordle  '+n+'/6', W/2, 26);
+      x.fillStyle='#9fb6a9'; x.font='11px system-ui,sans-serif'; x.fillText('上＝數字  下＝花色', W/2, 44);
+      var COL={CORRECT:'#3aa860',PRESENT:'#d9a92e',ABSENT:'#3a4a44'};
+      rows.forEach(function(row,r){
+        var y=padTop + r*(ch+gap);
+        row.forEach(function(c,i){
+          var cx=padX + i*(cw+gap);
+          x.fillStyle=COL[c.rankStatus]; x.fillRect(cx, y, cw, ch/2-1);
+          x.fillStyle=COL[c.suitStatus]; x.fillRect(cx, y+ch/2+1, cw, ch/2-1);
+        });
+      });
+      x.fillStyle='#9fb6a9'; x.font='10px system-ui,sans-serif';
+      x.fillText('lab4.kvzhuang.net/gen-art/poker-wordle', W/2, H-11);
+      return cv;
+    }
+    function downloadShareImage(){
+      var url=buildShareCanvas().toDataURL('image/png');
+      var img=document.getElementById('shareimg'); img.src=url; img.style.display='block';
+      var a=document.createElement('a'); a.href=url; a.download='poker-wordle.png'; a.click();
+      document.getElementById('copymsg').textContent='🖼️ 已產生成績圖並下載（手機可長按上方圖片分享）。';
+    }
+    function showStats(){
+      var st=A.getStats(); var rate=st.played?Math.round(st.won/st.played*100):0;
+      var dist=st.dist.map(function(n,i){return (i+1)+'次：'+n;}).join('　');
+      document.getElementById('statbody').innerHTML='玩過 '+st.played+' 題　勝 '+st.won+' 題　勝率 '+rate+'%<br><br>猜中次數分布：<br>'+dist;
+      document.getElementById('stat').className='overlay show';
+    }
+  })();
+  </script>
+</body>
+</html>

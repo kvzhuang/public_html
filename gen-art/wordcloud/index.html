@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>Google Trends Word Cloud</title>
+  <meta name="description" content="Google 熱門搜尋趨勢文字雲，每小時自動更新。">
+  <meta name="author" content="kvzhuang">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a12;
+      color: #fff;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    header {
+      text-align: center;
+      padding: 16px 20px 8px;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      color: #888;
+    }
+
+    #info {
+      font-size: 0.75rem;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    canvas {
+      display: block;
+      cursor: default;
+    }
+
+    #tooltip {
+      position: fixed;
+      background: rgba(20, 20, 30, 0.95);
+      border: 1px solid #444;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      pointer-events: none;
+      display: none;
+      z-index: 100;
+      color: #fff;
+    }
+
+    #regions {
+      position: fixed;
+      bottom: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .region-btn {
+      padding: 6px 14px;
+      border: 1px solid #333;
+      background: transparent;
+      color: #666;
+      font-size: 0.8rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .region-btn:hover { border-color: #666; color: #aaa; }
+    .region-btn.active { border-color: #538d4e; color: #538d4e; background: rgba(83,141,78,0.1); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>GOOGLE TRENDS</h1>
+    <div id="info"></div>
+  </header>
+  <canvas id="canvas"></canvas>
+  <div id="tooltip"></div>
+  <div id="regions">
+    <button class="region-btn active" data-region="all">All</button>
+    <button class="region-btn" data-region="TW">TW</button>
+    <button class="region-btn" data-region="US">US</button>
+    <button class="region-btn" data-region="JP">JP</button>
+    <button class="region-btn" data-region="GB">GB</button>
+  </div>
+  <script src="cloud.js"></script>
+</body>
+</html>
