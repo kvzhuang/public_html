@@ -193,6 +193,10 @@
 
 <div class="gallery">
 
+
+
+
+
     <a class="card" href="./sunflowers/" target="_blank">
     <div class="card-preview">
       <iframe src="./sunflowers/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
@@ -209,8 +213,6 @@
       </div>
     </div>
   </a>
-
-
 
   <a class="card" href="./impression-sunrise/" target="_blank">
     <div class="card-preview">
@@ -263,6 +265,11 @@
     </div>
   </a>
 
+  <a class="card" href="./sunflowers-3d/" target="_blank">
+    <div class="card-preview"><iframe title="Sunflowers 3D preview" src="./sunflowers-3d/?preview=1" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe></div>
+    <div class="card-body"><h2>Sunflowers 3D 走進向日葵</h2><p>走進向日葵的立體油畫世界。環繞陶瓶、近看黃金角花心與曲面花瓣，使用鍵盤或觸控自由探索。種子決定花束、釉色與背景，支援儲存畫面。</p><div class="card-tags"><span class="tag">three.js</span><span class="tag">3D</span><span class="tag">impasto</span><span class="tag">fxhash</span></div></div>
+  </a>
+
     <a class="card" href="./pointillism/" target="_blank">
     <div class="card-preview">
       <iframe src="./pointillism/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
@@ -309,6 +316,22 @@
         <span class="tag">three.js</span>
         <span class="tag">voxel</span>
         <span class="tag">simulation</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="./dp-lab/" target="_blank">
+    <div class="card-preview">
+      <iframe src="./dp-lab/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+    </div>
+    <div class="card-body">
+      <h2>動態規劃教室 DP Lab</h2>
+      <p>互動教學：用三個經典問題把動態規劃「演」給你看——費波那契的純遞迴 vs 記憶化（重疊子問題有多浪費）、硬幣找零的 1D bottom-up 填表（貪婪法會失敗、DP 保證最優）、最長共同子序列的 2D 表格＋回溯。可播放／單步／自訂輸入，每一步都高亮轉移式與依賴的子問題。</p>
+      <div class="card-tags">
+        <span class="tag">algorithm</span>
+        <span class="tag">dynamic-programming</span>
+        <span class="tag">interactive</span>
+        <span class="tag">education</span>
       </div>
     </div>
   </a>
@@ -1530,6 +1553,11 @@
 
   // 翻譯對照表：key 為中文 trim 後的文字
   var T_EN = {
+    "Sunflowers 3D 走進向日葵": "Sunflowers 3D — Inside the Painting",
+    "走進向日葵的立體油畫世界。環繞陶瓶、近看黃金角花心與曲面花瓣，使用鍵盤或觸控自由探索。種子決定花束、釉色與背景，支援儲存畫面。": "Step inside a three-dimensional sunflower painting. Orbit the vase, inspect golden-angle seeds and curved petals, and explore with keyboard or touch. Seed-driven bouquets, glazes and backgrounds; save your view.",
+    "動態規劃教室 DP Lab": "Dynamic Programming Lab",
+    "互動教學：用三個經典問題把動態規劃「演」給你看——費波那契的純遞迴 vs 記憶化（重疊子問題有多浪費）、硬幣找零的 1D bottom-up 填表（貪婪法會失敗、DP 保證最優）、最長共同子序列的 2D 表格＋回溯。可播放／單步／自訂輸入，每一步都高亮轉移式與依賴的子問題。":
+      "Interactive lessons that act out dynamic programming with three classics: naive recursion vs memoization on Fibonacci (see how wasteful overlapping subproblems are), 1D bottom-up coin change (where greedy fails but DP guarantees the optimum), and the 2D LCS table with traceback. Play / single-step / custom inputs, with the recurrence and its dependencies highlighted at every step.",
     "領地爭奪 Pong Wars": "Pong Wars",
     "兩顆彈跳球各據一方，撞到對方領地就反彈並把該格翻成自己的顏色——像素前線無限來回。薄荷 vs 深海，即時比分、可調速度／每邊球數／格數、拖尾與存檔。（參考自 Koen van Gilst 的 Pong Wars：pong-wars.koenvangilst.nl）":
       "Two bouncing balls each hold half the board; hitting the other's territory ricochets and flips that cell to its own color — an endless pixel frontier. Mint vs deep-sea, live score, adjustable speed / balls-per-side / grid size, trails and autosave. Inspired by Koen van Gilst's Pong Wars (pong-wars.koenvangilst.nl).",
@@ -1745,6 +1773,11 @@
   };
 
   var T_JA = {
+    "Sunflowers 3D 走進向日葵": "ひまわり 3D — 絵の中へ",
+    "走進向日葵的立體油畫世界。環繞陶瓶、近看黃金角花心與曲面花瓣，使用鍵盤或觸控自由探索。種子決定花束、釉色與背景，支援儲存畫面。": "立体のひまわりの世界へ。陶器の花瓶を周回し、黄金角の花芯や曲面の花びらを間近で鑑賞。キーボードやタッチで探索でき、種子で花束・釉薬・背景が決まります。画像保存にも対応。",
+    "動態規劃教室 DP Lab": "動的計画法ラボ",
+    "互動教學：用三個經典問題把動態規劃「演」給你看——費波那契的純遞迴 vs 記憶化（重疊子問題有多浪費）、硬幣找零的 1D bottom-up 填表（貪婪法會失敗、DP 保證最優）、最長共同子序列的 2D 表格＋回溯。可播放／單步／自訂輸入，每一步都高亮轉移式與依賴的子問題。":
+      "3つの定番問題で動的計画法を「見せる」インタラクティブ教材：フィボナッチの素朴な再帰 vs メモ化（重複部分問題の無駄が一目瞭然）、1D ボトムアップのコイン両替（貪欲法が失敗し DP が最適を保証）、2D の LCS テーブルとトレースバック。再生／ステップ実行／入力カスタム対応、各ステップで遷移式と依存する部分問題をハイライト。",
     "領地爭奪 Pong Wars": "ポンウォーズ",
     "兩顆彈跳球各據一方，撞到對方領地就反彈並把該格翻成自己的顏色——像素前線無限來回。薄荷 vs 深海，即時比分、可調速度／每邊球數／格數、拖尾與存檔。（參考自 Koen van Gilst 的 Pong Wars：pong-wars.koenvangilst.nl）":
       "2つの弾むボールが盤面を二分し、相手の陣地に当たると跳ね返してそのマスを自分の色に塗り替える——終わりのないピクセルの攻防。ミント対ディープシー、リアルタイムのスコア、速度／片側のボール数／マス数の調整、軌跡と自動保存。（Koen van Gilst の Pong Wars を参考：pong-wars.koenvangilst.nl）",
@@ -1950,6 +1983,11 @@
   };
 
   var T_KO = {
+    "Sunflowers 3D 走進向日葵": "해바라기 3D — 그림 속으로",
+    "走進向日葵的立體油畫世界。環繞陶瓶、近看黃金角花心與曲面花瓣，使用鍵盤或觸控自由探索。種子決定花束、釉色與背景，支援儲存畫面。": "입체 해바라기 그림 속으로 들어가세요. 꽃병 주위를 돌며 황금각 꽃씨와 곡면 꽃잎을 감상하고 키보드나 터치로 탐험하세요. 시드에 따라 꽃다발, 유약, 배경이 달라지며 이미지 저장을 지원합니다.",
+    "動態規劃教室 DP Lab": "동적 계획법 랩",
+    "互動教學：用三個經典問題把動態規劃「演」給你看——費波那契的純遞迴 vs 記憶化（重疊子問題有多浪費）、硬幣找零的 1D bottom-up 填表（貪婪法會失敗、DP 保證最優）、最長共同子序列的 2D 表格＋回溯。可播放／單步／自訂輸入，每一步都高亮轉移式與依賴的子問題。":
+      "세 가지 고전 문제로 동적 계획법을 '보여주는' 인터랙티브 교재: 피보나치의 단순 재귀 vs 메모이제이션(중복 부분 문제의 낭비를 한눈에), 1D 바텀업 동전 거스름돈(그리디가 실패하고 DP가 최적을 보장), 2D LCS 테이블과 역추적. 재생/단계 실행/입력 커스텀 지원, 매 단계마다 점화식과 의존하는 부분 문제를 하이라이트.",
     "領地爭奪 Pong Wars": "퐁 워즈",
     "兩顆彈跳球各據一方，撞到對方領地就反彈並把該格翻成自己的顏色——像素前線無限來回。薄荷 vs 深海，即時比分、可調速度／每邊球數／格數、拖尾與存檔。（參考自 Koen van Gilst 的 Pong Wars：pong-wars.koenvangilst.nl）":
       "두 개의 튕기는 공이 각자 절반의 영역을 차지하고, 상대 영역에 부딪히면 튕겨 나가며 그 칸을 자기 색으로 바꿉니다 — 끝없는 픽셀 전선. 민트 vs 딥시, 실시간 점수, 속도·한쪽 공 개수·칸 수 조절, 잔상과 자동 저장. Koen van Gilst의 Pong Wars 참고 (pong-wars.koenvangilst.nl).",
