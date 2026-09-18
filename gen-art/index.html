@@ -195,8 +195,6 @@
 
 
 
-
-
     <a class="card" href="./sunflowers/" target="_blank">
     <div class="card-preview">
       <iframe src="./sunflowers/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
@@ -288,6 +286,11 @@
   </a>
 
 
+  <a class="card" href="./taipei-drive/" target="_blank">
+    <div class="card-preview"><iframe title="Taipei After Hours preview" src="./taipei-drive/?preview=1" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe></div>
+    <div class="card-body"><h2>Taipei After Hours 台北夜行</h2><p>雨後台北的 3D 深夜兜風。黃色計程車自動穿梭霓虹街區，搭配中文招牌、機車、101 天際線與三種駕駛視角。</p><div class="card-tags"><span class="tag">three.js</span><span class="tag">3D</span><span class="tag">Taipei</span><span class="tag">autonomous</span></div></div>
+  </a>
+
   <a class="card" href="./pong-wars/" target="_blank">
     <div class="card-preview">
       <iframe src="./pong-wars/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
@@ -332,23 +335,6 @@
         <span class="tag">dynamic-programming</span>
         <span class="tag">interactive</span>
         <span class="tag">education</span>
-      </div>
-    </div>
-  </a>
-
-  <a class="card" href="./cross-drift/" target="_blank">
-    <div class="card-preview">
-      <iframe src="./cross-drift/" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
-    </div>
-    <div class="card-body">
-      <h2>叉點漂移 Cross Drift</h2>
-      <p>n×n 點陣生成動畫：由相鄰四點連成一個「叉叉」，多個叉叉在格點上平滑地上下左右漂移，配上各種配色（普普、霓虹、粉彩、大地、賽博、海洋…）。每次載入依 fxhash 種子決定格數（15–25）、叉叉數與色盤，獨一無二。點擊重生、S 鍵存圖。</p>
-      <div class="card-tags">
-        <span class="tag">fxhash</span>
-        <span class="tag">p5.js</span>
-        <span class="tag">grid</span>
-        <span class="tag">animation</span>
-        <span class="tag">generative</span>
       </div>
     </div>
   </a>
@@ -1553,6 +1539,8 @@
 
   // 翻譯對照表：key 為中文 trim 後的文字
   var T_EN = {
+    "Taipei After Hours 台北夜行": "Taipei After Hours",
+    "雨後台北的 3D 深夜兜風。黃色計程車自動穿梭霓虹街區，搭配中文招牌、機車、101 天際線與三種駕駛視角。": "A rainy midnight drive through procedural Taipei. An autonomous yellow taxi, neon signs, scooters, a Taipei 101 skyline, and three camera views.",
     "Sunflowers 3D 走進向日葵": "Sunflowers 3D — Inside the Painting",
     "走進向日葵的立體油畫世界。環繞陶瓶、近看黃金角花心與曲面花瓣，使用鍵盤或觸控自由探索。種子決定花束、釉色與背景，支援儲存畫面。": "Step inside a three-dimensional sunflower painting. Orbit the vase, inspect golden-angle seeds and curved petals, and explore with keyboard or touch. Seed-driven bouquets, glazes and backgrounds; save your view.",
     "動態規劃教室 DP Lab": "Dynamic Programming Lab",
@@ -1570,9 +1558,6 @@
     "擲骰模擬人生 Dice of Life": "Dice of Life",
     "擲骰子模擬人生的文字遊戲：從出生到晚年共六個階段，每階段先擲 d10／d12 觸發隨機事件，再做選擇——部分選擇需 d20 檢定（骰值＋屬性修正 ≥ 門檻才成功）。選擇會累積 健康／智力／體魄／魅力／幸福／財富，塑造你的職涯與命運。走完晚年給你一份人生總結：稱號、評分（S～D）與壽命。每局都不一樣，來看看這輩子能活成什麼樣子。":
       "A text-based life-sim driven by dice. From birth to old age you pass through six stages; each stage first rolls a d10 / d12 for a random event, then offers a choice — some choices require a d20 check (roll + stat modifier ≥ the DC to succeed). Choices accumulate Health / Intellect / Strength / Charisma / Happiness / Wealth, shaping your career and fate. After old age you get a life summary: a title, a grade (S–D) and your lifespan. Every run is different — see what kind of life you end up living.",
-    "叉點漂移 Cross Drift": "Cross Drift",
-    "n×n 點陣生成動畫：由相鄰四點連成一個「叉叉」，多個叉叉在格點上平滑地上下左右漂移，配上各種配色（普普、霓虹、粉彩、大地、賽博、海洋…）。每次載入依 fxhash 種子決定格數（15–25）、叉叉數與色盤，獨一無二。點擊重生、S 鍵存圖。":
-      "A generative animation on an n×n dot lattice: four neighboring dots form an 'X' (cross), and many crosses drift smoothly up / down / left / right across the grid, in a range of palettes (pop, neon, pastel, earth, cyber, ocean…). Each load's fxhash seed sets the grid size (15–25), the number of crosses and the palette — unique every time. Click to regenerate, S to save.",
     "描線揭圖 Unveil": "Unveil — Line Claim",
     "Qix／天蠶變風的圈地揭圖小遊戲：用方向鍵把游標拉進黑幕拉線，回到已揭開的邊界圍出封閉區，沒有敵人的那一側就揭開底層圖片（原創立繪）。避開在黑幕中亂彈的紅色敵人——碰到你正在拉的線就扣一命。揭開達 75% 過關看完整圖，關卡越高敵人越多越快。方向鍵／WASD 或畫面方向鍵操作，支援手機。":
       "A Qix / Volfied-style area-claiming game. Steer the cursor with the arrow keys, draw a line into the dark curtain, and return to the revealed border to enclose a region — the side without an enemy is claimed, revealing the hidden picture (original character art) beneath. Dodge the red enemies bouncing in the dark; touching the line you're drawing costs a life. Reveal 75% to clear a stage and see the full image; higher stages add faster, more numerous enemies. Arrow keys / WASD or an on-screen D-pad, mobile-friendly.",
@@ -1773,6 +1758,8 @@
   };
 
   var T_JA = {
+    "Taipei After Hours 台北夜行": "Taipei After Hours 台北夜行",
+    "雨後台北的 3D 深夜兜風。黃色計程車自動穿梭霓虹街區，搭配中文招牌、機車、101 天際線與三種駕駛視角。": "雨上がりの台北を走る 3D ナイトドライブ。自動走行する黄色いタクシー、ネオン看板、スクーター、台北101と3つのカメラ視点。",
     "Sunflowers 3D 走進向日葵": "ひまわり 3D — 絵の中へ",
     "走進向日葵的立體油畫世界。環繞陶瓶、近看黃金角花心與曲面花瓣，使用鍵盤或觸控自由探索。種子決定花束、釉色與背景，支援儲存畫面。": "立体のひまわりの世界へ。陶器の花瓶を周回し、黄金角の花芯や曲面の花びらを間近で鑑賞。キーボードやタッチで探索でき、種子で花束・釉薬・背景が決まります。画像保存にも対応。",
     "動態規劃教室 DP Lab": "動的計画法ラボ",
@@ -1790,9 +1777,6 @@
     "擲骰模擬人生 Dice of Life": "ダイス人生シミュレーション",
     "擲骰子模擬人生的文字遊戲：從出生到晚年共六個階段，每階段先擲 d10／d12 觸發隨機事件，再做選擇——部分選擇需 d20 檢定（骰值＋屬性修正 ≥ 門檻才成功）。選擇會累積 健康／智力／體魄／魅力／幸福／財富，塑造你的職涯與命運。走完晚年給你一份人生總結：稱號、評分（S～D）與壽命。每局都不一樣，來看看這輩子能活成什麼樣子。":
       "サイコロで人生をシミュレートするテキストゲーム。誕生から晩年までの6ステージで、各ステージはまず d10／d12 を振ってランダムイベントを起こし、次に選択——一部の選択は d20 判定（出目＋能力補正 ≥ 難易度で成功）が必要です。選択によって 健康／知力／体力／魅力／幸福／財産 が積み上がり、キャリアと運命が形づくられます。晩年を終えると、称号・評価（S〜D）・寿命をまとめた人生総括が表示されます。プレイのたびに展開が変わる——どんな一生になるか試してみて。",
-    "叉點漂移 Cross Drift": "クロス・ドリフト",
-    "n×n 點陣生成動畫：由相鄰四點連成一個「叉叉」，多個叉叉在格點上平滑地上下左右漂移，配上各種配色（普普、霓虹、粉彩、大地、賽博、海洋…）。每次載入依 fxhash 種子決定格數（15–25）、叉叉數與色盤，獨一無二。點擊重生、S 鍵存圖。":
-      "n×n のドット格子上のジェネラティブ・アニメーション：隣り合う4つの点が「×（クロス）」を形づくり、複数のクロスが格子の上を上下左右になめらかにドリフトします。多彩なパレット（ポップ、ネオン、パステル、アース、サイバー、オーシャン…）。読み込みごとに fxhash シードが格子数（15〜25）・クロスの数・配色を決め、毎回唯一無二。クリックで再生成、S で保存。",
     "描線揭圖 Unveil": "アンヴェール（線取り）",
     "Qix／天蠶變風的圈地揭圖小遊戲：用方向鍵把游標拉進黑幕拉線，回到已揭開的邊界圍出封閉區，沒有敵人的那一側就揭開底層圖片（原創立繪）。避開在黑幕中亂彈的紅色敵人——碰到你正在拉的線就扣一命。揭開達 75% 過關看完整圖，關卡越高敵人越多越快。方向鍵／WASD 或畫面方向鍵操作，支援手機。":
       "Qix／ヴォルフィード風の陣取りゲーム。方向キーでカーソルを暗幕に引き込んで線を描き、開いた縁に戻って領域を囲むと、敵のいない側が開いて下の絵（オリジナルの立ち絵）が現れます。暗幕内を跳ね回る赤い敵に注意——描いている線に触れると1ミス。75% 開けばステージクリアで完成絵を表示、上のステージほど敵は速く多くなります。方向キー／WASD または画面の方向ボタン、スマホ対応。",
@@ -1983,6 +1967,8 @@
   };
 
   var T_KO = {
+    "Taipei After Hours 台北夜行": "Taipei After Hours 타이베이 야행",
+    "雨後台北的 3D 深夜兜風。黃色計程車自動穿梭霓虹街區，搭配中文招牌、機車、101 天際線與三種駕駛視角。": "비 내린 타이베이의 3D 심야 드라이브. 자율 주행 노란 택시, 네온 간판, 스쿠터, 타이베이 101과 세 가지 카메라 시점.",
     "Sunflowers 3D 走進向日葵": "해바라기 3D — 그림 속으로",
     "走進向日葵的立體油畫世界。環繞陶瓶、近看黃金角花心與曲面花瓣，使用鍵盤或觸控自由探索。種子決定花束、釉色與背景，支援儲存畫面。": "입체 해바라기 그림 속으로 들어가세요. 꽃병 주위를 돌며 황금각 꽃씨와 곡면 꽃잎을 감상하고 키보드나 터치로 탐험하세요. 시드에 따라 꽃다발, 유약, 배경이 달라지며 이미지 저장을 지원합니다.",
     "動態規劃教室 DP Lab": "동적 계획법 랩",
@@ -2000,9 +1986,6 @@
     "擲骰模擬人生 Dice of Life": "주사위 인생 시뮬레이션",
     "擲骰子模擬人生的文字遊戲：從出生到晚年共六個階段，每階段先擲 d10／d12 觸發隨機事件，再做選擇——部分選擇需 d20 檢定（骰值＋屬性修正 ≥ 門檻才成功）。選擇會累積 健康／智力／體魄／魅力／幸福／財富，塑造你的職涯與命運。走完晚年給你一份人生總結：稱號、評分（S～D）與壽命。每局都不一樣，來看看這輩子能活成什麼樣子。":
       "주사위로 인생을 시뮬레이션하는 텍스트 게임. 탄생부터 노년까지 여섯 단계를 거치며, 각 단계는 먼저 d10／d12를 굴려 랜덤 이벤트를 발생시키고 이어서 선택을 합니다——일부 선택은 d20 판정(주사위 값＋능력치 보정 ≥ 난이도여야 성공)이 필요합니다. 선택에 따라 건강／지력／체력／매력／행복／재산이 쌓이며 커리어와 운명이 만들어집니다. 노년을 마치면 칭호·등급(S~D)·수명을 정리한 인생 총평이 나옵니다. 매 판마다 전개가 달라지니, 이번 생은 어떤 삶이 될지 확인해 보세요.",
-    "叉點漂移 Cross Drift": "크로스 드리프트",
-    "n×n 點陣生成動畫：由相鄰四點連成一個「叉叉」，多個叉叉在格點上平滑地上下左右漂移，配上各種配色（普普、霓虹、粉彩、大地、賽博、海洋…）。每次載入依 fxhash 種子決定格數（15–25）、叉叉數與色盤，獨一無二。點擊重生、S 鍵存圖。":
-      "n×n 점 격자 위의 제너러티브 애니메이션: 이웃한 네 점이 'X(크로스)'를 이루고, 여러 크로스가 격자 위를 상하좌우로 부드럽게 드리프트합니다. 다양한 팔레트(팝, 네온, 파스텔, 어스, 사이버, 오션…). 로드할 때마다 fxhash 시드가 격자 수(15–25), 크로스 개수, 색상을 정해 매번 유일무이. 클릭하면 재생성, S로 저장.",
     "描線揭圖 Unveil": "언베일 — 선 따기",
     "Qix／天蠶變風的圈地揭圖小遊戲：用方向鍵把游標拉進黑幕拉線，回到已揭開的邊界圍出封閉區，沒有敵人的那一側就揭開底層圖片（原創立繪）。避開在黑幕中亂彈的紅色敵人——碰到你正在拉的線就扣一命。揭開達 75% 過關看完整圖，關卡越高敵人越多越快。方向鍵／WASD 或畫面方向鍵操作，支援手機。":
       "Qix／볼피드 스타일의 영역 차지 게임. 방향키로 커서를 어둠 속으로 끌어 선을 긋고, 열린 경계로 돌아와 영역을 감싸면 적이 없는 쪽이 열리며 아래 그림(오리지널 캐릭터 일러스트)이 드러납니다. 어둠 속을 튕겨 다니는 빨간 적을 피하세요——그리는 선에 닿으면 목숨이 하나 줄어듭니다. 75%를 열면 스테이지 클리어로 완성 그림을 보여주며, 높은 스테이지일수록 적은 더 빠르고 많아집니다. 방향키/WASD 또는 화면 방향 버튼, 모바일 지원.",
