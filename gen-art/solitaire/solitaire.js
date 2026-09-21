@@ -90,6 +90,90 @@
     return false;
   }
 
+  // ── 求解並回傳「一整條通往獲勝的走法」（提示快取／無解偵測用）─────────────────
+  // 回傳 { status:'win', line:[move,...] } | { status:'exhausted' }（確定無解）| { status:'capped' }（逾時未知）
+  // move（UI 可直接套用）：{t:'draw'} | {t:'wf'} | {t:'tf',col} | {t:'wt',col} | {t:'tt',col,idx,to}
+  function _winLine(gameState, nodeCap) {
+    var SI = { S: 0, H: 1, D: 2, C: 3 };
+    function enc(card) { return (card.r - 1) * 4 + SI[card.s]; }
+    function rank(v) { return (v >> 2) + 1; }
+    function suit(v) { return v & 3; }
+    function red(v) { var s = v & 3; return s === 1 || s === 2; }
+    var init = {
+      stock: gameState.stock.map(enc), waste: gameState.waste.map(enc),
+      f: [gameState.found.S.length, gameState.found.H.length, gameState.found.D.length, gameState.found.C.length],
+      tab: gameState.tab.map(function (p) { return p.map(function (c) { return { v: enc(c), up: c.up }; }); })
+    };
+    function cl(SS) { return { stock: SS.stock.slice(), waste: SS.waste.slice(), f: SS.f.slice(), tab: SS.tab.map(function (p) { return p.map(function (c) { return { v: c.v, up: c.up }; }); }) }; }
+    function win(SS) { return SS.f[0] === 13 && SS.f[1] === 13 && SS.f[2] === 13 && SS.f[3] === 13; }
+    function key(SS) {
+      var t = ''; for (var i = 0; i < 7; i++) { var p = SS.tab[i]; for (var j = 0; j < p.length; j++) t += (p[j].up ? '' : 'x') + p[j].v + '.'; t += '|'; }
+      return SS.f.join(',') + '#' + SS.stock.join('.') + '#' + SS.waste.join('.') + '#' + t;
+    }
+    function canPlace(v, p) { if (!p.length) return rank(v) === 13; var top = p[p.length - 1]; return top.up && rank(top.v) === rank(v) + 1 && red(top.v) !== red(v); }
+    function flip(p) { if (p.length && !p[p.length - 1].up) p[p.length - 1].up = true; }
+    function safeOK(v, SS) { var r = rank(v), su = suit(v); if (SS.f[su] !== r - 1) return false; if (r <= 2) return true; var opp = red(v) ? [0, 3] : [1, 2]; return SS.f[opp[0]] >= r - 1 && SS.f[opp[1]] >= r - 1; }
+    // 安全自動上基（可能連鎖）；回傳所有動作描述（逐一），無則空陣列
+    function applySafeAll(SS) {
+      var mvs = [], again = true;
+      while (again) {
+        again = false;
+        if (SS.waste.length) { var v = SS.waste[SS.waste.length - 1]; if (safeOK(v, SS)) { mvs.push({ t: 'wf' }); SS.waste.pop(); SS.f[suit(v)]++; again = true; continue; } }
+        for (var c = 0; c < 7; c++) { var p = SS.tab[c]; if (p.length) { var tp = p[p.length - 1]; if (tp.up && safeOK(tp.v, SS)) { mvs.push({ t: 'tf', col: c }); p.pop(); SS.f[suit(tp.v)]++; flip(p); again = true; break; } } }
+      }
+      return mvs;
+    }
+    function children(SS) {
+      var out = [], n, mvs;
+      var s2 = cl(SS); mvs = applySafeAll(s2); if (mvs.length) { return [{ s: s2, mvs: mvs }]; }   // 安全上基＝強制步
+      // 抽牌／回收先產生（→ 同分數桶內最後才被展開，讓有進展的走法優先，牌局前段少無謂抽牌）
+      if (SS.stock.length) { n = cl(SS); n.waste.push(n.stock.pop()); out.push({ s: n, mvs: [{ t: 'draw' }] }); }
+      else if (SS.waste.length) { n = cl(SS); n.stock = n.waste.slice().reverse(); n.waste = []; out.push({ s: n, mvs: [{ t: 'draw' }] }); }
+      for (var c = 0; c < 7; c++) { var p = SS.tab[c]; if (p.length) { var t = p[p.length - 1]; if (t.up && SS.f[suit(t.v)] === rank(t.v) - 1) { n = cl(SS); n.tab[c].pop(); n.f[suit(t.v)]++; flip(n.tab[c]); out.push({ s: n, mvs: [{ t: 'tf', col: c }] }); } } }
+      if (SS.waste.length) { var wv = SS.waste[SS.waste.length - 1]; if (SS.f[suit(wv)] === rank(wv) - 1) { n = cl(SS); n.waste.pop(); n.f[suit(wv)]++; out.push({ s: n, mvs: [{ t: 'wf' }] }); } }
+      if (SS.waste.length) { var wv2 = SS.waste[SS.waste.length - 1]; for (var d = 0; d < 7; d++) if (canPlace(wv2, SS.tab[d])) { n = cl(SS); n.waste.pop(); n.tab[d].push({ v: wv2, up: true }); out.push({ s: n, mvs: [{ t: 'wt', col: d }] }); } }
+      for (var sc = 0; sc < 7; sc++) {
+        var pile = SS.tab[sc], startIdx = -1;
+        for (var i = pile.length - 1; i >= 0; i--) {
+          if (!pile[i].up) break;
+          if (i === pile.length - 1) startIdx = i;
+          else { var a = pile[i], b = pile[i + 1]; if (rank(a.v) === rank(b.v) + 1 && red(a.v) !== red(b.v)) startIdx = i; else break; }
+        }
+        if (startIdx < 0) continue;
+        for (var idx = startIdx; idx < pile.length; idx++) {
+          var moving = pile.slice(idx), bottom = moving[0].v;
+          for (var dc = 0; dc < 7; dc++) {
+            if (dc === sc) continue;
+            if (canPlace(bottom, SS.tab[dc])) {
+              if (idx === 0 && SS.tab[dc].length === 0) continue;                  // 空列間搬 K 無意義
+              n = cl(SS); n.tab[sc].splice(idx); for (var m = 0; m < moving.length; m++) n.tab[dc].push({ v: moving[m].v, up: true }); flip(n.tab[sc]); out.push({ s: n, mvs: [{ t: 'tt', col: sc, idx: idx, to: dc }] });
+            }
+          }
+        }
+      }
+      return out;
+    }
+    function fdown(SS) { var n = 0; for (var i = 0; i < 7; i++) { var p = SS.tab[i]; for (var j = 0; j < p.length; j++) if (!p[j].up) n++; } return n; }
+    function score(SS) { return (SS.f[0] + SS.f[1] + SS.f[2] + SS.f[3]) * 22 + (21 - fdown(SS)); }
+    var visited = {}, nodes = 0, buckets = [], top = -1;
+    function push(entry) { var s = score(entry.s); (buckets[s] || (buckets[s] = [])).push(entry); if (s > top) top = s; }
+    function rebuild(entry) { var stack = [], cur = entry; while (cur && cur.mvs) { stack.push(cur.mvs); cur = cur.p; } var line = []; for (var i = stack.length - 1; i >= 0; i--) { for (var j = 0; j < stack[i].length; j++) line.push(stack[i][j]); } return line; }
+    if (win(init)) return { status: 'win', line: [] };
+    push({ s: init, p: null, mvs: null });
+    while (top >= 0) {
+      if (nodes++ > nodeCap) return { status: 'capped' };
+      var e = buckets[top].pop();
+      while (top >= 0 && (!buckets[top] || !buckets[top].length)) top--;
+      if (!e) continue;
+      var SS = e.s;
+      if (win(SS)) return { status: 'win', line: rebuild(e) };
+      var k = key(SS); if (visited[k]) continue; visited[k] = 1;
+      var ch = children(SS);
+      for (var i = 0; i < ch.length; i++) push({ s: ch[i].s, p: e, mvs: ch[i].mvs });
+    }
+    return { status: 'exhausted' };
+  }
+
   function _deal() {
     var deck = [];
     for (var si = 0; si < 4; si++) for (var r = 1; r <= 13; r++) deck.push({ r: r, s: SUITS[si], up: false });
@@ -121,8 +205,72 @@
       if (!S) S = cand;   // 逾時保底：用最後一副（極少發生）
     }
     S.solvableChecked = verified;
+    S.initial = clone({ stock: S.stock, waste: S.waste, found: S.found, tab: S.tab });  // 存起手牌供「重玩本局」
     save();
     return S;
+  }
+
+  // 重玩本局：把牌面重置回起手（同一副已驗證可解的牌），清空悔棋與計時
+  function restartDeal() {
+    if (!S || !S.initial) return false;
+    var d = clone(S.initial);
+    S.stock = d.stock; S.waste = d.waste; S.found = d.found; S.tab = d.tab;
+    S.undo = []; S.moves = 0; S.start = nowMs(); S.elapsed = 0; S.status = 'playing';
+    save();
+    return true;
+  }
+
+  // ── 求解式提示：快取整條致勝走法，逐步給出（照走→下一步；偏離→自動重算）──────────
+  var _plan = null;   // { line:[mv,...], idx, expectKey }
+  function _keyOf(st) {
+    var t = '';
+    for (var i = 0; i < 7; i++) { var p = st.tab[i]; for (var j = 0; j < p.length; j++) t += (p[j].up ? '' : 'x') + p[j].r + p[j].s + '.'; t += '|'; }
+    return st.found.S.length + ',' + st.found.H.length + ',' + st.found.D.length + ',' + st.found.C.length +
+      '#' + st.stock.length + '#' + st.waste.map(function (c) { return c.r + c.s; }).join('.') + '#' + t;
+  }
+  function _applyCard(st, mv) {
+    function fl(p) { if (p.length && !p[p.length - 1].up) p[p.length - 1].up = true; }
+    if (mv.t === 'draw') {
+      if (st.stock.length) { var c = st.stock.pop(); c.up = true; st.waste.push(c); }
+      else { st.stock = st.waste.reverse().map(function (x) { x.up = false; return x; }); st.waste = []; }
+      return st;
+    }
+    if (mv.t === 'wf') { var w = st.waste.pop(); st.found[w.s].push(w); return st; }
+    if (mv.t === 'tf') { var p = st.tab[mv.col]; var c2 = p.pop(); st.found[c2.s].push(c2); fl(p); return st; }
+    if (mv.t === 'wt') { var w2 = st.waste.pop(); w2.up = true; st.tab[mv.col].push(w2); return st; }
+    if (mv.t === 'tt') { var src = st.tab[mv.col]; var mov = src.splice(mv.idx); for (var i = 0; i < mov.length; i++) { mov[i].up = true; st.tab[mv.to].push(mov[i]); } fl(src); return st; }
+    return st;
+  }
+  function _keyAfter(mv) { return _keyOf(_applyCard(clone({ stock: S.stock, waste: S.waste, found: S.found, tab: S.tab }), mv)); }
+
+  // 回傳 { status:'win', move } | { status:'exhausted' }（確定無解）| { status:'capped', hint }（逾時→退回啟發式）
+  function solveHint(cap) {
+    if (!S || S.status !== 'playing') return { status: 'exhausted' };
+    cap = cap || 50000;
+    var curKey = _keyOf(S);
+    // 快取命中（照上次提示走到了預期狀態）→ 直接給下一步，不重算
+    if (_plan && _plan.expectKey === curKey && _plan.idx < _plan.line.length) {
+      var mv = _plan.line[_plan.idx];
+      _plan.idx++;
+      _plan.expectKey = _keyAfter(mv);
+      if (_plan.idx >= _plan.line.length) _plan = null;
+      return { status: 'win', move: mv };
+    }
+    var r = _winLine(S, cap);                    // 重新求解整條致勝走法
+    if (r.status === 'exhausted') { _plan = null; return { status: 'exhausted' }; }
+    if (r.status === 'capped') { _plan = null; return { status: 'capped', hint: hint() }; }
+    if (!r.line.length) { _plan = null; return { status: 'win', move: null }; }
+    var first = r.line[0];
+    _plan = { line: r.line, idx: 1, expectKey: _keyAfter(first) };
+    if (_plan.idx >= _plan.line.length) _plan = null;
+    return { status: 'win', move: first };
+  }
+
+  // 一鍵求解：回傳目前局面「一整條致勝走法」（供 UI 全自動播放）。
+  // { status:'win', line:[mv,...] } | { status:'exhausted' } | { status:'capped' }
+  function winningLine(cap) {
+    if (!S || S.status !== 'playing') return { status: 'exhausted' };
+    return _winLine(S, cap || 300000);
   }
 
   function snapshot() {
@@ -330,6 +478,7 @@
     canAutoFinish: canAutoFinish, autoFinishStep: autoFinishStep,
     canPlaceOnTab: canPlaceOnTab, canPlaceOnFound: canPlaceOnFound, isRun: isRun,
     undo: undo, hint: hint, won: won, elapsed: elapsed,
+    solveHint: solveHint, restartDeal: restartDeal, winningLine: winningLine,
     isSolvable: function (st, cap) { return _solvable(st || S, cap || 16000); },
     load: load, save: save, clearSave: clearSave
   };
