@@ -72,7 +72,6 @@
     <button class="ghost" onclick="game.undo()">↩ 悔棋</button>
     <button class="ghost" onclick="game.hint()">💡 提示</button>
     <button class="ghost" onclick="game.autosolve()">🏁 自動求解</button>
-    <button class="ghost" id="autoBtn" onclick="game.auto()">⚡ 自動完成</button>
   </div>
   <div class="hintbar">
     抽牌堆點一下抽牌／回收；<b>拖曳</b>牌到目標牌堆（或「點選→點目標」也可）；<b>雙擊</b>或拖到基座即收牌。
@@ -105,6 +104,13 @@
     var winShown=false;   // 破關動畫只播一次
     var autoFinishing=false;   // 自動收牌動畫進行中
     var autoIv=null;           // 自動收牌計時器 id
+    var _autoInterrupt=null;   // 自動求解播放中，攔截使用者操作以便中途接手
+    function stopAuto(){       // 停止任何進行中的自動播放，恢復手動
+      if(autoIv){ clearInterval(autoIv); autoIv=null; }
+      autoFinishing=false;
+      if(board) board.style.pointerEvents='';
+      if(_autoInterrupt){ board.removeEventListener('pointerdown', _autoInterrupt, true); _autoInterrupt=null; }
+    }
 
     function colX(i){ return i*(CW+GAP); }
     function boardWidth(){ return 7*CW + 6*GAP; }
@@ -332,7 +338,6 @@
 
       // stats
       document.getElementById('moves').textContent=st.moves;
-      document.getElementById('autoBtn').disabled=!S.canAutoComplete();
       fitScale();
       if(st.status==='won' && !winShown){ winShown=true; winCascade(function(){ showWin(st); }); }
       else if(!autoFinishing) maybeAutoFinish();   // 台面暗牌全開 → 自動收牌
@@ -420,15 +425,14 @@
     setInterval(function(){ var st=S.state(); if(st&&st.status==='playing'){ document.getElementById('time').textContent=fmt(S.elapsed()); } },1000);
 
     var game={
-      newGame:function(){ document.getElementById('win').classList.remove('on'); if(autoIv){clearInterval(autoIv);autoIv=null;} autoFinishing=false; board.style.pointerEvents=''; winShown=false; S.newGame(); clearSel(); render(); },
-      undo:function(){ if(autoFinishing) return; S.undo(); clearSel(); render(); },
-      auto:function(){ maybeAutoFinish(); },
+      newGame:function(){ document.getElementById('win').classList.remove('on'); stopAuto(); winShown=false; S.newGame(); clearSel(); render(); },
+      undo:function(){ stopAuto(); S.undo(); clearSel(); render(); },
       restart:function(){
         var st=S.state();
         if(!st || !st.initial){ toast('這局沒有可重玩的起手牌（舊存檔），請開新遊戲'); return; }
         if(!confirm('重玩本局？會回到起手、清空目前進度（同一副已驗證可解的牌）。')) return;
         document.getElementById('win').classList.remove('on');
-        if(autoIv){clearInterval(autoIv);autoIv=null;} autoFinishing=false; board.style.pointerEvents=''; winShown=false;
+        stopAuto(); winShown=false;
         S.restartDeal(); clearSel(); render();
       },
       autosolve:function(){
@@ -440,13 +444,15 @@
           if(r.status==='exhausted'){ toast('⚠️ 此局面已無解，無法自動完成（試試悔棋或重玩本局）'); return; }
           if(r.status==='capped'){ toast('😵 此局太複雜，暫時算不出完整解法（先手動走幾步再按）'); return; }
           if(!r.line || !r.line.length){ maybeAutoFinish(); return; }
-          autoFinishing=true; board.style.pointerEvents='none'; toast('🏁 自動完成中…');
+          autoFinishing=true; toast('🏁 自動完成中…（點牌桌任一處即可中途接手）');
+          // 保持牌桌可點：使用者一按就停止自動、交還手動（捕獲階段先觸發，該次點擊仍照常操作）
+          _autoInterrupt=function(){ stopAuto(); toast('🎮 已接手，改為手動操作'); };
+          board.addEventListener('pointerdown', _autoInterrupt, true);
           var i=0, line=r.line;
           autoIv=setInterval(function(){
             var st=S.state();
             if(i>=line.length || !st || st.status!=='playing'){
-              clearInterval(autoIv); autoIv=null; autoFinishing=false; board.style.pointerEvents='';
-              render(); return;
+              stopAuto(); render(); return;
             }
             var mv=line[i]; i++;
             if(mv.t==='draw') S.draw();
