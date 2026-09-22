@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GP0KMK7NS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GP0KMK7NS');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <title>萬熊之熊 — 寵物小屋 Bears' Life Pets</title>
+  <meta name="description" content="《萬熊之熊》Telegram MUD 的個人寵物小屋：每位玩家自己的像素房間，寵物即時生活互動、牆上展示保管區珍藏裝備，訪客可以免費投餵（真的會餵飽牠！）。">
+  <meta name="author" content="kvzhuang">
+  <meta name="theme-color" content="#1a140e">
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      background: radial-gradient(circle at 50% 35%, #2a2016, transparent 60rem), #150f0a;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      font-family: -apple-system, "Noto Sans TC", sans-serif; color: #e8ddc8;
+    }
+    #wrap { display: flex; gap: 14px; align-items: stretch; max-width: 97vw; max-height: 96vh; }
+    #stage { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    #topbar { display: flex; gap: 10px; align-items: center; font-size: 13px; color: #b9a884; }
+    #topbar a { color: #b9a884; text-decoration: none; }
+    #topbar a:hover { color: #f0d89a; }
+    #topbar a.play { color: #7ec8f0; font-weight: 700; }
+    #topbar a.play:hover { color: #c8ecff; }
+    #topbar .hname { font-weight: 700; color: #f0d89a; font-size: 15px; }
+    a.playcta {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: linear-gradient(135deg, #2AABEE, #229ED9); color: #fff;
+      text-decoration: none; padding: 12px 14px; border-radius: 10px; font-weight: 700;
+      box-shadow: 0 4px 16px rgba(34,158,217,.45);
+    }
+    a.playcta span { opacity: .9; font-weight: 400; }
+    a.playcta:hover { filter: brightness(1.06); }
+    #lobby a.playcta { grid-column: 1 / -1; }
+    #side a.playcta { flex-direction: column; gap: 2px; padding: 10px 12px; font-size: 13px; }
+    #side a.playcta span { font-size: 12px; }
+    #park-container { position: relative; display: flex; }
+    #park-container canvas {
+      display: block; border: 4px solid #4a3a26; border-radius: 8px;
+      background: #120d08; box-shadow: 0 24px 70px rgba(0,0,0,.7);
+      max-width: 100%; height: auto !important;
+    }
+    /* 大廳門牌牆 */
+    #lobby {
+      width: min(960px, 92vw); max-height: 80vh; overflow-y: auto;
+      display: none; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;
+      padding: 14px; border: 4px solid #4a3a26; border-radius: 8px;
+      background: #1c150d; box-shadow: 0 24px 70px rgba(0,0,0,.7);
+    }
+    .door {
+      display: block; text-decoration: none; color: #e8ddc8;
+      background: rgba(34,26,16,.9); border: 1px solid #4a3a26; border-radius: 8px;
+      padding: 12px; transition: border-color .15s;
+    }
+    .door:hover { border-color: #d9b877; }
+    .door .dn { font-weight: 700; color: #f0d89a; font-size: 14px; }
+    .door .dm { font-size: 11px; color: #9a8a6a; margin: 3px 0 6px; }
+    .door .dp { font-size: 17px; letter-spacing: 3px; }
+    #side {
+      width: 268px; flex: none; display: none; flex-direction: column; gap: 10px;
+      max-height: 96vh; overflow-y: auto; overflow-x: hidden;
+    }
+    .box { background: rgba(34,26,16,.85); border: 1px solid #4a3a26; border-radius: 8px; padding: 10px 12px; }
+    .box h3 { margin: 0 0 7px; font-size: 12px; color: #d9b877; letter-spacing: .12em; font-weight: 700; }
+    #ownercard { font-size: 12px; color: #c9b89a; line-height: 1.7; }
+    #ownercard .on { font-size: 15px; font-weight: 700; color: #f0e6cc; }
+    #card { font-size: 12px; color: #c9b89a; line-height: 1.7; min-height: 3em; }
+    #card .pname { font-size: 14px; font-weight: 700; color: #f0e6cc; }
+    #card .tiers { color: #d9c8a4; }
+    #feedbtn {
+      margin-top: 7px; width: 100%; padding: 9px 0; border: none; border-radius: 8px;
+      background: #7a5c2e; color: #ffe9b0; font-size: 14px; font-weight: 700; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #feedbtn:disabled { background: #3a2f1e; color: #8a7a5a; cursor: default; }
+    #feedbtn:not(:disabled):active { opacity: .75; }
+    #feedmsg { font-size: 11px; color: #9a8a6a; margin-top: 5px; min-height: 1.2em; }
+    .pt { display: flex; align-items: center; gap: 7px; margin: 3px 0; font-size: 12px;
+          cursor: pointer; padding: 2px 4px; margin-left: -4px; border-radius: 5px; }
+    .pt:hover { background: rgba(217,184,119,.12); }
+    .pt.sel { background: rgba(217,184,119,.18); }
+    .pt .nm { font-weight: 700; color: #f0e6cc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pt .st { margin-left: auto; font-size: 11px; color: #9a8a6a; white-space: nowrap; }
+    .gr { display: flex; align-items: center; gap: 7px; margin: 3px 0; font-size: 12px; }
+    .gr .ge { flex: none; }
+    .gr .gn { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gr .gq { margin-left: auto; color: #9a8a6a; font-size: 11px; white-space: nowrap; }
+    #legend { font-size: 11px; line-height: 1.7; color: #b9a884; }
+    @media (max-width: 900px) {
+      html, body { overflow: auto; align-items: flex-start; }
+      #wrap { flex-direction: column; max-height: none; margin: 8px 0; }
+      #side { width: 100%; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <div id="stage">
+      <div id="topbar">
+        <span class="hname" id="housename">🏠 寵物小屋</span>
+        <span style="margin-left:auto"></span>
+        <a href="./">🚪 小屋大廳</a>
+        <a href="../bears-life/">🗺️ 世界地圖</a>
+        <a class="play" href="https://t.me/bearOfBearsBot" target="_blank" rel="noopener">✈️ 進遊戲</a>
+      </div>
+      <div id="lobby"></div>
+      <div id="park-container"></div>
+    </div>
+    <div id="side">
+      <div class="box" style="padding:0;background:none;border:none;box-shadow:none">
+        <a class="playcta" href="https://t.me/bearOfBearsBot" target="_blank" rel="noopener">
+          ✈️ 在 Telegram 開始遊戲　<span>@bearOfBearsBot</span>
+        </a>
+      </div>
+      <div class="box"><h3>屋主</h3><div id="ownercard">載入中…</div></div>
+      <div class="box"><h3>寵物資訊</h3><div id="card">點畫面上的寵物或下方名單看詳情。</div>
+        <button id="feedbtn" style="display:none"></button><div id="feedmsg"></div></div>
+      <div class="box"><h3>這個家的寵物</h3><div id="petlist"></div></div>
+      <div class="box"><h3>牆上珍藏</h3><div id="gearlist" style="font-size:12px;color:#c9b89a">—</div></div>
+      <div class="box" id="trophybox" style="display:none"><h3>🏆 戰利品</h3><div id="trophylist" style="font-size:12px;color:#c9b89a">—</div></div>
+      <div class="box" id="legend">
+        🍽️ 投餵免費、無冷卻，隨時都能餵（+6 飽食，約 1 分鐘生效）。
+        親密度還是要主人在遊戲裡 /feed /play /pat 培養。<br>
+        🪟 點窗戶開關窗簾；寵物會自己跳上貓跳台或鑽沙坑，點牠們會冒愛心。<br>
+        🖼️ 牆上排掛 /store 珍藏，下排掛 /craft store 保管區。房屋可用 /expand 加寬、/furn 買家具。<br>
+        💘 牆上的羈絆相框＝屋主走完的青春物語（遊戲內 /story）；夜裡窗外若有一盞燈，那是觀測站有人在等。想低調可用 /lovehide。<br>
+        ✈️ 遊戲本體在 Telegram：<a href="https://t.me/bearOfBearsBot" target="_blank" rel="noopener" style="color:#7ec8f0">t.me/bearOfBearsBot</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'sketch.js?v=' + Date.now();
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>
